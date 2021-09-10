@@ -11,18 +11,18 @@
 - The elements are stored in a 1D array
 - It supports basic matrix and scalar operations (+,-,*)
 - It supports Comparing operations (==, !=)
-- Performance :-
+- Performance:-
   - Uses templates to construct size, so it's static! which makes it `fast` but not resizable
-- Compile time checks :-
+- Compile time checks:-
   - Must `row_size > 0` And `column_size > 0`
 
-## Usage :-
+## Usage:-
 
-### - Creating a variable of type matrix_<> :-
+### - Creating a variable of type matrix_<>:-
 
 - `matrix_<Type, row_size, column_size> var_name`
 
-### - Initializing a matrix variable and adding data :-
+### - Initializing a matrix variable and adding data:-
 
 #### - - Using a constructor
 
