@@ -13,7 +13,7 @@
     - [back_substitution][]
     - and a helper function called `change_with_R`
 
-## Note :- check the TESTS folder to look at the usage
+## Note :- check the `tests` folder to look at the usage
 
 [gauss_elimination]: https://en.wikipedia.org/wiki/Gaussian_elimination
 [determined]: https://en.wikipedia.org/wiki/Determination
