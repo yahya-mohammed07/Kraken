@@ -34,6 +34,6 @@
   - `max` : has `5` overloads
   - `min` : has `5` overloads
 
-## Note: for usage please check the `TESTS` folder
+## Note: for usage please check the `tests` folder
 
 [Alf P. Steinbach]: https://github.com/alf-p-steinbach
