@@ -1,12 +1,12 @@
 #ifndef NUMERIC_HPP
 #define NUMERIC_HPP
 
-#include <algorithm> // std::move, std::forward
+#include <algorithm>      // std::move, std::forward
 #include <type_traits>
-#include <cassert>  // assert
+#include <cassert>        // assert
 #include <initializer_list>
-#include <limits> // quite_NaN
-#include "matrix.hpp"
+#include <limits>         // quite_NaN
+#include "matrix.hpp"     // matrix_<>
 #include "constants.hpp"
 
 namespace lab::num_methods {
