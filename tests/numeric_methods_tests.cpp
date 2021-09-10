@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <iomanip>
 
-TEST_CASE("CHECK GAUSS-ELIMINATION AND DETERMINNAT") {
+TEST_CASE("CHECK GAUSS-ELIMINATION AND DETERMINED") {
   constexpr matrix_<float, 3, 3> matrix{1.f, 2.f, 3.f, 4.f, 5.f,
                                         6.f, 7.f, 8.f, 9.f};
   constexpr auto mat = lab::num_methods::gauss_elimination(matrix);
