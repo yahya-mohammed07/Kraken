@@ -1,4 +1,4 @@
-# Kraken :octopus: v0.1.1
+# Kraken :octopus:
 
 ==============
 
