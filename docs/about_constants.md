@@ -4,12 +4,12 @@
 
 - Math and physics constants as symbols
 
-## - Reasons for storing the constants as symbols :-
+## - Reasons for storing the constants as symbols:-
 
 - I'ts cool!
 - Some people find symbols more readable than writing the `full-name` of that symbol e.g: `Gauss–Kuzmin–Wirsing constant` as a symbol : `λ_gauss`. so yeah that's better
 
-## - Usage :-
+## - Usage:-
 
 ```cpp
   std::cout << "Ω= " << constants::Ω << '\n';
