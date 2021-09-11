@@ -4,7 +4,7 @@
 #include "matrix.hpp"
 #include "numeric.hpp"
 
-namespace lab::num_methods {
+namespace kraken::num_methods {
 
   /**
    * @brief Perform's gauss-elimination
