@@ -9,7 +9,7 @@
 #include "matrix.hpp"     // matrix_<>
 #include "constants.hpp"
 
-namespace lab::num_methods {
+namespace kraken::num_methods {
   template<class A, class Op1, class Op2>
   requires (std::is_floating_point_v<A>)
   [[nodiscard]]
@@ -52,7 +52,7 @@ public:
   constexpr My_Iota(const It a, const It b) noexcept : m_begin(a), m_end(b) {}
 };
 
-namespace lab {
+namespace kraken {
     namespace op {
     struct plus {
       constexpr auto operator()(auto &&...args) noexcept { return (args + ...); }
@@ -88,7 +88,7 @@ namespace lab {
 }
 
 /// @brief pure calculations for mostly any container or a collection
-namespace lab::cal {
+namespace kraken::cal {
 
   /// @brief  short name for => accumulate
   template <class V, class Binary_op, class T>
@@ -335,7 +335,7 @@ namespace lab::cal {
   auto sqrt(const Ty val) noexcept
       -> Ty
   {
-    return lab::num_methods::newton(
+    return kraken::num_methods::newton(
       (static_cast<Ty>(1.)),
       20, [&val](auto &&x) {
         return (x*x) - val;
