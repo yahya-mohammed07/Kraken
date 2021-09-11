@@ -14,8 +14,8 @@
 
 - 1- implementation of `newton's method`
 - 2- basic `iota` class given by [Alf P. Steinbach][]
-- 3- `lab::cal` namespace `cal` contains functions that do some calculations
-- inside `lab::cal`:
+- 3- `kraken::cal` namespace `cal` contains functions that do some calculations
+- inside `kraken::cal`:
   - `acc`Is short for `accumulate`: It can compute `scalar operations (+,-,*)` of a container with no need of iterators
   - `calcu` Is short for `calculate`: It can compute `scalar operations (+,-,*)` on a `init-list` or `variadic` argument
   - `abs`
