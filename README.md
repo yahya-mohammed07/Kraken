@@ -6,8 +6,6 @@
 * [Requirement](#requirement)
 * [Contents](#contents)
 * [Installation](#installation)
-  * [Debian based systems](#debian)
-  * [Windows](#windows)
 
 ## Introduction
 
@@ -37,31 +35,28 @@
 
 ## Installation
 
-1. Download the library.
-2. Make it so that the compiler will find the `<Kraken/all.hpp>` header.
+* [Download](#download)
+* [Make it so that the compiler will find the `<Kraken/all.hpp>` header](#path)
+* Adding the library to intended folder
+  * [Debian based systems](#debian)
+  * [Windows](#windows)
 
-3. Test it by compiling and running the Kraken “Pi” example.
-
-## 1. Download
+### Download
 
 * A simple way is to download this library from `github` as `zip` then `unzip` it maybe using your os built-in unzip tool but the preferred way is to use [PeaZip][] for windows and linux, for mac you can use [keka][]
 
-## 2. Make the compiler find the `<Kraken/all.hpp>` header
+### Path
 
-* If you downloaded it ZIP and unzipped it, then in the unzipped library the root of the header folder hierarchy is `Kraken-master/source/library`.
+* If you downloaded it as `zip` and unzipped it, then in the unzipped library the root of the header folder hierarchy is `Kraken-master/source/library`.
 
 * I.e. there is a `Kraken-master/source/library/all.hpp` header, which is the one that you want the compiler to find as <Kraken/all.hpp>.
 
-### A simple way is to do that
+## Debian
 
 * copy the `Kraken-master/source/library` folder from the unzipped archive, to a folder that your compiler searches for headers.
 
-A that folder is
+And that folder is
 > /usr/include
-
-### So, how to do that?
-
-## Debian
 
 ### If you're on `Ubuntu/POP!_os/any debian based os/` you can do the following :-
 
@@ -71,24 +66,26 @@ A that folder is
   * if your're using `nemo` no need to install anything `run as-administer` is built-in
 
 * open `usr/include` folder as `administrator`
-* paste `library` folder into `usr/include`, you may rename library into `Kraken`. you're done!
+* paste `library` folder into `usr/include`, then rename `library` into `Kraken`. you're done!
 
 * Terminal version
   * if you have any file manger installed you can open a folder as administer as follows:
     `sudo` **(your-file-manager)** ` /usr/include `
-  * paste `library` folder into `usr/include`, you may rename library into `Kraken`. you're done!
+  * paste `library` folder into `usr/include`, then rename `library` into `Kraken`. you're done!
 
 ## windows
 
 ### If you're on `Windows` :-
 
+* copy the `Kraken-master/source/library` folder from the unzipped archive, to a folder that your compiler searches for headers.
+
 * in Windows for the MinGW g++ compiler you might have a folder such as
   > C:\installed\mingw\nuwen\MinGW **(version)**\include
-* just paste the `Kraken` folder inside
+* just paste the `library` folder inside, then rename `library` into `Kraken`. you're done!
 
 * and in Windows for the Visual C++ compiler you might have a folder such as
   > C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\ **(version)** \include
-* again just paste the `Kraken` folder inside
+* just paste the `library` folder inside, then rename `library` into `Kraken`. you're done!
 
 ## 3. Check if the library is working by running this code
 
