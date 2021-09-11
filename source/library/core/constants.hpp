@@ -8,7 +8,7 @@
 
 /// @brief math and physics constants in one place
 
-namespace lab::constants {
+namespace kraken::constants {
 
   template <class Ty>
   concept check_float = std::is_floating_point_v<Ty>;
