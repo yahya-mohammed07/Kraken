@@ -6,7 +6,7 @@
 * [Requirement](#requirement)
 * [Contents](#contents)
 * [Installation](#installation)
-  * [Debian_os](#debian)
+  * [Debian based systems](#debian)
   * [Windows](#windows)
 
 ## Introduction
@@ -71,12 +71,12 @@ A that folder is
   * if your're using `nemo` no need to install anything `run as-administer` is built-in
 
 * open `usr/include` folder as `administrator`
-* paste `library` folder into `usr/include`, you may rename library into `Kraken` after you're done!
+* paste `library` folder into `usr/include`, you may rename library into `Kraken`. you're done!
 
 * Terminal version
   * if you have any file manger installed you can open a folder as administer as follows:
     `sudo` **(your-file-manager)** ` /usr/include `
-  * paste `library` folder into `usr/include`, you may rename library into `Kraken` after you're done!
+  * paste `library` folder into `usr/include`, you may rename library into `Kraken`. you're done!
 
 ## windows
 
