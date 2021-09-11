@@ -4,7 +4,7 @@
 
 ## Introduction
 
-- `Kraken` is a modern mini-math library similar to [cmath][] but in a different approaches (good for both learners and actual work) that gives accurate results, compile time checks and simplicity
+- `Kraken` is a modern cross-platform mini-math library similar to [cmath][] but in a different approaches (good for both learners and actual work) that gives accurate results, compile time checks and simplicity
 
 ## Requirement
 
@@ -13,13 +13,14 @@
     - g++10 -std=c++2a
     - g++-11 -std=c++2a
     - clang++-11 -std=c++2a
+    - clang++-10 -std=c++2a
 - Catch2 for testing
 
 ## What is inside?
 
 - A matrix_<> class `(check docs/about_matrix.md)`
 
-- namespace `lab` which has ::
+- namespace `kraken` which has:-
 
   - namespace `constants` : contains mathematical and physical constants presented as symbols, just like in julia
   - namespace `cal`       : contains functions that do some calculations
@@ -81,7 +82,7 @@ A that folder is
   #include <Kraken/all.hpp>
   #include <iostream>
 
-  using namespace lab;
+  using namespace kraken;
 
   auto main()
       -> int
