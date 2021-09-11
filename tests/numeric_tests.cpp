@@ -3,7 +3,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cmath>
 
-using namespace lab;
+using namespace kraken;
 
 constexpr std::array<int, 5> numeric_test { 1, 2, 3, 4, 5 };
 
@@ -26,7 +26,7 @@ TEST_CASE("CHECK CALCULATE") {
 }
 
 TEST_CASE("LN(X)") {
-  REQUIRE(cal::ln(lab::constants::e_v<float>) == 1.f);
+  REQUIRE(cal::ln(kraken::constants::e_v<float>) == 1.f);
   REQUIRE(cal::ln(4.f) == 1.38629436112f);
   REQUIRE(cal::ln(7.f) == 1.94591014906f);
 }
