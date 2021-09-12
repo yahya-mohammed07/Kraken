@@ -1,7 +1,6 @@
 #include "../source/library/core/numeric.hpp"
 #include "../source/library/core/constants.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <cmath>
 
 using namespace kraken;
 
@@ -26,7 +25,7 @@ TEST_CASE("CHECK CALCULATE") {
 }
 
 TEST_CASE("LN(X)") {
-  REQUIRE(cal::ln(kraken::constants::e_v<float>) == 1.f);
+  REQUIRE(cal::ln(constants::e_v<float>) == 1.f);
   REQUIRE(cal::ln(4.f) == 1.38629436112f);
   REQUIRE(cal::ln(7.f) == 1.94591014906f);
 }
