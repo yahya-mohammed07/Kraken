@@ -1,7 +1,6 @@
 #include "../source/library/core/matrix.hpp"
 #include "../source/library/core/numeric_methods.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <iomanip>
 
 TEST_CASE("CHECK GAUSS-ELIMINATION AND DETERMINED") {
   constexpr matrix_<float, 3, 3> matrix{1.f, 2.f, 3.f, 4.f, 5.f,
@@ -47,11 +46,12 @@ TEST_CASE("SIMPSON'S RULE") {
 
 TEST_CASE("NEWTON'S METHOD") {
   constexpr auto val = 2;
-  constexpr auto actual = kraken::num_methods::newton(1.f, 20.f, [&val](auto x) {
-                                          return (x*x) - val;
-                                        }, [](auto x){
-                                          return (2.*x);
-                                        });
+  constexpr auto actual = kraken::num_methods::newton(1.f, 20.f,
+                  [&val](auto x) {
+                  return (x*x) - val;
+                }, [](auto x){
+                  return (2.*x);
+                });
   constexpr float expected = 1.4142135623730951;
   REQUIRE(expected == actual);
 }
