@@ -46,7 +46,7 @@ TEST_CASE ("TRANSPOSE FOR SQUARED MATRIX") {
   REQUIRE(expected == actual);
 }
 
-TEST_CASE ("TRANSPODE FOR NON-SQUARED MATRIX") {
+TEST_CASE ("TRANSPOSE FOR NON-SQUARED MATRIX") {
   constexpr matrix_<float, 3, 4> arr
   {
     0, 3, 6, 9,
