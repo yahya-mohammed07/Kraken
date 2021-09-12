@@ -1,6 +1,6 @@
 # Kraken :octopus:
 
-**Table of Contents:**
+## Table of Contents
 
 * [Introduction](#introduction)
 * [Requirement](#requirement)
@@ -36,7 +36,8 @@
 ## Installation
 
 * [Download](#download)
-* Adding the library to intended folder
+* Adding the library to the intended path so the compiler can recognize it
+  * [Any system](#all)
   * [Debian based systems](#debian)
   * [Windows](#windows)
 
@@ -44,13 +45,32 @@
 
 * A simple way is to download this library from `github` as `zip` then `unzip` it maybe using your os built-in unzip tool but the preferred way is to use [PeaZip][] for windows and linux, for mac you can use [keka][]
 
+## All
+
+* If you downloaded it as `zip` and unzipped it, then in the unzipped library the root of the header folder hierarchy is `Kraken-master/source/library`.
+
+* copy the **`library`** folder from the unzipped archive to your working directory as **`Kraken`** and include it this way.
+
+* ```cpp
+  #include "Kraken/all.hpp"
+  #include <iostream>
+
+  using namespace kraken;
+
+  auto main()
+      -> int
+  {
+    std::cout << constants::π << '\n';
+  }
+  ```
+
 ### Debian
 
 * If you downloaded it as `zip` and unzipped it, then in the unzipped library the root of the header folder hierarchy is `Kraken-master/source/library`.
 
 * I.e. there is a `Kraken-master/source/library/all.hpp` header, which is the one that you want the compiler to find as <Kraken/all.hpp>.
 
-* copy the `Kraken-master/source/library` folder from the unzipped archive, to a folder that your compiler searches for headers.
+* copy the **`library`** folder from the unzipped archive, to a folder that your compiler searches for headers.
 
 And that folder is
 > /usr/include
@@ -76,7 +96,7 @@ And that folder is
 
 * I.e. there is a `Kraken-master/source/library/all.hpp` header, which is the one that you want the compiler to find as <Kraken/all.hpp>.
 
-* copy the `Kraken-master/source/library` folder from the unzipped archive, to a folder that your compiler searches for headers.
+* copy the **`library`** folder from the unzipped archive, to a folder that your compiler searches for headers.
 
 * in Windows for the MinGW g++ compiler you might have a folder such as
   > C:\installed\mingw\nuwen\MinGW **(version)**\include
