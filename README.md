@@ -36,7 +36,6 @@
 ## Installation
 
 * [Download](#download)
-* [Make it so that the compiler will find the `<Kraken/all.hpp>` header](#path)
 * Adding the library to intended folder
   * [Debian based systems](#debian)
   * [Windows](#windows)
@@ -45,13 +44,11 @@
 
 * A simple way is to download this library from `github` as `zip` then `unzip` it maybe using your os built-in unzip tool but the preferred way is to use [PeaZip][] for windows and linux, for mac you can use [keka][]
 
-### Path
+### Debian
 
 * If you downloaded it as `zip` and unzipped it, then in the unzipped library the root of the header folder hierarchy is `Kraken-master/source/library`.
 
 * I.e. there is a `Kraken-master/source/library/all.hpp` header, which is the one that you want the compiler to find as <Kraken/all.hpp>.
-
-## Debian
 
 * copy the `Kraken-master/source/library` folder from the unzipped archive, to a folder that your compiler searches for headers.
 
@@ -73,9 +70,11 @@ And that folder is
     `sudo` **(your-file-manager)** ` /usr/include `
   * paste `library` folder into `usr/include`, then rename `library` into `Kraken`. you're done!
 
-## windows
+### windows
 
-### If you're on `Windows` :-
+* If you downloaded it as `zip` and unzipped it, then in the unzipped library the root of the header folder hierarchy is `Kraken-master/source/library`.
+
+* I.e. there is a `Kraken-master/source/library/all.hpp` header, which is the one that you want the compiler to find as <Kraken/all.hpp>.
 
 * copy the `Kraken-master/source/library` folder from the unzipped archive, to a folder that your compiler searches for headers.
 
@@ -87,7 +86,7 @@ And that folder is
   > C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\ **(version)** \include
 * just paste the `library` folder inside, then rename `library` into `Kraken`. you're done!
 
-## 3. Check if the library is working by running this code
+## Check if the library is working by running this code
 
 * ```cpp
   #include <Kraken/all.hpp>
