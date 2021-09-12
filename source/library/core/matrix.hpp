@@ -8,10 +8,8 @@
 #include <iostream>           // std::cout
 #include <cassert>            // assert
 #include <type_traits>
-#include <future>
 #include <ostream>            // std::ostream
 #include <iterator>
-#include <typeinfo>
 //
 
 struct row_col
