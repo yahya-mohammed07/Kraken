@@ -9,7 +9,7 @@
 
 ## Introduction
 
-* `Kraken` is a modern cross-platform mini-math library similar to [cmath][] but in a different approaches (good for both learners and actual work) that gives accurate results, compile time checks and simplicity
+* **`Kraken`** is a modern math library similar to [cmath][] but in a different approaches (good for both learners and actual work) that gives accurate results, compile time checks and simplicity
 
 ## Requirement
 
