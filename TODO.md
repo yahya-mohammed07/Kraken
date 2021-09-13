@@ -13,6 +13,14 @@
 - [ ] **sec()**
 - [ ] **cosec()**
 - [ ] **cot()**
+- [ ] **trunc()**
+- [ ] **mod()**
+- [ ] **min_max()**
+- [ ] **modf()**
+- [ ] **gamma()**
+- [ ] **beta()**
+- [ ] **gcd()**
+- [ ] **lcm()**
 - [ ] **LU decomposition()**
 - [ ] **Newton's Forward Difference Formula()**
 - [ ] **Lagrange Interpolation()**
