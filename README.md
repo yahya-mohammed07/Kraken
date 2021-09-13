@@ -9,7 +9,7 @@
 
 ## Introduction
 
-* **`Kraken`** is a modern math library similar to [cmath][] but in a different approaches (good for both learners and actual work) that gives accurate results, compile time checks and simplicity
+* **`Kraken`** is a modern math library written in a way that gives accurate results, compile time checks and simplicity.
 
 ## Requirement
 
@@ -121,6 +121,5 @@ And that folder is
   }
   ```
 
-[cmath]: https://en.cppreference.com/w/cpp/header/cmath
 [PeaZip]: https://peazip.github.io/
 [keka]: https://www.keka.io/en/
