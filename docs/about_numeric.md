@@ -21,7 +21,7 @@
   - `abs`
   - `floor`
   - `ceil`
-  - `ln` : log of base `e`
+  - `ln` : log base `e` of x
   - `log2`: for `int` values it uses super-fast table lockup, for floating-point it uses: ln(x) * log2(e)
   - `log10`: for `int` values it uses super-fast table lockup, for floating-point it uses: log2(x) / log2(10)
   - `pow`: made using Exponentiation by squaring
@@ -30,9 +30,10 @@
   - `hypot`
   - `round`
   - `sqr`
-  - `sqrt`: made using `newton's method`
-  - `max` : has `5` overloads
-  - `min` : has `5` overloads
+  - `sqrt`: works using `newton's method`
+  - `max`
+  - `min`
+  - `min_max`
 
 ## Note: for usage please check the `tests` folder
 
