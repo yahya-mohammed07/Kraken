@@ -85,3 +85,18 @@ TEST_CASE("MIN") {
   constexpr matrix_<int, 1, 4> nums {33, 87, 3, 66};
   REQUIRE(cal::min(nums) == 3);
 }
+
+TEST_CASE("MIN_MAX") {
+  REQUIRE(cal::min_max(90, 87).Min == 87);
+  REQUIRE(cal::min_max(90, 87).Max == 90);
+  //
+  REQUIRE(cal::min_max(33, 87, 3, 66).Min == 3);
+  REQUIRE(cal::min_max(33, 87, 3, 66).Max == 87);
+  //
+  REQUIRE(cal::min_max({33, 87, 3, 66}).Min == 3);
+  REQUIRE(cal::min_max({33, 87, 3, 66}).Max == 87);
+  //
+  constexpr matrix_<int, 1, 4> nums {33, 87, 3, 66};
+  REQUIRE(cal::min_max(nums).Min == 3);
+  REQUIRE(cal::min_max(nums).Max == 87);
+}
