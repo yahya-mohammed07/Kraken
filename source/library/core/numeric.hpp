@@ -8,6 +8,13 @@
 #include <limits>         // quite_NaN
 #include "matrix.hpp"     // matrix_<>
 #include "constants.hpp"
+#include <bit>
+
+template <class Ty>
+struct Min_Max {
+  const Ty Min{};
+  const Ty Max{};
+};
 
 namespace kraken::num_methods {
   template<class A, class Op1, class Op2>
@@ -217,7 +224,7 @@ namespace kraken::cal {
     return static_cast<Ty>(1.)/res;
   }
 
-  //
+  /// @brief returns ln of `x`
   template<class Ty>
   requires (std::is_floating_point_v<Ty>)
   [[nodiscard]]
@@ -294,6 +301,7 @@ namespace kraken::cal {
   /// @brief gives the absolute of a value
   template<class Ty>
   requires (!std::is_class_v<Ty>)
+  [[nodiscard]]
   inline constexpr
   auto abs(const Ty val) noexcept
       -> Ty
@@ -344,6 +352,7 @@ namespace kraken::cal {
       });
   }
 
+  /// @brief returns a*a
   template<class T>
   requires (std::is_floating_point_v<T>)
   [[nodiscard]] inline constexpr
@@ -354,14 +363,15 @@ namespace kraken::cal {
   }
 
   /**
-   * @brief under testing...
-   * @tparam Ty
-   * @tparam P
+   * @brief computes pow of floating point
+   * @param base
+   * @param power
+   * @param eps .000'000'000'00'1
    */
   template<class Ty, class B>
   requires (std::is_floating_point_v<Ty> && std::is_floating_point_v<B>)
   [[nodiscard]] inline constexpr
-  auto powf(Ty base, B power, Ty eps = .000'000'000'00'1f)
+  auto powf(Ty base, B power, Ty eps = .000'000'000'00'1)
       -> Ty
   {
     if ( power < 0 )    { return 1. / powf(base, -power, eps); }
@@ -429,11 +439,11 @@ namespace kraken::cal {
   auto max( std::initializer_list<Ty>&& args) noexcept
       -> Ty
   {
-    Ty begin = *args.begin();
+    Ty high = *args.begin();
     for ( auto && i : args) {
-      if ( i > begin ) { begin = i; }
+      if ( i > high ) { high = i; }
     }
-    return begin;
+    return high;
   }
 
   /// @brief calculates max in a init-list
@@ -443,11 +453,11 @@ namespace kraken::cal {
   auto max(const std::initializer_list<Ty>& args) noexcept
       -> Ty
   {
-    Ty begin = *args.begin();
+    Ty high = *args.begin();
     for (const auto & i : args) {
-      if ( i > begin ) { begin = i; }
+      if ( i > high ) { high = i; }
     }
-    return begin;
+    return high;
   }
 
   /**
@@ -456,9 +466,10 @@ namespace kraken::cal {
    * @return Ty
    */
   template<class First, class Second, class ...Args>
+  [[nodiscard]]
   inline constexpr
-  auto max(First && a, Second && b,
-            Args &&... args) noexcept
+  auto max(First a, Second b,
+            Args... args) noexcept
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
@@ -470,15 +481,16 @@ namespace kraken::cal {
 
   /// @brief: finds max in a container
   template<class Cont>
+  [[nodiscard]]
   inline constexpr
-  auto max(Cont &container)
-    -> std::size_t
+  auto max(const Cont &container)
+    -> auto
   {
-    auto begin = *container.begin();
+    auto high = container[0];
     for (auto &i : container) {
-      if ( i > begin ) { begin = i; }
+      if ( i > high ) { high = i; }
     }
-    return begin;
+    return high;
   }
 
   /**
@@ -504,11 +516,11 @@ namespace kraken::cal {
   auto min( std::initializer_list<Ty>&& args) noexcept
       -> Ty
   {
-    Ty begin = *args.begin();
+    Ty low = *args.begin();
     for ( auto && i : args) {
-      if ( i < begin ) { begin = i; }
+      if ( i < low ) { low = i; }
     }
-    return begin;
+    return low;
   }
 
   /// @brief calculates min in a init-list
@@ -518,22 +530,23 @@ namespace kraken::cal {
   auto min(const std::initializer_list<Ty>& args) noexcept
       -> Ty
   {
-    Ty begin = *args.begin();
+    Ty low = *args.begin();
     for (const auto & i : args) {
-      if ( i < begin ) { begin = i; }
+      if ( i < low ) { low = i; }
     }
-    return begin;
+    return low;
   }
 
   /**
    * @brief calculate `min` with arbitrary numbers
-   * @param  a...  A thing of arbitrary type
+   * @param  a...  A thing of arbitrary number of arguments
    * @return Ty
    */
   template<class First, class Second, class ...Args>
+  [[nodiscard]]
   inline constexpr
-  auto min(First && a, Second && b,
-                Args &&... args) noexcept
+  auto min(First a, Second b,
+                Args... args) noexcept
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
@@ -545,19 +558,102 @@ namespace kraken::cal {
 
   /// @brief: finds min in a container
   template<class Cont>
+  [[nodiscard]]
   inline constexpr
-  auto min(Cont &container)
-    -> std::size_t
+  auto min(const Cont &container)
+    -> auto
   {
-    auto begin = *container.begin();
+    auto low = container[0];
     for (auto &i : container) {
-      if ( i < begin ) { begin = i; }
+      if ( i < low ) { low = i; }
     }
-    return begin;
+    return low;
+  }
+
+  /**
+   * @brief calculate `min_max` with two numbers
+   * @param  a  A thing of arbitrary type.
+   * @param  b  Another thing of arbitrary type.
+   * @return Min_Max
+   */
+  template<class T>
+  requires std::is_floating_point_v<T> || std::is_integral_v<T>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(const T a, const T b) noexcept
+      -> Min_Max<T>
+  {
+    if ( a > b) {
+      return { b, a };
+    }
+    return { a, b };
   }
 
 
-  /// @link from https://stackoverflow.com/a/11398748
+  /// @brief calculates `min_max` in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(const std::initializer_list<Ty>& args) noexcept
+      -> Min_Max<Ty>
+  {
+    Ty low = *args.begin();
+    Ty high = *args.begin();
+    for (const auto & i : args) {
+      if ( i < low ) { low = i; }
+      if ( i > high ) { high = i; }
+    }
+    return {low, high};
+  }
+
+  /// @brief calculates `min_max` in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(std::initializer_list<Ty> &&args) noexcept
+      -> Min_Max<Ty>
+  {
+    Ty low = *args.begin();
+    Ty high = *args.begin();
+    for ( auto &&i : args) {
+      if ( i < low ) { low = i; }
+      if ( i > high ) { high = i; }
+    }
+    return {low, high};
+  }
+
+  /**
+   * @brief calculate `min_max` with arbitrary numbers
+   * @param  a...  A thing of arbitrary number of arguments
+   * @return Min_Max
+   */
+  template<class First, class Second, class ...Args>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(First a, Second b,
+                Args ...args) noexcept
+     -> Min_Max<First>
+  {
+    return { min({a,b,args...}) , max({a,b,args...}) };
+  }
+
+  /// @brief: `finds min_max` in a container
+  template<class Cont>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(const Cont &container)
+    -> Min_Max<decltype(container[0])>
+  {
+    auto low = container[0];
+    auto high = container[0];
+    for (auto &&i : container) {
+      if ( i < low ) { low = i; }
+      if ( i > high ) { high = i; }
+    }
+    return {low, high};
+  }
+
+  /// @brief returns log base2 of `x`
   template<class Ty>
   [[nodiscard]] constexpr
   auto log2(Ty val)
@@ -565,34 +661,31 @@ namespace kraken::cal {
   {
     assert(val>0ull && "- value must be greater than 0");
     if constexpr ( std::is_integral_v<Ty> ) {
-      constexpr int tab64[64] = {
-        63,  0, 58,  1, 59, 47, 53,  2,
-        60, 39, 48, 27, 54, 33, 42,  3,
-        61, 51, 37, 40, 49, 18, 28, 20,
-        55, 30, 34, 11, 43, 14, 22,  4,
-        62, 57, 46, 52, 38, 26, 32, 41,
-        50, 36, 17, 19, 29, 10, 13, 21,
-        56, 45, 25, 31, 35, 16,  9, 12,
-        44, 24, 15,  8, 23,  7,  6,  5
+      constexpr std::uint64_t tab64[64] = {
+        0,  58, 1,  59, 47, 53, 2,  60, 39, 48, 27, 54, 33, 42, 3,  61,
+        51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4,  62,
+        57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
+        45, 25, 31, 35, 16, 9,  12, 44, 24, 15, 8,  23, 7,  6,  5,  63
       };
-      val |= val >> 1;
+      val |= val >> 1; // first round down to one less than a power of 2
       val |= val >> 2;
       val |= val >> 4;
       val |= val >> 8;
       val |= val >> 16;
-      val |= static_cast<std::size_t>(val) >> 32;
-      return tab64[(static_cast<std::size_t>((val - (val >> 1))*0x07EDD5E59A4E28C2)) >> 58];
+      val |= static_cast<std::uint64_t>(val) >> 32;
+      return tab64[(static_cast<std::uint64_t>(val * 0x03f6eaf2cd271461ull) >> 58)];
     }
     else return ln(val) * constants::log2e_v<Ty>;
   }
 
+  /// @brief returns log base10 of `x`
   template<class Ty>
   [[nodiscard]] constexpr
   auto log10(Ty val)
     -> Ty
   {
     if constexpr ( std::is_integral_v<Ty> ) {
-      return log2(static_cast<std::size_t>(val)) / log2(10ull);
+      return log2(static_cast<std::uint64_t>(val)) / log2(10ull);
     }
     else return ln(val) * constants::log10e_v<Ty>;
   }
