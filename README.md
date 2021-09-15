@@ -72,10 +72,10 @@
 
 * copy the **`library`** folder from the unzipped archive, to a folder that your compiler searches for headers.
 
-And that folder is
+And that folder is :-
 > /usr/include
 
-### If you're on `Ubuntu/POP!_os/any debian based os/` you can do the following :-
+#### The procedure :-
 
 * Ui version
   * if you're using `nautilus` file manager
@@ -98,11 +98,11 @@ And that folder is
 
 * copy the **`library`** folder from the unzipped archive, to a folder that your compiler searches for headers.
 
-* in Windows for the MinGW g++ compiler you might have a folder such as
+* for the MinGW g++ compiler you might have a folder such as
   > C:\installed\mingw\nuwen\MinGW **(version)**\include
 * just paste the `library` folder inside, then rename `library` into `Kraken`. you're done!
 
-* and in Windows for the Visual C++ compiler you might have a folder such as
+* for the Visual C++ compiler you might have a folder such as
   > C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\ **(version)** \include
 * just paste the `library` folder inside, then rename `library` into `Kraken`. you're done!
 
