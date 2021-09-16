@@ -98,12 +98,12 @@ namespace kraken {
 namespace kraken::cal {
 
   /// @brief  short name for => accumulate
-  template <class V, class Binary_op, class T>
+  template <class b, class Binary_op, class T>
   [[nodiscard]]
   extern constexpr
-  auto acc(V &&init, Binary_op Op,
+  auto acc(b &&init, Binary_op Op,
                   T &container) noexcept
-      -> V
+      -> b
    {
     for (auto &&item : container /*std::ranges::views::all(container)*/) {
       init = Op(item, std::move(init));
@@ -112,13 +112,13 @@ namespace kraken::cal {
   }
 
   //
-  template <class V, class Binary_op, class It_begin, class It_end>
+  template <class b, class Binary_op, class It_begin, class It_end>
   [[nodiscard]]
   extern constexpr
-  auto acc(V &&init, Binary_op Op,
+  auto acc(b &&init, Binary_op Op,
                   const It_begin it_begin,
                     const It_end it_end) noexcept
-      -> V
+      -> b
   {
     for (auto &&item : My_Iota(it_begin, it_end)) {
       init = Op(item, std::move(init));
@@ -127,22 +127,22 @@ namespace kraken::cal {
   }
 
   //
-  template <class V, class It_begin, class It_end>
+  template <class b, class It_begin, class It_end>
   [[nodiscard]]
   inline constexpr
-  auto acc(V &&init, It_begin &&it_begin,
+  auto acc(b &&init, It_begin &&it_begin,
                   It_end &&it_end) noexcept
-      -> V
+      -> b
   {
     return acc(init, op::plus{}, it_begin, it_end);
   }
 
   ///
-  template <class V, class T>
+  template <class b, class T>
   [[nodiscard]]
   inline constexpr
-  auto acc(V &&init, const T &container) noexcept
-      -> V
+  auto acc(b &&init, const T &container) noexcept
+      -> b
   {
     return acc(init, op::plus{}, container);
   }
@@ -160,12 +160,12 @@ namespace kraken::cal {
   }
 
   //
-  template <class V, class T, class Binary_op>
+  template <class b, class T, class Binary_op>
   [[nodiscard]]
   inline constexpr
-  auto calcu(V &&init, Binary_op op,
+  auto calcu(b &&init, Binary_op op,
                     std::initializer_list<T> &&args) noexcept
-      -> V
+      -> b
   {
     for ( auto &&i : args ) {
       init = op(std::move(init), i);
@@ -688,6 +688,41 @@ namespace kraken::cal {
       return log2(static_cast<std::uint64_t>(val)) / log2(10ull);
     }
     else return ln(val) * constants::log10e_v<Ty>;
+  }
+
+  ///@brief computes the greatest common divisor
+  ///@link https://lemire.me/blog/2013/12/26/fastest-way-to-compute-the-greatest-common-divisor/ @endlink
+  template <class A, class B>
+  requires (std::is_integral_v<A> && std::is_integral_v<B>)
+  [[nodiscard]]
+  inline constexpr
+  auto gcd(A a, B b) -> A
+  {
+    int shift{};
+    if (a == 0) return b;
+    if (b == 0) return a;
+    shift = std::countr_zero(static_cast<std::uint64_t>(a | b));
+    a >>= std::countr_zero(static_cast<std::uint64_t>(a));
+    do {
+      b >>= std::countr_zero(static_cast<std::uint64_t>(b));
+      if (a > b) {
+        std::swap(a,b);
+      }
+      b -= a;
+    } while (b != 0);
+    return a << shift;
+  }
+
+  ///@brief computes the least common multiples
+  template <class A, class B>
+  requires (std::is_integral_v<A> && std::is_integral_v<B>)
+  [[nodiscard]]
+  inline constexpr
+  auto lcm(A a, B b) -> A
+  {
+    return (a != 0 && b != 0)
+      ? (a / gcd(a, b)) * b
+      : 0;
   }
 
 } // namespace math
