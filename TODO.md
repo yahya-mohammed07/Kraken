@@ -19,8 +19,8 @@
 - [ ] **modf()**
 - [ ] **gamma()**
 - [ ] **beta()**
-- [ ] **gcd()**
-- [ ] **lcm()**
+- [x] **gcd()**
+- [x] **lcm()**
 - [ ] **LU decomposition()**
 - [ ] **Newton's Forward Difference Formula()**
 - [ ] **Lagrange Interpolation()**
