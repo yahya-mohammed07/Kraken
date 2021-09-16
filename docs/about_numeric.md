@@ -34,6 +34,8 @@
   - `max`
   - `min`
   - `min_max`
+  - `gcd`
+  - `lcm`
 
 ## Note: for usage please check the `tests` folder
 
