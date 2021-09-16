@@ -100,3 +100,15 @@ TEST_CASE("MIN_MAX") {
   REQUIRE(cal::min_max(nums).Min == 3);
   REQUIRE(cal::min_max(nums).Max == 87);
 }
+
+TEST_CASE("GCD") {
+  REQUIRE(cal::gcd(42, 56) == 14);
+  REQUIRE(cal::gcd(24826148, 45296490) == 526);
+  REQUIRE(cal::gcd(0, 9) == 9);
+  REQUIRE(cal::gcd(12, 0) == 12);
+}
+
+TEST_CASE("LCM") {
+  REQUIRE(cal::lcm(45, 88) == 3960);
+  REQUIRE(cal::lcm(12, 33) == 132);
+}
