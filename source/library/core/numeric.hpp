@@ -659,21 +659,10 @@ namespace kraken::cal {
   auto log2(Ty val)
     -> Ty
   {
-    assert(val>0ull && "- value must be greater than 0");
+    assert(val>0ull && "- value must be greater than `0`");
     if constexpr ( std::is_integral_v<Ty> ) {
-      constexpr std::uint64_t tab64[64] = {
-        0,  58, 1,  59, 47, 53, 2,  60, 39, 48, 27, 54, 33, 42, 3,  61,
-        51, 37, 40, 49, 18, 28, 20, 55, 30, 34, 11, 43, 14, 22, 4,  62,
-        57, 46, 52, 38, 26, 32, 41, 50, 36, 17, 19, 29, 10, 13, 21, 56,
-        45, 25, 31, 35, 16, 9,  12, 44, 24, 15, 8,  23, 7,  6,  5,  63
-      };
-      val |= val >> 1; // first round down to one less than a power of 2
-      val |= val >> 2;
-      val |= val >> 4;
-      val |= val >> 8;
-      val |= val >> 16;
-      val |= static_cast<std::uint64_t>(val) >> 32;
-      return tab64[(static_cast<std::uint64_t>(val * 0x03f6eaf2cd271461ull) >> 58)];
+      return (static_cast<std::uint64_t>(8ull*sizeof(std::uint64_t) -
+                                  std::countl_zero(std::uint64_t(val)) - 1ull));
     }
     else return ln(val) * constants::log2e_v<Ty>;
   }
