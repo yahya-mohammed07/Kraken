@@ -22,8 +22,8 @@
   - `floor`
   - `ceil`
   - `ln` : log base `e` of x
-  - `log2`: for `int` values it uses super-fast table lockup, for floating-point it uses: ln(x) * log2(e)
-  - `log10`: for `int` values it uses super-fast table lockup, for floating-point it uses: log2(x) / log2(10)
+  - `log2`: for `int` values it uses super-fast `63 or 31 - std::countl-zero(x)`, for floating-point it uses: ln(x) * log2(e)
+  - `log10`: for `int` values it uses super-fast `63 or 31 - std::countl-zero(x)`, for floating-point it uses: log2(x) / log2(10)
   - `pow`: made using Exponentiation by squaring
   - `powf`: made using sqrt and recursion
   - `pow_container`
