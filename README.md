@@ -25,14 +25,14 @@
 
 ## contents
 
-* A matrix_<> class `(check docs/about_matrix.md)`
+* A matrix_<> class. For more info check: [about_matrix](https://github.com/yahya-mohammed07/Kraken/blob/master/docs/about_matrix.md)
 
 * namespace `kraken` which has:-
 
-  * namespace `constants` : contains mathematical and physical constants presented as symbols, just like in julia
-  * namespace `cal`       : contains functions that do some calculations
-  * namespace `op`        : contains variadic function objects
-  * and a bonus namespace! `num_methods` : contains implementation of some numerical methods
+  * namespace `constants`: contains mathematical and physical constants presented as symbols, just like in julia.
+  * namespace `cal`: contains functions that do some calculations.
+  * namespace `op`: contains variadic function objects.
+  * and a bonus namespace! `num_methods` : contains implementation of some numerical methods.
 
 ## Installation
 
@@ -44,7 +44,7 @@
 
 ### Download
 
-* A simple way is to download this library from `github` as `zip` then `unzip` it maybe using your os built-in unzip tool but the preferred way is to use [PeaZip][] for windows and linux, for mac you can use [keka][]
+* A simple way is to download this library from `github` as `zip` then `unzip` it maybe using your os built-in unzip tool but the preferred way is to use [PeaZip][] for windows and linux, for mac you can use [keka][].
 
 ## All
 
@@ -80,16 +80,16 @@ And that folder is :-
 
 * Ui version
   * if you're using `nautilus` file manager
-    * open terminal then do `sudo apt install nautilus-admin` then when it's done do `nautilus -q`
-  * if your're using `nemo` no need to install anything `run as-administer` is built-in
+    * open terminal then do `sudo apt install nautilus-admin` then when it's done do `nautilus -q`.
+  * if your're using `nemo` no need to install anything `run as-administer` is built-in.
 
-* open `usr/include` folder as `administrator`
-* paste `library` folder into `usr/include`, then rename `library` into `Kraken`. you're done!
+* open `usr/include` folder as `administrator`.
+* paste `library` folder into `usr/include`, then rename `library` into `Kraken`. you're done!.
 
 * Terminal version
   * if you have any file manger installed you can open a folder as administer as follows:
     `sudo` **(your-file-manager)** ` /usr/include `
-  * paste `library` folder into `usr/include`, then rename `library` into `Kraken`. you're done!
+  * paste `library` folder into `usr/include`, then rename `library` into `Kraken`. you're done!.
 
 ### windows
 
