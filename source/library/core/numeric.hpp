@@ -5,10 +5,11 @@
 #include <type_traits>
 #include <cassert>        // assert
 #include <initializer_list>
-#include <limits>         // quite_NaN
+#include <limits>         // quite_NaN, epslon()
+#include <limits.h>       // LLONG_MAX, LLONG_MIN
 #include "matrix.hpp"     // matrix_<>
 #include "constants.hpp"
-#include <bit>
+#include <bit>            // std::countl_zero
 
 template <class Ty>
 struct Min_Max {
@@ -30,12 +31,11 @@ namespace kraken::num_methods {
     };
     A x0 = init; // initial guess
     A x1 = {}; // initial guess
-    A tolerance = 1e-7; // 7 digit accuracy is desired
-    A eps = 1e-14; // Do not divide by a number smaller than this
-    for ( std::size_t i = 1; i < max_it; ++i ) {
+    const A tolerance = 1e-7; // 7 digit accuracy is desired
+   for ( std::size_t i = 1; i < max_it; ++i ) {
       A y = fx(x0);
       A y_ = fx_(x0);
-      if ( myAbs(y_) < eps ) {
+      if ( myAbs(y_) < std::numeric_limits<double>::epsilon() ) {
         break;
       }
       x1 = x0-(y/y_); // Do Newton's computation
@@ -286,14 +286,15 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto floor(Ty val) noexcept
-      -> Ty
+      -> auto
   {
-    constexpr Ty max_llong = static_cast<Ty> (9223372036854775807);
-    if ( val >= max_llong || val <= -(max_llong) || val == 0 ) {
+    constexpr Ty max_llong = static_cast<Ty>(LLONG_MAX);
+    constexpr Ty min_llong = static_cast<Ty>(LLONG_MIN);
+    if ( val >= max_llong || val <= min_llong || val == 0 ) {
       return val;
     }
     const long long temp_n = static_cast<long long>(val);
-    Ty temp_d = static_cast<Ty>(temp_n);
+    const Ty temp_d = static_cast<Ty>(temp_n);
     if (temp_d == val || val >= 0) { return temp_d; }
     else {return  (temp_d) - static_cast<Ty>(1);}
   }
@@ -318,7 +319,7 @@ namespace kraken::cal {
   auto ceil(Ty val) noexcept
       -> Ty
   {
-    std::int64_t temp = {static_cast<std::int64_t>(val)};
+    const std::int64_t temp = {static_cast<std::int64_t>(val)};
     if (val < 0 || val == static_cast<Ty>(temp) ) { return static_cast<Ty> (temp); }
     return static_cast<Ty> (temp + 1);
   }
@@ -331,8 +332,8 @@ namespace kraken::cal {
   auto round(Ty val) noexcept
       -> Ty
   {
-    return val > static_cast<Ty>(0.) ? ceil(std::forward<Ty>(val-static_cast<Ty>(.5))) :
-    floor(std::forward<Ty>(val+static_cast<Ty>(.5)));
+    return (val > static_cast<Ty>(0.)) ? ceil(val-static_cast<Ty>(.5)) :
+                            floor(val+static_cast<Ty>(.5));
   }
 
 /// @brief gives the sqrt of a integral or a a float number
@@ -363,6 +364,59 @@ namespace kraken::cal {
   }
 
   /**
+   * @brief get the number of elements after the decimal point
+   * @param val
+   * @return std::uint64_t
+   */
+  template<class Ty>
+  requires std::is_floating_point_v<Ty>
+  [[nodiscard]]
+  inline constexpr auto decimal_places(Ty val)
+    -> std::uint64_t
+  {
+    std::uint64_t dec_count{};
+    val = abs(val);
+    auto temp = val - floor(val);
+    Ty factor = 10;
+    auto eps = std::numeric_limits<Ty>::epsilon() * temp;
+    while ((temp > eps && temp < (1 - eps)) && dec_count < std::numeric_limits<Ty>::max_digits10)
+    {
+      temp = val * factor;
+      temp -= floor(temp);
+      factor *= 10;
+      eps = std::numeric_limits<Ty>::epsilon() * val * factor;
+      ++dec_count;
+    }
+    return dec_count;
+  }
+
+  /**
+   * @brief chops of the fractional part of any floating-point number
+   * @param val
+   * @return std::uint64_t
+   */
+  template<class Ty>
+  requires std::is_floating_point_v<Ty>
+  [[nodiscard]]
+  inline constexpr auto trunc(Ty val)
+    -> std::uint64_t
+  {
+    //check if float fits into integer
+    if ( std::numeric_limits<std::uint64_t>::digits < std::numeric_limits<Ty>::digits) {
+        // check if float is smaller than max std::uint64_t
+        if( (val < static_cast<Ty>( std::numeric_limits<std::uint64_t>::max())) &&
+            (val > static_cast<Ty>( std::numeric_limits<std::uint64_t>::min())) ) {
+          return static_cast<std::uint64_t>(val); //safe to cast
+        } else {
+          return std::numeric_limits<std::uint64_t>::max();
+        }
+    } else {
+        //It is safe to cast
+        return static_cast<std::uint64_t>(val);
+    }
+  }
+
+  /**
    * @brief computes pow of floating point
    * @param base
    * @param power
@@ -371,7 +425,7 @@ namespace kraken::cal {
   template<class Ty, class B>
   requires (std::is_floating_point_v<Ty> && std::is_floating_point_v<B>)
   [[nodiscard]] inline constexpr
-  auto powf(Ty base, B power, Ty eps = .000'000'000'00'1)
+  auto powf(Ty base, B power, Ty eps = std::numeric_limits<double>::epsilon())
       -> Ty
   {
     if ( power < 0 )    { return 1. / powf(base, -power, eps); }
