@@ -33,9 +33,11 @@
   - `sqrt`: works using `newton's method`
   - `max`
   - `min`
-  - `min_max`
+  - `min_max`: gives a pair of `min` and `max`
   - `gcd`
   - `lcm`
+  - `trunc`: chops of the fractional part of any floating-point number
+  - `decimal_places`: counts the number of elements after the decimal point
 
 ## Note: for usage please check the `tests` folder
 
