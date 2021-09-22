@@ -13,6 +13,7 @@
 - [ ] **sec()**
 - [ ] **cosec()**
 - [ ] **cot()**
+- [x] **decimal_places()**
 - [ ] **trunc()**
 - [ ] **mod()**
 - [x] **min_max()**
