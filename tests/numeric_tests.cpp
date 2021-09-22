@@ -112,3 +112,32 @@ TEST_CASE("LCM") {
   REQUIRE(cal::lcm(45, 88) == 3960);
   REQUIRE(cal::lcm(12, 33) == 132);
 }
+
+TEST_CASE("FLOOR") {
+  REQUIRE(cal::floor(45.453) == 45);
+  REQUIRE(cal::floor(45.753) == 45);
+  REQUIRE(cal::floor(-1.3) == -2);
+  REQUIRE(cal::floor(-3.2) == -4);
+}
+
+TEST_CASE("NUMBER OF DECIMAL PLACES") {
+  REQUIRE(cal::decimal_places(45.453) == 3);
+  REQUIRE(cal::decimal_places(45.453343434) == 9);
+  REQUIRE(cal::decimal_places(45.753) == 3);
+  REQUIRE(cal::decimal_places(-1.3) == 1);
+  REQUIRE(cal::decimal_places(-3.2) == 1);
+}
+
+TEST_CASE("TRUNC") {
+  REQUIRE(cal::trunc(10.25) == 10);
+  REQUIRE(cal::trunc(2251799813685240.0) == 2251799813685240);
+  REQUIRE(cal::trunc(-34.25) == -34);
+  REQUIRE(cal::trunc(345.4324324234124) == 345);
+}
+
+TEST_CASE("ROUND") {
+  REQUIRE(cal::round(10.25) == 10);
+  REQUIRE(cal::round(10.55) == 11);
+  REQUIRE(cal::round(-34.25) == -34);
+  REQUIRE(cal::round(-34.66) == -35);
+}
