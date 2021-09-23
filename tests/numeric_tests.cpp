@@ -2,9 +2,11 @@
 #include "../source/library/core/constants.hpp"
 #include <catch2/catch_test_macros.hpp>
 
+#include <cstdio>
+
 using namespace kraken;
 
-constexpr std::array<int, 5> numeric_test { 1, 2, 3, 4, 5 };
+constexpr matrix_<int, 1, 5> numeric_test ( 1, 2, 3, 4, 5 );
 
 TEST_CASE("CHECK ACCUMULATE") {
   REQUIRE( cal::acc(0, numeric_test) == 15 ); // plus by default - or check next way:
@@ -16,7 +18,6 @@ TEST_CASE("CHECK ACCUMULATE") {
 TEST_CASE("CHECK CALCULATE") {
 // variadic
   REQUIRE( cal::calcu(0 , op::plus{} ,1 , 2, 3, 4, 5) == 15);
-  //REQUIRE( cal::calcu(1 , op::minus{} , 2, -3, +4, -5) == 3); // FIXME: or not
   REQUIRE( cal::calcu(1 , op::multiplies{}, 1, 2, 3, 4, 5) == 120);
 // init list
   REQUIRE( cal::calcu(0 , op::plus{}, {1 , 2, 3, 4, 5}) == 15);
@@ -31,7 +32,8 @@ TEST_CASE("LN(X)") {
 }
 
 TEST_CASE("SQRT(x)") {
-  REQUIRE(cal::sqrt(4.f) == 2);
+  REQUIRE(cal::sqrt(4) == 2);
+  REQUIRE(cal::sqrt(25) == 5);
   REQUIRE(cal::sqrt(3.f) == 1.73205080757f);
 }
 
@@ -120,6 +122,13 @@ TEST_CASE("FLOOR") {
   REQUIRE(cal::floor(-3.2) == -4);
 }
 
+TEST_CASE("CEIL") {
+  REQUIRE(cal::ceil(45.453) == 46);
+  REQUIRE(cal::ceil(45.753) == 46);
+  REQUIRE(cal::ceil(-1.3) == -1);
+  REQUIRE(cal::ceil(-3.2) == -3);
+}
+
 TEST_CASE("NUMBER OF DECIMAL PLACES") {
   REQUIRE(cal::decimal_places(45.453) == 3);
   REQUIRE(cal::decimal_places(45.453343434) == 9);
@@ -140,4 +149,10 @@ TEST_CASE("ROUND") {
   REQUIRE(cal::round(10.55) == 11);
   REQUIRE(cal::round(-34.25) == -34);
   REQUIRE(cal::round(-34.66) == -35);
+}
+
+TEST_CASE("HYPOT") {
+  REQUIRE(cal::hypot(4, 3) == 5);
+  REQUIRE(cal::hypot(2.f, 3.f) == 3.605551242828369140625f);
+  REQUIRE(cal::hypot( {2,3,4,5} ) == 7 );
 }
