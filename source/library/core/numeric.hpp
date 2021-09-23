@@ -29,12 +29,12 @@ namespace kraken::num_methods {
     {
       return x > 0 ? x : -1 * (x);
     };
-    A x0 = init; // initial guess
-    A x1 = {}; // initial guess
-    const A tolerance = 1e-7; // 7 digit accuracy is desired
-   for ( std::size_t i = 1; i < max_it; ++i ) {
-      A y = fx(x0);
-      A y_ = fx_(x0);
+    A x0 {init}; // initial guess
+    A x1 {}; // initial guess
+    const A tolerance {1e-7}; // 7 digit accuracy is desired
+    for ( std::size_t i {1}; i < max_it; ++i ) {
+      A y  {fx(x0)};
+      A y_ {static_cast<A>(fx_(x0))};
       if ( myAbs(y_) < std::numeric_limits<double>::epsilon() ) {
         break;
       }
@@ -187,8 +187,8 @@ namespace kraken::cal {
       -> Ty
   {
     assert("Ther power input must not be negative!" && power >= 0);
-    Ty res = static_cast<Ty>(1);
-    Ty base_copy = {std::move(base)};
+    Ty res {static_cast<Ty>(1)};
+    Ty base_copy {std::move(base)};
     for ( ;; ) {
       if ( power & 1 ) { res *= base_copy; }
       power >>= 1;
@@ -212,8 +212,8 @@ namespace kraken::cal {
       -> Ty
   {
     assert("Ther power input must be negative!" && power < 0);
-    Ty res = static_cast<Ty>(1);
-    Ty base_copy = std::move(base);
+    Ty res {static_cast<Ty>(1)};
+    Ty base_copy {std::move(base)};
     power *= -1;
     for ( ;; ) {
       if ( power &  1 ) { res *= base_copy; }
@@ -238,8 +238,8 @@ namespace kraken::cal {
     if ( val >= 1024) { return ln(val/1024.) + static_cast<Ty>(6.9314718056); }
     val -= 1;
     Ty res{0.};
-    Ty x_pow = val;
-    for ( std::size_t i = 1; i < 100; ++i ) {
+    Ty x_pow {val};
+    for ( std::size_t i {1}; i < 100; ++i ) {
       if ( i & 1 ) {
         res += x_pow / i;
       } else {
@@ -288,13 +288,13 @@ namespace kraken::cal {
   auto floor(Ty val) noexcept
       -> auto
   {
-    constexpr Ty max_llong = static_cast<Ty>(LLONG_MAX);
-    constexpr Ty min_llong = static_cast<Ty>(LLONG_MIN);
+    constexpr Ty max_llong {static_cast<Ty>(LLONG_MAX)};
+    constexpr Ty min_llong {static_cast<Ty>(LLONG_MIN)};
     if ( val >= max_llong || val <= min_llong || val == 0 ) {
       return val;
     }
-    const long long temp_n = static_cast<long long>(val);
-    const Ty temp_d = static_cast<Ty>(temp_n);
+    const long long temp_n {static_cast<long long>(val)};
+    const Ty temp_d {static_cast<Ty>(temp_n)};
     if (temp_d == val || val >= 0) { return temp_d; }
     else {return  (temp_d) - static_cast<Ty>(1);}
   }
@@ -319,7 +319,7 @@ namespace kraken::cal {
   auto ceil(Ty val) noexcept
       -> Ty
   {
-    const std::int64_t temp = {static_cast<std::int64_t>(val)};
+    const std::int64_t temp {static_cast<std::int64_t>(val)};
     if (val < 0 || val == static_cast<Ty>(temp) ) { return static_cast<Ty> (temp); }
     return static_cast<Ty> (temp + 1);
   }
@@ -376,9 +376,9 @@ namespace kraken::cal {
   {
     std::uint64_t dec_count{};
     val = abs(val);
-    auto temp = val - floor(val);
-    Ty factor = 10;
-    auto eps = std::numeric_limits<Ty>::epsilon() * temp;
+    auto temp {val - floor(val)};
+    Ty factor {10};
+    auto eps {std::numeric_limits<Ty>::epsilon() * temp};
     while ((temp > eps && temp < (1 - eps)) && dec_count < std::numeric_limits<Ty>::max_digits10)
     {
       temp = val * factor;
@@ -420,7 +420,7 @@ namespace kraken::cal {
    * @brief computes pow of floating point
    * @param base
    * @param power
-   * @param eps .000'000'000'00'1
+   * @param eps
    */
   template<class Ty, class B>
   requires (std::is_floating_point_v<Ty> && std::is_floating_point_v<B>)
@@ -463,7 +463,7 @@ namespace kraken::cal {
   auto hypot( const std::initializer_list<Ty>& args) noexcept
       -> auto
   {
-    Ty sum = static_cast<Ty>(1.);
+    Ty sum {static_cast<Ty>(1.)};
     for ( auto&& i : args ) {
       sum += (i*i);
     }
@@ -493,7 +493,7 @@ namespace kraken::cal {
   auto max( std::initializer_list<Ty>&& args) noexcept
       -> Ty
   {
-    Ty high = *args.begin();
+    Ty high {*args.begin()};
     for ( auto && i : args) {
       if ( i > high ) { high = i; }
     }
@@ -507,7 +507,7 @@ namespace kraken::cal {
   auto max(const std::initializer_list<Ty>& args) noexcept
       -> Ty
   {
-    Ty high = *args.begin();
+    Ty high {*args.begin()};
     for (const auto & i : args) {
       if ( i > high ) { high = i; }
     }
@@ -540,7 +540,7 @@ namespace kraken::cal {
   auto max(const Cont &container)
     -> auto
   {
-    auto high = container[0];
+    auto high {container[0]};
     for (auto &i : container) {
       if ( i > high ) { high = i; }
     }
@@ -570,7 +570,7 @@ namespace kraken::cal {
   auto min( std::initializer_list<Ty>&& args) noexcept
       -> Ty
   {
-    Ty low = *args.begin();
+    Ty low {*args.begin()};
     for ( auto && i : args) {
       if ( i < low ) { low = i; }
     }
@@ -584,7 +584,7 @@ namespace kraken::cal {
   auto min(const std::initializer_list<Ty>& args) noexcept
       -> Ty
   {
-    Ty low = *args.begin();
+    Ty low {*args.begin()};
     for (const auto & i : args) {
       if ( i < low ) { low = i; }
     }
@@ -617,7 +617,7 @@ namespace kraken::cal {
   auto min(const Cont &container)
     -> auto
   {
-    auto low = container[0];
+    auto low {container[0]};
     for (auto &i : container) {
       if ( i < low ) { low = i; }
     }
@@ -651,8 +651,8 @@ namespace kraken::cal {
   auto min_max(const std::initializer_list<Ty>& args) noexcept
       -> Min_Max<Ty>
   {
-    Ty low = *args.begin();
-    Ty high = *args.begin();
+    Ty low {*args.begin()};
+    Ty high {*args.begin()};
     for (const auto & i : args) {
       if ( i < low ) { low = i; }
       if ( i > high ) { high = i; }
@@ -667,8 +667,8 @@ namespace kraken::cal {
   auto min_max(std::initializer_list<Ty> &&args) noexcept
       -> Min_Max<Ty>
   {
-    Ty low = *args.begin();
-    Ty high = *args.begin();
+    Ty low {*args.begin()};
+    Ty high {*args.begin()};
     for ( auto &&i : args) {
       if ( i < low ) { low = i; }
       if ( i > high ) { high = i; }
@@ -698,8 +698,8 @@ namespace kraken::cal {
   auto min_max(const Cont &container)
     -> Min_Max<decltype(container[0])>
   {
-    auto low = container[0];
-    auto high = container[0];
+    auto low {container[0]};
+    auto high {container[0]};
     for (auto &&i : container) {
       if ( i < low ) { low = i; }
       if ( i > high ) { high = i; }
@@ -714,7 +714,7 @@ namespace kraken::cal {
     -> Ty
   {
     assert(val > 0ull && "- value must be greater than `0`");
-    constexpr std::size_t sysbits = (std::numeric_limits<unsigned char>::digits * sizeof(void*));
+    constexpr std::size_t sysbits {(std::numeric_limits<unsigned char>::digits * sizeof(void*))};
     if constexpr ( std::is_integral_v<Ty> && sysbits == 64 ) {
       return (static_cast<std::uint64_t>(63ull -
                     std::countl_zero(static_cast<std::uint64_t>(val))));
