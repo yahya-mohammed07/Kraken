@@ -48,7 +48,7 @@ public:
   /// @brief init-list constructor
   constexpr matrix_(const std::initializer_list<T> &init) noexcept
   {
-    for (std::size_t j = 0 ; const auto &i : init) {
+    for (std::size_t j {0} ; const auto &i : init) {
       m_data.at(j) = std::move(i);
       ++i;
     }
@@ -57,24 +57,18 @@ public:
   /// @brief init-list constructor
   constexpr matrix_(std::initializer_list<T> &&init) noexcept
   {
-    for (std::size_t j = 0 ; auto &&i : init) {
+    for (std::size_t j {0} ; auto &&i : init) {
       m_data.at(j) = i;
       ++j;
     }
   }
 
-/*   /// @brief variadic constructor
-  constexpr matrix_( T&& ...args )
+  /// @brief variadic constructor
+  consteval matrix_( auto ...args )
   {
-    m_data = {static_cast<T>(args)...};
+    m_data = {std::move(args)...};
   }
 
-  /// @brief variadic constructor
-  constexpr matrix_( const T& ...args )
-  {
-    m_data = {static_cast<T>(args)...};
-  }
- */
   /// @brief read-only
   [[nodiscard]] constexpr
   auto begin() const noexcept   { return m_data.begin(); }
@@ -220,7 +214,7 @@ public:
   auto swap_rows(const std::size_t &start, const std::size_t &with)
       -> void
   {
-    for (std::size_t i = 0; i < ROW; ++i)
+    for (std::size_t i {0}; i < ROW; ++i)
       std::swap(at(start, i), at(with, i));
   }
   /**
@@ -232,7 +226,7 @@ public:
   auto swap_cols(const std::size_t &start, const std::size_t &with)
       -> void
   {
-    for (std::size_t i = 0; i < COL; ++i)
+    for (std::size_t i {0}; i < COL; ++i)
       std::swap(at(i, start), at(i, with));
   }
 
@@ -248,8 +242,8 @@ public:
   {
     if ( size() < 256ul ) { // insertion-sort
       if ( order ) {
-        for ( std::size_t i = 0; i < size(); ++i) {
-          std::size_t j = i;
+        for ( std::size_t i {0}; i < size(); ++i) {
+          std::size_t j {i};
           while ( j != 0 && m_data[j-1] > m_data[j] ) {
             std::swap(m_data[j-1] , m_data[j]);
             --j;
@@ -257,8 +251,8 @@ public:
         }
         return;
       }
-      for ( std::size_t i = 0; i < size(); ++i) {
-        std::size_t j = i;
+      for ( std::size_t i {0}; i < size(); ++i) {
+        std::size_t j {i};
         while ( j != 0 && m_data[j-1] < m_data[j] ) {
           std::swap(m_data[j-1] , m_data[j]);
           --j;
@@ -277,8 +271,8 @@ public:
   constexpr
   auto transpose_squared() -> void
   {
-    for (std::size_t i = 0; i < ROW-1; ++i) {
-      for (std::size_t j = i+1; j < COL; ++j) {
+    for (std::size_t i {0}; i < ROW-1; ++i) {
+      for (std::size_t j {i+1}; j < COL; ++j) {
         std::swap( at(i,j), at(j,i) );
       }
     }
@@ -292,8 +286,8 @@ public:
   auto transpose_triangular() const -> auto
   {
     matrix_<T, COL, ROW> temp;
-    for ( std::size_t i = 0; i < ROW; ++i ) {
-      for ( std::size_t j = 0; j < COL; ++j ) {
+    for ( std::size_t i {0}; i < ROW; ++i ) {
+      for ( std::size_t j {0}; j < COL; ++j ) {
         temp[(ROW*j)+i] = std::move(m_data[(COL*i)+j]);
       }
     }
@@ -326,9 +320,9 @@ public:
     -> void
   {
     if constexpr ( clock_wise ) {
-      for ( std::size_t i = 0; i < col; ++i ) {
-        std::size_t start = 0;
-        std::size_t end   = row-1;
+      for ( std::size_t i {0}; i < col; ++i ) {
+        std::size_t start {0};
+        std::size_t end   {row-1};
         while ( start < end ) {
           std::swap( at(start, i), at(end, i) );
           ++start;
@@ -337,9 +331,9 @@ public:
       }
       return;
     }
-    for ( std::size_t i = 0; i < row; ++i ) {
-      std::size_t start = 0;
-      std::size_t end   = col-1;
+    for ( std::size_t i {0}; i < row; ++i ) {
+      std::size_t start {0};
+      std::size_t end   {col-1};
       while ( start < end ) {
         std::swap( at(i, start), at(i, end) );
         ++start;
@@ -360,20 +354,20 @@ public:
     -> void
   {
     if constexpr ( clock_wise ) {
-      std::size_t k = 0;
-      for ( std::size_t i = 0; i < ROW; ++i ) {
+      std::size_t k {0};
+      for ( std::size_t i {0}; i < ROW; ++i ) {
         k = ROW-1;
-        for ( std::size_t j = 0; j < k; ++j ) {
+        for ( std::size_t j {0}; j < k; ++j ) {
           std::swap( at(i, j), at(i, k) );
           --k;
         }
       }
       return;
     }
-    std::size_t k = 0;
-    for ( std::size_t i = 0; i < ROW; ++i ) {
+    std::size_t k {0};
+    for ( std::size_t i {0}; i < ROW; ++i ) {
       k = ROW-1;
-      for ( std::size_t j = 0; j < k; ++j ) {
+      for ( std::size_t j {0}; j < k; ++j ) {
         std::swap( at(j, i), at(k, i) );
         --k;
       }
@@ -501,12 +495,12 @@ public:
       return *this;
     }
     matrix_<T , ROW, COL> temp{};
-    for (int i = 0; i < ROW; i++)
+    for (int i {0}; i < ROW; i++)
     {
-      for (int j = 0; j < rhs.col(); j++)
+      for (int j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k = 0; k < rhs.row(); k++)
+        for (int k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
@@ -531,12 +525,12 @@ public:
       return *this;
     }
     matrix_<T , ROW, COL> temp{};
-    for (int i = 0; i < ROW; i++)
+    for (int i {0}; i < ROW; i++)
     {
-      for (int j = 0; j < rhs.col(); j++)
+      for (int j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k = 0; k < rhs.row(); k++)
+        for (int k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
@@ -556,12 +550,12 @@ public:
   matrix_<T , ROW, L> operator*(const matrix_<T , COL, L> &rhs) const noexcept
   {
     matrix_<T , ROW, L> temp{};
-    for (int i = 0; i < ROW; i++)
+    for (int i {0}; i < ROW; i++)
     {
-      for (int j = 0; j < rhs.col(); j++)
+      for (int j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k = 0; k < rhs.row(); k++)
+        for (int k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
@@ -580,12 +574,12 @@ public:
   matrix_<T , ROW, L> operator*(matrix_<T , COL, L> &&rhs) const noexcept
   {
     matrix_<T , ROW, L> temp{};
-    for (int i = 0; i < row(); i++)
+    for (int i {0}; i < row(); i++)
     {
-      for (int j = 0; j < rhs.col(); j++)
+      for (int j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k = 0; k < rhs.row(); k++)
+        for (int k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
