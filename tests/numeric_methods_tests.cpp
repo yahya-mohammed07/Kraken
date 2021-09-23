@@ -3,8 +3,13 @@
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("CHECK GAUSS-ELIMINATION AND DETERMINED") {
-  constexpr matrix_<float, 3, 3> matrix{1.f, 2.f, 3.f, 4.f, 5.f,
-                                        6.f, 7.f, 8.f, 9.f};
+  constexpr matrix_<float, 3, 3> matrix
+  (
+    1.f, 2.f, 3.f,
+    4.f, 5.f, 6.f,
+    7.f, 8.f, 9.f
+  );
+
   constexpr auto mat = kraken::num_methods::gauss_elimination(matrix);
   REQUIRE(mat.at<1, 0>() == 0.f);
   REQUIRE(mat.at<2, 0>() == 0.f);
@@ -14,8 +19,8 @@ TEST_CASE("CHECK GAUSS-ELIMINATION AND DETERMINED") {
 }
 
 TEST_CASE("CHECK LEAST-SQUARES") {
-  constexpr matrix_<float, 1, 8> xi{0, 1, 1, 2, 3, 4, 2, 5};
-  constexpr matrix_<float, 1, 8> yi{3, 4, 6, 9, 11, 15, 10, 16};
+  constexpr matrix_<float, 1, 8> xi(0.f, 1.f, 1.f, 2.f, 3.f, 4.f, 2.f, 5.f);
+  constexpr matrix_<float, 1, 8> yi(3.f, 4.f, 6.f, 9.f, 11.f, 15.f, 10.f, 16.f);
   constexpr auto actual = kraken::num_methods::least_squares(xi, yi);
   constexpr float expected = 5.75641f;
   REQUIRE(expected == actual);
@@ -23,16 +28,16 @@ TEST_CASE("CHECK LEAST-SQUARES") {
 
 TEST_CASE("CRAMER'S RULE") {
   matrix_<float, 3, 3> mat
-  {
-    3, -1, 2,
-    1, 2, 3,
-    2, -2, -1
-  };
+  (
+    3.f, -1.f, 2.f,
+    1.f, 2.f, 3.f,
+    2.f, -2.f, -1.f
+  );
   constexpr matrix_<float, 1, 3> right_side{12, 11, 2};
   const auto actual =
     std::move(kraken::num_methods::cramer(mat, right_side));
   constexpr matrix_<float, 1, 3> expected
-  {2.99999928474f, 1.00000035763f, 1.99999976158f};
+  (2.99999928474f, 1.00000035763f, 1.99999976158f);
   REQUIRE(expected == actual);
 }
 
