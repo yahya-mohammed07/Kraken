@@ -27,6 +27,7 @@
 #### - - Using a constructor
 
 - `var_name { a1, a2, a3, a3 ... }`
+- `var_name ( a1, a2, a3, a3 ... )` **Recommended**
 - `note`: number of elements must be less than `(row_size * column_size)`
 
 #### - - Using fill method
