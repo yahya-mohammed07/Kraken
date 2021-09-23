@@ -31,7 +31,7 @@ namespace kraken::num_methods {
     };
     A x0 {init}; // initial guess
     A x1 {}; // initial guess
-    const A tolerance {1e-7}; // 7 digit accuracy is desired
+    const double tolerance {1e-7}; // 7 digit accuracy is desired
     for ( std::size_t i {1}; i < max_it; ++i ) {
       A y  {fx(x0)};
       A y_ {static_cast<A>(fx_(x0))};
@@ -56,25 +56,25 @@ private:
 public:
   constexpr auto begin() const -> It { return m_begin; }
   constexpr auto end() const -> It { return m_end; }
-  constexpr My_Iota(const It a, const It b) noexcept : m_begin(a), m_end(b) {}
+  constexpr My_Iota(const It a, const It b)   : m_begin(a), m_end(b) {}
 };
 
 namespace kraken {
     namespace op {
     struct plus {
-      constexpr auto operator()(auto &&...args) noexcept { return (args + ...); }
+      constexpr auto operator()(auto &&...args) noexcept  { return (args + ...); }
     };
     struct multiplies {
-      constexpr auto operator()(auto &&...args) noexcept { return (args * ...); }
+      constexpr auto operator()(auto &&...args) noexcept  { return (args * ...); }
     };
     struct minus {
-      constexpr auto operator()(auto &&...args) noexcept { return (args - ...); }
+      constexpr auto operator()(auto &&...args) noexcept  { return (args - ...); }
     };
     struct devide {
       template <class... T>
       requires(
           std::is_floating_point_v<std::decay_t<T>> &&...) constexpr auto
-      operator()(T &&...args) noexcept {
+      operator()(T &&...args) noexcept  {
         return (args / ...);
       }
     };
@@ -86,7 +86,7 @@ namespace kraken {
     */
     template <class T>
     inline constexpr
-    auto restore( T &target, const T &copy_org ) noexcept
+    auto restore( T &target, const T &copy_org )
         -> void
     {
       target = std::move(copy_org);
@@ -102,7 +102,7 @@ namespace kraken::cal {
   [[nodiscard]]
   extern constexpr
   auto acc(b &&init, Binary_op Op,
-                  T &container) noexcept
+                  T &container)
       -> b
    {
     for (auto &&item : container /*std::ranges::views::all(container)*/) {
@@ -117,7 +117,7 @@ namespace kraken::cal {
   extern constexpr
   auto acc(b &&init, Binary_op Op,
                   const It_begin it_begin,
-                    const It_end it_end) noexcept
+                    const It_end it_end)
       -> b
   {
     for (auto &&item : My_Iota(it_begin, it_end)) {
@@ -131,7 +131,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto acc(b &&init, It_begin &&it_begin,
-                  It_end &&it_end) noexcept
+                  It_end &&it_end)
       -> b
   {
     return acc(init, op::plus{}, it_begin, it_end);
@@ -141,7 +141,7 @@ namespace kraken::cal {
   template <class b, class T>
   [[nodiscard]]
   inline constexpr
-  auto acc(b &&init, const T &container) noexcept
+  auto acc(b &&init, const T &container)
       -> b
   {
     return acc(init, op::plus{}, container);
@@ -151,9 +151,9 @@ namespace kraken::cal {
   template <class Init, class Binray_op, class... Args>
   requires(std::is_same_v<Init, Args> &&...)
   [[nodiscard]]
-  constexpr
+  inline constexpr
   auto calcu(Init &&init, Binray_op op,
-    Args &&...args)  noexcept
+    Args &&...args)
       -> Init
   {
     return (op(args..., std::move(init)));
@@ -164,7 +164,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto calcu(b &&init, Binary_op op,
-                    std::initializer_list<T> &&args) noexcept
+                    std::initializer_list<T> &&args)
       -> b
   {
     for ( auto &&i : args ) {
@@ -183,7 +183,7 @@ namespace kraken::cal {
   requires (std::is_integral_v<Ty> && std::is_integral_v<P>)
   [[nodiscard]]
   inline constexpr
-  auto pow( Ty base, P power ) noexcept
+  auto pow( Ty base, P power )
       -> Ty
   {
     assert("Ther power input must not be negative!" && power >= 0);
@@ -208,7 +208,7 @@ namespace kraken::cal {
   requires std::is_floating_point_v<Ty>
   [[nodiscard]]
   inline constexpr
-  auto pow(Ty base, int64_t power ) noexcept
+  auto pow(Ty base, int64_t power )
       -> Ty
   {
     assert("Ther power input must be negative!" && power < 0);
@@ -285,7 +285,7 @@ namespace kraken::cal {
   requires std::is_floating_point_v<Ty>
   [[nodiscard]]
   inline constexpr
-  auto floor(Ty val) noexcept
+  auto floor(Ty val)
       -> auto
   {
     constexpr Ty max_llong {static_cast<Ty>(LLONG_MAX)};
@@ -304,7 +304,7 @@ namespace kraken::cal {
   requires (!std::is_class_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto abs(const Ty val) noexcept
+  auto abs(const Ty val)
       -> Ty
   {
     if  (val < 0) return -val;
@@ -316,7 +316,7 @@ namespace kraken::cal {
   requires std::is_floating_point_v<Ty>
   [[nodiscard]]
   inline constexpr
-  auto ceil(Ty val) noexcept
+  auto ceil(Ty val)
       -> Ty
   {
     const std::int64_t temp {static_cast<std::int64_t>(val)};
@@ -329,7 +329,7 @@ namespace kraken::cal {
   requires std::is_floating_point_v<Ty>
   [[nodiscard]]
   inline constexpr
-  auto round(Ty val) noexcept
+  auto round(Ty val)
       -> Ty
   {
     return (val > static_cast<Ty>(0.)) ? ceil(val-static_cast<Ty>(.5)) :
@@ -341,12 +341,11 @@ namespace kraken::cal {
   requires (std::is_integral_v<Ty> || std::is_floating_point_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto sqrt(const Ty val) noexcept
+  auto sqrt(const Ty val)
       -> Ty
   {
     return kraken::num_methods::newton(
-      (static_cast<Ty>(1.)),
-      20, [&val](auto &&x) {
+      1., 20, [&val](auto &&x) {
         return (x*x) - val;
       }, [](auto &&y){
         return (static_cast<Ty>(2.)*y);
@@ -436,38 +435,41 @@ namespace kraken::cal {
     return sqrt( powf(base, power*static_cast<Ty>(2.), eps*static_cast<Ty>(2.)) );
   }
 
+  ///@brief  returns the square root of the sum of squares of its arguments
   template<class Ty>
   requires (std::is_floating_point_v<Ty> || std::is_integral_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto hypot(Ty x, Ty y, Ty z) noexcept
+  auto hypot(Ty x, Ty y, Ty z)
     -> Ty
   {
     return sqrt((x*x) + (y*y) + (z*z));
   }
 
+  ///@brief  returns the square root of the sum of squares of its arguments
   template<class Ty>
   requires (std::is_floating_point_v<Ty> || std::is_integral_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto hypot(Ty x, Ty y) noexcept
+  auto hypot(Ty x, Ty y)
     -> Ty
   {
     return sqrt((x*x) + (y*y));
   }
 
+  ///@brief  returns the square root of the sum of squares of its arguments
   template<class Ty>
   requires (std::is_floating_point_v<Ty> || std::is_integral_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto hypot( const std::initializer_list<Ty>& args) noexcept
+  auto hypot( const std::initializer_list<Ty>& args)
       -> auto
   {
     Ty sum {static_cast<Ty>(1.)};
-    for ( auto&& i : args ) {
+    for ( const auto i : args ) {
       sum += (i*i);
     }
-    return sqrt(std::forward<Ty>(sum));
+    return sqrt(sum);
   }
 
   /**
@@ -480,7 +482,7 @@ namespace kraken::cal {
   requires std::is_floating_point_v<T> || std::is_integral_v<T>
   [[nodiscard]]
   inline constexpr
-  auto max(const T a, const T b) noexcept
+  auto max(const T a, const T b)
       -> T
   {
     return a > b ? a : b;
@@ -490,7 +492,7 @@ namespace kraken::cal {
   template<class Ty>
   [[nodiscard]]
   inline constexpr
-  auto max( std::initializer_list<Ty>&& args) noexcept
+  auto max( std::initializer_list<Ty>&& args)
       -> Ty
   {
     Ty high {*args.begin()};
@@ -504,7 +506,7 @@ namespace kraken::cal {
   template<class Ty>
   [[nodiscard]]
   inline constexpr
-  auto max(const std::initializer_list<Ty>& args) noexcept
+  auto max(const std::initializer_list<Ty>& args)
       -> Ty
   {
     Ty high {*args.begin()};
@@ -523,7 +525,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto max(First a, Second b,
-            Args... args) noexcept
+            Args... args)
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
@@ -557,7 +559,7 @@ namespace kraken::cal {
   requires std::is_floating_point_v<T> || std::is_integral_v<T>
   [[nodiscard]]
   inline constexpr
-  auto min(const T a, const T b) noexcept
+  auto min(const T a, const T b)
       -> T
   {
     return a > b ? b : a;
@@ -567,7 +569,7 @@ namespace kraken::cal {
   template<class Ty>
   [[nodiscard]]
   inline constexpr
-  auto min( std::initializer_list<Ty>&& args) noexcept
+  auto min( std::initializer_list<Ty>&& args)
       -> Ty
   {
     Ty low {*args.begin()};
@@ -581,7 +583,7 @@ namespace kraken::cal {
   template<class Ty>
   [[nodiscard]]
   inline constexpr
-  auto min(const std::initializer_list<Ty>& args) noexcept
+  auto min(const std::initializer_list<Ty>& args)
       -> Ty
   {
     Ty low {*args.begin()};
@@ -600,7 +602,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto min(First a, Second b,
-                Args... args) noexcept
+                Args... args)
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
@@ -634,7 +636,7 @@ namespace kraken::cal {
   requires std::is_floating_point_v<T> || std::is_integral_v<T>
   [[nodiscard]]
   inline constexpr
-  auto min_max(const T a, const T b) noexcept
+  auto min_max(const T a, const T b)
       -> Min_Max<T>
   {
     if ( a > b) {
@@ -648,7 +650,7 @@ namespace kraken::cal {
   template<class Ty>
   [[nodiscard]]
   inline constexpr
-  auto min_max(const std::initializer_list<Ty>& args) noexcept
+  auto min_max(const std::initializer_list<Ty>& args)
       -> Min_Max<Ty>
   {
     Ty low {*args.begin()};
@@ -664,7 +666,7 @@ namespace kraken::cal {
   template<class Ty>
   [[nodiscard]]
   inline constexpr
-  auto min_max(std::initializer_list<Ty> &&args) noexcept
+  auto min_max(std::initializer_list<Ty> &&args)
       -> Min_Max<Ty>
   {
     Ty low {*args.begin()};
@@ -685,7 +687,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto min_max(First a, Second b,
-                Args ...args) noexcept
+                Args ...args)
      -> Min_Max<First>
   {
     return { min({a,b,args...}) , max({a,b,args...}) };
