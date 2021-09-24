@@ -58,7 +58,7 @@ TEST_CASE("BASE TO POWER OF FLOATING-POINT") {
 TEST_CASE("CONTAINER TO POWER") {
   matrix_<int, 1, 3> actual { 1, 2, 3 };
   cal::pow_container(actual, 2);
-  const matrix_<int, 1, 3> expected { 1, 4, 9 };
+  const matrix_<int, 1, 3> expected ( 1, 4, 9 );
   REQUIRE(expected == actual);
 }
 
@@ -84,7 +84,7 @@ TEST_CASE("MIN") {
   REQUIRE(cal::min(90, 87) == 87);
   REQUIRE(cal::min(33, 87, 3, 66) == 3);
   REQUIRE(cal::min({33, 87, 3, 66}) == 3);
-  constexpr matrix_<int, 1, 4> nums {33, 87, 3, 66};
+  constexpr matrix_<int, 1, 4> nums ( 33, 87, 3, 66 );
   REQUIRE(cal::min(nums) == 3);
 }
 
@@ -98,7 +98,7 @@ TEST_CASE("MIN_MAX") {
   REQUIRE(cal::min_max({33, 87, 3, 66}).Min == 3);
   REQUIRE(cal::min_max({33, 87, 3, 66}).Max == 87);
   //
-  constexpr matrix_<int, 1, 4> nums {33, 87, 3, 66};
+  constexpr matrix_<int, 1, 4> nums ( 33, 87, 3, 66 );
   REQUIRE(cal::min_max(nums).Min == 3);
   REQUIRE(cal::min_max(nums).Max == 87);
 }
