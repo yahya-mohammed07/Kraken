@@ -101,11 +101,11 @@ namespace kraken::cal {
   template <class b, class Binary_op, class T>
   [[nodiscard]]
   extern constexpr
-  auto acc(b &&init, Binary_op Op,
-                  T &container)
+  auto acc(b init, Binary_op Op,
+                  const T &container)
       -> b
    {
-    for (auto &&item : container /*std::ranges::views::all(container)*/) {
+    for (auto item : container /*std::ranges::views::all(container)*/) {
       init = Op(item, std::move(init));
     }
     return init;
