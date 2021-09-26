@@ -1,6 +1,6 @@
 #include "../source/library/core/matrix.hpp"
 #include "../source/library/core/numeric_methods.hpp"
-#include <catch2/catch_test_macros.hpp>
+#include "../Catch2/catch.hpp"
 
 TEST_CASE("CHECK GAUSS-ELIMINATION AND DETERMINED") {
   constexpr matrix_<float, 3, 3> matrix
