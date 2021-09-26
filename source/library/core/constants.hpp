@@ -3,8 +3,6 @@
 
 #include <concepts>
 #include <type_traits>
-#include <numbers>
-
 
 /// @brief math and physics constants in one place
 
@@ -180,6 +178,6 @@ namespace kraken::constants {
   inline constexpr Ty inv_sqrt3_v = static_cast<Ty> (0.577350269189625764509148780501957456L);
   ///@brief 1/sqrt(3)
   inline constexpr double inv_sqrt3 = inv_sqrt3_v<double>;
-} // namespace math::constants
+} // namespace kraken::constants
 
 #endif // CONSTANTS_HPP
