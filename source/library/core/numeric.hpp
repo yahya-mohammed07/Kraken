@@ -173,57 +173,6 @@ namespace kraken::cal {
     return init;
   }
 
-  /**
-   * @brief pow fuction works with only for integral types
-   * @param base lvalue
-   * @param power (positive)
-   * @return Ty
-   */
-  template<class Ty, class P>
-  requires (std::is_integral_v<Ty> && std::is_integral_v<P>)
-  [[nodiscard]]
-  inline constexpr
-  auto pow( Ty base, P power )
-      -> Ty
-  {
-    assert("Ther power input must not be negative!" && power >= 0);
-    Ty res {static_cast<Ty>(1)};
-    Ty base_copy {std::move(base)};
-    for ( ;; ) {
-      if ( power & 1 ) { res *= base_copy; }
-      power >>= 1;
-      if ( !power ) { break; }
-      base_copy *= base_copy;
-    }
-    return res;
-  }
-
-  /**
-   * @brief pow function only floating point types
-   * @param base
-   * @param power negative power
-   * @return Ty
-   */
-  template<class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto pow(Ty base, int64_t power )
-      -> Ty
-  {
-    assert("Ther power input must be negative!" && power < 0);
-    Ty res {static_cast<Ty>(1)};
-    Ty base_copy {std::move(base)};
-    power *= -1;
-    for ( ;; ) {
-      if ( power &  1 ) { res *= base_copy; }
-      power >>= 1;
-      if ( !power ) { break; }
-      base_copy *= base_copy;
-    }
-    return static_cast<Ty>(1.)/res;
-  }
-
   /// @brief returns ln of `x`
   template<class Ty>
   requires (std::is_floating_point_v<Ty>)
@@ -250,32 +199,6 @@ namespace kraken::cal {
     return res;
   }
 
-  /**
-   * @brief pow fuction works with only for containers
-   * @param base container
-   * @param power
-   */
-  template<class Cont, class P>
-  requires std::is_class_v<Cont>
-  constexpr
-  auto pow_container(Cont &container, const P& power)
-      -> void
-  {
-    for (auto &i : container) {
-      i = std::move( cal::pow(i, power) );
-    }
-  }
-
-  template<class Cont, class P>
-  requires std::is_class_v<Cont>
-  constexpr
-  auto pow_container(Cont &container, P&& power)
-      -> void
-  {
-    for (auto &i : container) {
-      i = std::move( cal::pow(i, power) );
-    }
-  }
 
   /**
    * @brief calculates `floor` of float values
@@ -354,7 +277,6 @@ namespace kraken::cal {
 
   /// @brief returns a*a
   template<class T>
-  requires (std::is_floating_point_v<T>)
   [[nodiscard]] inline constexpr
   auto sqr(const T a)
     -> T
@@ -416,23 +338,72 @@ namespace kraken::cal {
   }
 
   /**
-   * @brief computes pow of floating point
+   * @brief computes base to power
    * @param base
    * @param power
    * @param eps
    */
-  template<class Ty, class B>
-  requires (std::is_floating_point_v<Ty> && std::is_floating_point_v<B>)
+  template<class Ty, class P>
   [[nodiscard]] inline constexpr
-  auto powf(Ty base, B power, Ty eps = std::numeric_limits<Ty>::epsilon())
+  auto pow(Ty base, P power, const Ty eps = std::numeric_limits<Ty>::epsilon())
       -> Ty
   {
-    if ( power < 0 )    { return 1. / powf(base, -power, eps); }
-    if ( power >= 10 )  { return sqr( powf(base, power/static_cast<Ty>(2.),
+    if constexpr ( std::is_integral_v<Ty> && std::is_integral_v<P>) {
+        if ( power > 0 ) {
+        Ty res {static_cast<Ty>(1)};
+        Ty base_copy {std::move(base)};
+        for ( ;; ) {
+          if ( power & 1 ) { res *= base_copy; }
+          power >>= 1;
+          if ( !power ) { break; }
+          base_copy *= base_copy;
+        }
+        return res;
+      }
+      Ty res {static_cast<Ty>(1)};
+      Ty base_copy {std::move(base)};
+      power *= -1;
+      for ( ;; ) {
+        if ( power &  1 ) { res *= base_copy; }
+        power >>= 1;
+        if ( !power ) { break; }
+        base_copy *= base_copy;
+      }
+      return static_cast<Ty>(1.)/res;
+    }
+    if ( power < 0 )    { return 1. / pow(base, -power, eps); }
+    if ( power >= 10 )  { return sqr( pow(base, power/static_cast<Ty>(2.),
                                                         eps/static_cast<Ty>(2.)) ); }
-    if ( power >= 1 )   { return base * powf(base, power-static_cast<Ty>(1.), eps); }
+    if ( power >= 1 )   { return base * pow(base, power-static_cast<Ty>(1.), eps); }
     if ( eps >= static_cast<Ty>(1.) )     { return sqrt(base) ; }
-    return sqrt( powf(base, power*static_cast<Ty>(2.), eps*static_cast<Ty>(2.)) );
+    return sqrt( pow(base, power*static_cast<Ty>(2.), eps*static_cast<Ty>(2.)) );
+  }
+
+  /**
+   * @brief pow fuction works with only for containers
+   * @param base container
+   * @param power
+   */
+  template<class Cont, class P>
+  requires std::is_class_v<Cont>
+  constexpr
+  auto pow_container(Cont &container, const P& power)
+      -> void
+  {
+    for (auto &i : container) {
+      i = std::move( cal::pow(i, power) );
+    }
+  }
+
+  template<class Cont, class P>
+  requires std::is_class_v<Cont>
+  constexpr
+  auto pow_container(Cont &container, P&& power)
+      -> void
+  {
+    for (auto &i : container) {
+      i = std::move( cal::pow(i, power) );
+    }
   }
 
   ///@brief  returns the square root of the sum of squares of its arguments
@@ -774,6 +745,21 @@ namespace kraken::cal {
       : 0;
   }
 
-} // namespace math
+  ///@brief gives the `fibonacci` of `x`
+  template <class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto fibonacci(const Ty val) -> std::size_t
+  {
+    if (val == 0) return 0ull;
+    else if (val == 1) return 1ull;
+    //
+    constexpr double sqrt_5 { sqrt(5.) };
+    return static_cast<std::size_t>
+            (round( pow(constants::ϕ,
+                static_cast<double>(val)) / sqrt_5 ));
+  }
+
+} // namespace Kraken
 
 #endif // NUMERIC_HPP
