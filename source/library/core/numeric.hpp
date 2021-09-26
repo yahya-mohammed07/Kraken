@@ -100,12 +100,12 @@ namespace kraken::cal {
   /// @brief  short name for => accumulate
   template <class b, class Binary_op, class T>
   [[nodiscard]]
-  extern constexpr
-  auto acc(b init, Binary_op Op,
-                  const T &container)
+  inline constexpr
+  auto acc(b init, Binary_op &&Op,
+                  const T &container) noexcept
       -> b
    {
-    for (auto item : container /*std::ranges::views::all(container)*/) {
+    for (auto &&item : container) {
       init = Op(item, std::move(init));
     }
     return init;
@@ -114,8 +114,8 @@ namespace kraken::cal {
   //
   template <class b, class Binary_op, class It_begin, class It_end>
   [[nodiscard]]
-  extern constexpr
-  auto acc(b &&init, Binary_op Op,
+  inline constexpr
+  auto acc(b &&init, Binary_op &&Op,
                   const It_begin it_begin,
                     const It_end it_end)
       -> b
@@ -134,7 +134,10 @@ namespace kraken::cal {
                   It_end &&it_end)
       -> b
   {
-    return acc(init, op::plus{}, it_begin, it_end);
+    for ( auto && i : My_Iota(it_begin, it_end)) {
+      init += i;
+    }
+    return init;
   }
 
   ///
@@ -144,7 +147,10 @@ namespace kraken::cal {
   auto acc(b &&init, const T &container)
       -> b
   {
-    return acc(init, op::plus{}, container);
+    for ( auto && i : container) {
+      init += i;
+    }
+    return init;
   }
 
   /// @brief  short name for => calculate
