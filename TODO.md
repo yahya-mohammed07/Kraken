@@ -22,6 +22,8 @@
 - [ ] **beta()**
 - [x] **gcd()**
 - [x] **lcm()**
+- [ ] **factorial()**
+- [ ] **fibonacci()**
 - [ ] **LU decomposition()**
 - [ ] **Newton's Forward Difference Formula()**
 - [ ] **Lagrange Interpolation()**
