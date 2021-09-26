@@ -424,7 +424,7 @@ namespace kraken::cal {
   template<class Ty, class B>
   requires (std::is_floating_point_v<Ty> && std::is_floating_point_v<B>)
   [[nodiscard]] inline constexpr
-  auto powf(Ty base, B power, Ty eps = std::numeric_limits<double>::epsilon())
+  auto powf(Ty base, B power, Ty eps = std::numeric_limits<Ty>::epsilon())
       -> Ty
   {
     if ( power < 0 )    { return 1. / powf(base, -power, eps); }
