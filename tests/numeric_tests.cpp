@@ -52,7 +52,7 @@ TEST_CASE("BASE TO POWER OF NEGATIVE-INTEGER") {
 }
 
 TEST_CASE("BASE TO POWER OF FLOATING-POINT") {
-  REQUIRE( cal::powf(3.f, 1.5f) == 5.19615268707275390625f);
+  REQUIRE( cal::pow(3.f, 1.5f) == 5.19615268707275390625f);
 }
 
 TEST_CASE("CONTAINER TO POWER") {
@@ -155,4 +155,17 @@ TEST_CASE("HYPOT") {
   REQUIRE(cal::hypot(4, 3) == 5);
   REQUIRE(cal::hypot(2.f, 3.f) == 3.605551242828369140625f);
   REQUIRE(cal::hypot( {2,3,4,5} ) == 7 );
+}
+
+TEST_CASE("FIBONACCI") {
+  REQUIRE(cal::fibonacci(13) == 233);
+  REQUIRE(cal::fibonacci(8) == 21);
+  REQUIRE(cal::fibonacci(23) == 28657);
+  REQUIRE(cal::fibonacci(19) == 4181);
+  REQUIRE(cal::fibonacci(43) == 433494437);
+  REQUIRE(cal::fibonacci(53) == 53316291173);
+  REQUIRE(cal::fibonacci(72) == 498454011879265);
+  REQUIRE(cal::fibonacci(91) == 4660046610375549952); // not very accuarate
+  REQUIRE(cal::fibonacci(92) == 7540113804746366976); // not very accuarate
+  REQUIRE(cal::fibonacci(52) == 32951280099);
 }
