@@ -23,7 +23,7 @@
 - [x] **gcd()**
 - [x] **lcm()**
 - [ ] **factorial()**
-- [ ] **fibonacci()**
+- [x] **fibonacci()**
 - [ ] **LU decomposition()**
 - [ ] **Newton's Forward Difference Formula()**
 - [ ] **Lagrange Interpolation()**
