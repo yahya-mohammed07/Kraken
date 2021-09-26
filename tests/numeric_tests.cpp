@@ -1,6 +1,6 @@
 #include "../source/library/core/numeric.hpp"
 #include "../source/library/core/constants.hpp"
-#include <catch2/catch_test_macros.hpp>
+#include "../Catch2/catch.hpp"
 
 #include <cstdio>
 
