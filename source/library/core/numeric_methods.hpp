@@ -1,6 +1,7 @@
 #ifndef NUMERIC_METHODS_HPP
 #define NUMERIC_METHODS_HPP
 
+#include "common/newton.hpp"
 #include "matrix.hpp"
 #include "numeric.hpp"
 
@@ -10,10 +11,10 @@ namespace kraken::num_methods {
    * @brief Perform's gauss-elimination
    * @return a gauss-eliminated matrix if it was normal
    */
-  template<class T, std::size_t ROW, std::size_t COL>
-    requires ( std::is_floating_point_v<T> )
+  template<class Ty, std::size_t ROW, std::size_t COL>
+    requires ( std::is_floating_point_v<Ty> )
   [[nodiscard]] constexpr
-  auto gauss_elimination(const matrix_<T, ROW, COL> &matrix)
+  auto gauss_elimination(const matrix_<Ty, ROW, COL> &matrix)
       -> const auto
   {
     bool gauss_sliminated = false;
@@ -24,7 +25,7 @@ namespace kraken::num_methods {
         }
       }
     }
-    matrix_<T, ROW, COL> arr = std::move(matrix);
+    matrix_<Ty, ROW, COL> arr = std::move(matrix);
     if ( !gauss_sliminated ) {
       double P{};
       for (std::size_t k = 0; k < ROW; ++k) {
@@ -43,17 +44,17 @@ namespace kraken::num_methods {
 
   /**
    * @brief Gives the determined matrix, matrix must be squared
-   * @return T
+   * @return Ty
    */
-  template<class T, std::size_t ROW, std::size_t COL>
+  template<class Ty, std::size_t ROW, std::size_t COL>
   [[nodiscard]] constexpr
-  auto determined(const matrix_<T, ROW, COL> &matrix)
-      -> T
+  auto determined(const matrix_<Ty, ROW, COL> &matrix)
+      -> Ty
   {
     static_assert(ROW == COL, "- Matrix must be squared");
     const auto temp = std::move(gauss_elimination(matrix));
 
-    T deter{1};
+    Ty deter{1};
     for (std::size_t i = 0; i < COL; ++i) {
       deter *= temp.at( i,i );
     }
@@ -100,9 +101,9 @@ namespace kraken::num_methods {
    * @param R linear collection of right_side
    * @return nothing
    */
-  template<class T, std::size_t ROW, std::size_t COL>
-  auto change_with_R(matrix_<T, ROW, COL> &from,
-                                    matrix_<T, 1, COL> R)
+  template<class Ty, std::size_t ROW, std::size_t COL>
+  auto change_with_R(matrix_<Ty, ROW, COL> &from,
+                                    matrix_<Ty, 1, COL> R)
       -> void
   {
     static std::size_t changed{};
@@ -116,18 +117,18 @@ namespace kraken::num_methods {
  *
  * @param arr the gavin matrix
  * @param right_side the values after =
- * @return matrix_<T, 1, COL>
+ * @return matrix_<Ty, 1, COL>
  */
-  template <class T, const size_t ROW, const size_t COL>
-  auto cramer(matrix_<T, ROW, COL> arr, const matrix_<T, 1, COL> &right_side)
+  template <class Ty, const size_t ROW, const size_t COL>
+  auto cramer(matrix_<Ty, ROW, COL> arr, const matrix_<Ty, 1, COL> &right_side)
       -> auto
   {
     static_assert(ROW == COL, "- matrix must be squared");
-    const matrix_<T, ROW, COL> copy = arr;
-    const T deter_a = determined(arr);
+    const matrix_<Ty, ROW, COL> copy = arr;
+    const Ty deter_a = determined(arr);
     //
-    matrix_<T, 1, COL> D;
-    matrix_<T, 1, COL> X;
+    matrix_<Ty, 1, COL> D;
+    matrix_<Ty, 1, COL> X;
     //
     for (size_t i = 0; i < COL; ++i) {
       // reset arr after being minupilated in line 85
@@ -173,26 +174,19 @@ namespace kraken::num_methods {
     return result;
   }
 
-  template<class A, class Op1, class Op2>
-  requires (std::is_floating_point_v<A>)
-  [[nodiscard]]
-  constexpr
-  extern auto newton(const A init, const std::size_t max_it, Op1 &&fx, Op2 &&fx_ )
-    -> A;
-
   /**
    * @brief gives the back-substitution of gauss eliminated matrix
    * , must call gauss_elimination
    * @param col number of columns in matrix
-   * @return matrix<float, 1>
+   * @return matrix<Ty, 1, COL>
    */
-  template<class T, std::size_t ROW, std::size_t COL>
+  template<class Ty, std::size_t ROW, std::size_t COL>
   [[nodiscard]] constexpr
-  auto back_substitution(const matrix_<T, ROW, COL> &arr)
+  auto back_substitution(const matrix_<Ty, ROW, COL> &arr)
       -> auto
   {
     static_assert(ROW < COL, "--`col` must always be greater than `row`...");
-    matrix_<T, 1, COL - 1> x;
+    matrix_<Ty, 1, COL - 1> x;
     //
     for (int64_t i = static_cast<int64_t>(ROW - 1); i >= 0; --i) {
       x.at(0, i) = {arr.at(i, COL - 1)};
