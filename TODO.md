@@ -16,6 +16,7 @@
 - [x] **decimal_places()**
 - [ ] **trunc()**
 - [ ] **mod()**
+- [x] **div()**
 - [x] **min_max()**
 - [ ] **modf()**
 - [ ] **gamma()**
