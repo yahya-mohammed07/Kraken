@@ -165,7 +165,21 @@ TEST_CASE("FIBONACCI") {
   REQUIRE(cal::fibonacci(43) == 433494437);
   REQUIRE(cal::fibonacci(53) == 53316291173);
   REQUIRE(cal::fibonacci(72) == 498454011879265);
-  REQUIRE(cal::fibonacci(91) == 4660046610375549952); // not very accuarate
-  REQUIRE(cal::fibonacci(92) == 7540113804746366976); // not very accuarate
+  REQUIRE(cal::fibonacci(91) == 4660046610375549952); // big, not very accuarate
+  REQUIRE(cal::fibonacci(92) == 7540113804746366976); // big, not very accuarate
   REQUIRE(cal::fibonacci(52) == 32951280099);
+}
+
+TEST_CASE("FACTORIAL") {
+  REQUIRE(cal::factorial(4ull) == 24);
+  REQUIRE(cal::factorial(8ull) == 40320);
+  REQUIRE(cal::factorial(12ull) == 479001600);
+  REQUIRE(cal::factorial(14ull) == 87178291200);
+  REQUIRE(cal::factorial(20ull) == 2432902008176640000);
+}
+
+TEST_CASE("DIV") {
+  const auto& [quot, rem] = cal::div(645, 67);
+  REQUIRE(quot == 9);
+  REQUIRE(rem == 42);
 }
