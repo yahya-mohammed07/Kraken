@@ -1,11 +1,11 @@
 #ifndef NUMERIC_HPP
 #define NUMERIC_HPP
 
+#include "common/abs.hpp" // abs
+#include "common/newton.hpp" // newton
 #include <algorithm>      // std::move, std::forward
-#include <type_traits>
 #include <cassert>        // assert
 #include <initializer_list>
-#include <limits>         // quite_NaN, epslon()
 #include <limits.h>       // LLONG_MAX, LLONG_MIN
 #include "matrix.hpp"     // matrix_<>
 #include "constants.hpp"
@@ -17,36 +17,11 @@ struct Min_Max {
   const Ty Max{};
 };
 
-namespace kraken::num_methods {
-  template<class A, class Op1, class Op2>
-  requires (std::is_floating_point_v<A>)
-  [[nodiscard]]
-  constexpr
-  auto newton(const A init, const std::size_t max_it, Op1 &&fx, Op2 &&fx_ )
-    -> A
-  {
-    constexpr auto myAbs = [](const auto& x)
-    {
-      return x > 0 ? x : -1 * (x);
-    };
-    A x0 {init}; // initial guess
-    A x1 {}; // initial guess
-    const double tolerance {1e-7}; // 7 digit accuracy is desired
-    for ( std::size_t i {1}; i < max_it; ++i ) {
-      A y  {fx(x0)};
-      A y_ {static_cast<A>(fx_(x0))};
-      if ( myAbs(y_) < std::numeric_limits<double>::epsilon() ) {
-        break;
-      }
-      x1 = x0-(y/y_); // Do Newton's computation
-      if ( myAbs(x1-x0) <= tolerance ) { // Stop when the result is within the desired tolerance
-        break;
-      }
-      x0=x1;
-    }
-    return x1;
-  }
-}
+template <class Ty>
+struct Division {
+  Ty quot{}; // quotient
+  Ty rem{}; // reminder
+};
 
 template <typename It> class My_Iota {
 private:
@@ -228,16 +203,17 @@ namespace kraken::cal {
     else {return  (temp_d) - static_cast<Ty>(1);}
   }
 
-  /// @brief gives the absolute of a value
+  /// @brief stores division of an `element` of type `Ty`
   template<class Ty>
-  requires (!std::is_class_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto abs(const Ty val)
-      -> Ty
+      // numerator, denominator
+  auto div(Ty num, Ty denom) -> Division<Ty>
   {
-    if  (val < 0) return -val;
-    else { return val; }
+    Division<Ty> res{};
+    res.quot = num/denom;
+    res.rem = num - (res.quot * denom);
+    return res;
   }
 
   /// @brief gives ceil of a float value
@@ -766,6 +742,15 @@ namespace kraken::cal {
                 static_cast<double>(val)) / sqrt_5 ));
   }
 
-} // namespace Kraken
+  [[nodiscard]]
+  inline constexpr
+  auto factorial(std::size_t val) -> std::size_t
+  {
+    if ( val > 20ull ) throw std::out_of_range("- out of range...");
+    if ( val <= 1ull) return 1ull;
+    return val * factorial(val - 1ull);
+  }
+
+} // namespace kraken
 
 #endif // NUMERIC_HPP
