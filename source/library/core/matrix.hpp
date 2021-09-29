@@ -472,7 +472,7 @@ public:
   [[nodiscard]] constexpr
   matrix_& operator*( T &&val)  noexcept
   {
-    for ( std::size_t j{} ; auto &&i : *this ) {
+    for ( std::size_t j{} ; [[maybe_unused]] auto &&i : *this ) {
       m_data[j] *= val;
       ++j;
     }
@@ -495,12 +495,12 @@ public:
       return *this;
     }
     matrix_<T , ROW, COL> temp{};
-    for (int i {0}; i < ROW; i++)
+    for (std::size_t i {0}; i < ROW; i++)
     {
-      for (int j {0}; j < rhs.col(); j++)
+      for (std::size_t j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k {0}; k < rhs.row(); k++)
+        for (std::size_t k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
@@ -525,12 +525,12 @@ public:
       return *this;
     }
     matrix_<T , ROW, COL> temp{};
-    for (int i {0}; i < ROW; i++)
+    for (std::size_t i {0}; i < ROW; i++)
     {
-      for (int j {0}; j < rhs.col(); j++)
+      for (std::size_t j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k {0}; k < rhs.row(); k++)
+        for (std::size_t k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
@@ -550,12 +550,12 @@ public:
   matrix_<T , ROW, L> operator*(const matrix_<T , COL, L> &rhs) const noexcept
   {
     matrix_<T , ROW, L> temp{};
-    for (int i {0}; i < ROW; i++)
+    for (std::size_t i {0}; i < ROW; i++)
     {
-      for (int j {0}; j < rhs.col(); j++)
+      for (std::size_t j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k {0}; k < rhs.row(); k++)
+        for (std::size_t k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
@@ -574,12 +574,12 @@ public:
   matrix_<T , ROW, L> operator*(matrix_<T , COL, L> &&rhs) const noexcept
   {
     matrix_<T , ROW, L> temp{};
-    for (int i {0}; i < row(); i++)
+    for (std::size_t i {0}; i < row(); i++)
     {
-      for (int j {0}; j < rhs.col(); j++)
+      for (std::size_t j {0}; j < rhs.col(); j++)
       {
         temp.at(i,j) = 0;
-        for (int k {0}; k < rhs.row(); k++)
+        for (std::size_t k {0}; k < rhs.row(); k++)
         {
           temp.at(i,j) += (at(i,k) * rhs.at(k,j));
         }
