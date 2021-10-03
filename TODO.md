@@ -2,8 +2,10 @@
 
 ## Core changes :-
 
-- [ ] Write another matrix class or modify the current one to accept large matrix sizes
-  - [ ] Must write a better algorithm for matrix transpose
+- [ ] Write another matrix class or modify the current one to accept large matrix sizes.
+  - [ ] Must write a better algorithm for matrix transpose.
+
+- [ ] Add error-handling system.
 
 ## Implement :-
 
