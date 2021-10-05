@@ -171,15 +171,20 @@ TEST_CASE("FIBONACCI") {
 }
 
 TEST_CASE("FACTORIAL") {
-  REQUIRE(cal::factorial(4ull) == 24);
-  REQUIRE(cal::factorial(8ull) == 40320);
-  REQUIRE(cal::factorial(12ull) == 479001600);
-  REQUIRE(cal::factorial(14ull) == 87178291200);
-  REQUIRE(cal::factorial(20ull) == 2432902008176640000);
+  REQUIRE(cal::factorial(4) == 24);
+  REQUIRE(cal::factorial(8) == 40320);
+  REQUIRE(cal::factorial(12) == 479001600);
+  REQUIRE(cal::factorial(14) == 87178291200);
+  REQUIRE(cal::factorial(20) == 2432902008176640000);
 }
 
 TEST_CASE("DIV") {
   const auto& [quot, rem] = cal::div(645, 67);
   REQUIRE(quot == 9);
   REQUIRE(rem == 42);
+}
+
+TEST_CASE("IS_NEG") {
+  REQUIRE(cal::is_neg(-0.0435345) == true);
+  REQUIRE(cal::is_neg(0.0435345) == false);
 }
