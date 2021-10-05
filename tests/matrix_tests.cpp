@@ -194,3 +194,88 @@ TEST_CASE("NON-SQUARED MATRIX ROTATION") {
   );
   REQUIRE(expected == actual);
 }
+
+TEST_CASE("MATRIX ADDITION") {
+  constexpr matrix_<int, 3, 3> a
+  (
+    3, 4, 5,
+    5, 4, 3,
+    3, 3, 7
+  );
+
+  constexpr matrix_<int, 3, 3> b
+  (
+    3, 4, 5,
+    5, 4, 3,
+    3, 3, 7
+  );
+
+  constexpr auto actual = (a + b);
+  constexpr matrix_<int, 3, 3> expected
+  (
+    6, 8, 10,
+    10, 8, 6,
+    6, 6, 14
+  );
+  REQUIRE(expected == actual);
+}
+
+TEST_CASE("MATRIX SUBTRACTION") {
+  constexpr matrix_<int, 3, 3> a
+  (
+    3, 4, 5,
+    5, 4, 3,
+    3, 3, 7
+  );
+
+  constexpr matrix_<int, 3, 3> b
+  (
+    3, 4, 5,
+    5, 4, 3,
+    3, 3, 7
+  );
+  constexpr auto actual = (a - b);
+  constexpr matrix_<int, 3, 3> expected
+  (
+    0, 0, 0,
+    0, 0, 0,
+    0, 0, 0
+  );
+  REQUIRE(expected == actual);
+}
+
+TEST_CASE("MATRIX ADDITION WITH SCALAR") {
+  constexpr  matrix_<int, 3, 3> a
+  (
+    3, 4, 5,
+    5, 4, 3,
+    3, 3, 7
+  );
+
+  constexpr auto actual = (a + 2);
+  constexpr matrix_<int, 3, 3> expected
+  (
+    5, 6, 7,
+    7, 6, 5,
+    5, 5, 9
+  );
+  REQUIRE(expected == actual);
+}
+
+TEST_CASE("MATRIX SUBTRACTION WITH SCALAR") {
+  constexpr matrix_<int, 3, 3> a
+  (
+    3, 4, 5,
+    5, 4, 3,
+    3, 3, 7
+  );
+
+  constexpr auto actual = (a - 2);
+  constexpr matrix_<int, 3, 3> expected
+  (
+    1, 2, 3,
+    3, 2, 1,
+    1, 1, 5
+  );
+  REQUIRE(expected == actual);
+}
