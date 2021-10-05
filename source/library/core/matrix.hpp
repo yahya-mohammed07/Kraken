@@ -1,6 +1,33 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
+/*
+
+MIT License
+
+Copyright (c) 2021 yahya mohammed
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+
+
 #include <algorithm>          // std::swap
 #include <array>              // std::array
 #include <initializer_list>
@@ -38,6 +65,7 @@ public:
   }
 
   /// @brief move constructor
+  explicit
   constexpr matrix_(matrix_ &&move) noexcept
   {
     m_data  = std::move(move.m_data);
@@ -399,13 +427,9 @@ public:
     return *this;
   }
 
-  /**
-   * @brief adds two matrix containers
-   * @return matrix
-   */
-  constexpr matrix_& operator+(const matrix_ &other) noexcept
+  constexpr matrix_ &operator+=(const matrix_ &rhs) noexcept
   {
-    for ( std::size_t j{} ; const auto& i : other ) {
+    for ( std::size_t j{} ; const auto& i : rhs ) {
       m_data[j] += i;
       ++j;
     }
@@ -416,12 +440,15 @@ public:
    * @brief adds two matrix containers
    * @return matrix
    */
-  constexpr matrix_& operator+(matrix_ &&other) noexcept
+  constexpr friend matrix_ operator+(matrix_ lhs ,const matrix_ &rhs) noexcept
   {
-    for ( std::size_t j{} ; auto&& i : other ) {
-      m_data[j] += i;
-      ++j;
-    }
+    lhs += rhs;
+    return lhs;
+  }
+
+  constexpr matrix_ &operator+=(const T scalar) noexcept
+  {
+    for ( auto && i : *this ) { i += scalar; }
     return *this;
   }
 
@@ -429,26 +456,10 @@ public:
    * @brief adds a matrix containers with a scalar
    * @return matrix
    */
-  constexpr matrix_& operator+(const T &val) noexcept
+  constexpr friend matrix_ operator+(matrix_ lhs , const T scalar) noexcept
   {
-    for ( std::size_t j{} ; const auto& i : *this ) {
-      m_data[j] += val;
-      ++j;
-    }
-    return *this;
-  }
-
-  /**
-   * @brief adds a matrix containers with a scalar
-   * @return matrix
-   */
-  constexpr matrix_& operator+(T &&val) noexcept
-  {
-    for ( std::size_t j{} ; auto &&i : *this ) {
-      m_data[j] += val;
-      ++j;
-    }
-    return *this;
+    lhs += scalar;
+    return lhs;
   }
 
   /**
@@ -456,25 +467,10 @@ public:
    * @return matrix
    */
   [[nodiscard]] constexpr
-  matrix_& operator*(const T &val)  noexcept
+  matrix_& operator*( T val)  noexcept
   {
-    for ( std::size_t j{} ; const auto& i : *this ) {
-      m_data[j] *= val;
-      ++j;
-    }
-    return *this;
-  }
-
-  /**
-   * @brief multiplies a matrix containers with a `scalar`
-   * @return matrix
-   */
-  [[nodiscard]] constexpr
-  matrix_& operator*( T &&val)  noexcept
-  {
-    for ( std::size_t j{} ; [[maybe_unused]] auto &&i : *this ) {
-      m_data[j] *= val;
-      ++j;
+    for ( auto &&i : *this ) {
+      i *= val;
     }
     return *this;
   }
@@ -588,13 +584,9 @@ public:
     return temp;
   }
 
-  /**
-   * @brief subtructs two matrix containers
-   * @return matrix
-   */
-  constexpr matrix_& operator-(const matrix_ &other) noexcept
+  constexpr matrix_ &operator-=(const matrix_ &rhs) noexcept
   {
-    for ( std::size_t j{} ; const auto& i : other ) {
+    for ( std::size_t j{} ; const auto& i : rhs ) {
       m_data[j] -= i;
       ++j;
     }
@@ -605,33 +597,33 @@ public:
    * @brief subtructs two matrix containers
    * @return matrix
    */
-  constexpr matrix_& operator-( matrix_ &&other) noexcept
+  constexpr friend matrix_ operator-(matrix_ lhs ,const matrix_ &rhs) noexcept
   {
-    for ( std::size_t j{} ; auto&& i : other ) {
-      m_data[j] -= i;
-      ++j;
-    }
+    lhs -= rhs;
+    return lhs;
+  }
+
+  constexpr matrix_ &operator-=(const T scalar) noexcept
+  {
+    for ( auto && i : *this ) { i -= scalar; }
     return *this;
+  }
+
+  /**
+   * @brief adds a matrix containers with a scalar
+   * @return matrix
+   */
+  constexpr friend matrix_ operator-(matrix_ lhs , const T scalar) noexcept
+  {
+    lhs -= scalar;
+    return lhs;
   }
 
   /**
    * @brief subtructs a matrix containers with a scalar
    * @return matrix
    */
-  constexpr matrix_& operator-(const T &val) noexcept
-  {
-    for ( std::size_t j{} ; const auto& i : *this ) {
-      m_data[j] -= val;
-      ++j;
-    }
-    return *this;
-  }
-
-  /**
-   * @brief subtructs a matrix containers with a scalar
-   * @return matrix
-   */
-  constexpr matrix_& operator-(T &&val) noexcept
+  constexpr matrix_& operator-(const T val) noexcept
   {
     for ( std::size_t j{} ; auto &&i : *this ) {
       m_data[j] -= val;
