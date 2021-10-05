@@ -40,6 +40,7 @@
   - `fibonacci`
   - `div`
   - `factorial` **recursive**
+  - `is_neg`
 
 ## Note: for usage please check the `tests` folder
 
