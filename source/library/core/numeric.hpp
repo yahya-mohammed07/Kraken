@@ -1,15 +1,41 @@
 #ifndef NUMERIC_HPP
 #define NUMERIC_HPP
 
-#include "common/abs.hpp" // abs
-#include "common/newton.hpp" // newton
-#include <algorithm>      // std::move, std::forward
-#include <cassert>        // assert
+/*
+
+MIT License
+
+Copyright (c) 2021 yahya mohammed
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+
+#include "../../Apology/apology.hpp"  // Apology, kraken::err_codes
+#include "common/abs.hpp"             // abs
+#include "common/newton.hpp"          // newton
+#include <algorithm>                  // std::move, std::forward
 #include <initializer_list>
-#include <limits.h>       // LLONG_MAX, LLONG_MIN
-#include "matrix.hpp"     // matrix_<>
+#include <limits.h>                   // LLONG_MAX, LLONG_MIN
+#include "matrix.hpp"                 // matrix_<>
 #include "constants.hpp"
-#include <bit>            // std::countl_zero
+#include <bit>                        // std::countl_zero
 
 template <class Ty>
 struct Min_Max {
@@ -154,14 +180,29 @@ namespace kraken::cal {
     return init;
   }
 
+  /// @brief check if the number is signed or not
+  /// @return int
+  template <class Ty>
+  requires (std::is_integral_v<Ty> || std::is_floating_point_v<Ty>)
+  constexpr inline
+  auto is_neg(Ty val) -> int
+  {
+    if ( val < static_cast<Ty>(0) ) return true;
+    return false;
+  }
+
   /// @brief returns ln of `x`
   template<class Ty>
   requires (std::is_floating_point_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto ln( Ty val )
+  auto ln( Ty val, src_loc src = src_loc::current() )
     -> Ty
   {
+    if ( is_neg(val) ) {
+      Apology( [&] { return error{ src.file_name(), src.function_name()
+                              , err_codes::neg_arg, src.line() }; } );
+    }
     if ( val == 1 ) { return 0; }
     if ( val <= 0 ) { return std::numeric_limits<Ty>::quiet_NaN(); }
     if ( val >= 2 ) { return ln(val/2.) + static_cast<Ty>(0.69314718056); }
@@ -208,8 +249,12 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
       // numerator, denominator
-  auto div(Ty num, Ty denom) -> Division<Ty>
+  auto div(Ty num, Ty denom, src_loc src = src_loc::current()) -> Division<Ty>
   {
+    if ( denom == 0 ) {
+      Apology( [&] { return error{ src.file_name(), src.function_name()
+                                      , err_codes::zero, src.line() }; } );
+    }
     Division<Ty> res{};
     res.quot = num/denom;
     res.rem = num - (res.quot * denom);
@@ -225,7 +270,7 @@ namespace kraken::cal {
       -> Ty
   {
     const std::int64_t temp {static_cast<std::int64_t>(val)};
-    if (val < 0 || val == static_cast<Ty>(temp) ) { return static_cast<Ty> (temp); }
+    if (is_neg(val) || val == static_cast<Ty>(temp) ) { return static_cast<Ty> (temp); }
     return static_cast<Ty> (temp + 1);
   }
 
@@ -246,9 +291,13 @@ namespace kraken::cal {
   requires (std::is_integral_v<Ty> || std::is_floating_point_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto sqrt(const Ty val)
+  auto sqrt(const Ty val, src_loc src = src_loc::current())
       -> Ty
   {
+    if ( is_neg(val) ) {
+      Apology( [&] { return error{ src.file_name(), src.function_name()
+                              , err_codes::neg_arg, src.line() }; } );
+    }
     return kraken::num_methods::newton(
       1., 20, [&val](auto &&x) {
         return (x*x) - val;
@@ -490,6 +539,7 @@ namespace kraken::cal {
 
   /// @brief: finds max in a container
   template<class Cont>
+  requires std::is_class_v<Cont>
   [[nodiscard]]
   inline constexpr
   auto max(const Cont &container)
@@ -567,6 +617,7 @@ namespace kraken::cal {
 
   /// @brief: finds min in a container
   template<class Cont>
+  requires std::is_class_v<Cont>
   [[nodiscard]]
   inline constexpr
   auto min(const Cont &container)
@@ -648,6 +699,7 @@ namespace kraken::cal {
 
   /// @brief: `finds min_max` in a container
   template<class Cont>
+  requires std::is_class_v<Cont>
   [[nodiscard]]
   inline constexpr
   auto min_max(const Cont &container)
@@ -665,10 +717,13 @@ namespace kraken::cal {
   /// @brief returns log base2 of `x`
   template<class Ty>
   [[nodiscard]] constexpr
-  auto log2(Ty val)
+  auto log2(Ty val, src_loc src = src_loc::current())
     -> Ty
   {
-    assert(val > 0ull && "- value must be greater than `0`");
+    if ( is_neg(val) ) {
+      Apology( [&] { return error{ src.file_name(), src.function_name()
+                                  , err_codes::neg_arg, src.line() }; } );
+    }
     constexpr std::size_t sysbits {(std::numeric_limits<unsigned char>::digits * sizeof(void*))};
     if constexpr ( std::is_integral_v<Ty> && sysbits == 64 ) {
       return (static_cast<std::uint64_t>(63ull -
@@ -683,9 +738,13 @@ namespace kraken::cal {
   /// @brief returns log base10 of `x`
   template<class Ty>
   [[nodiscard]] constexpr
-  auto log10(Ty val)
+  auto log10(Ty val, src_loc src = src_loc::current())
     -> Ty
   {
+    if ( is_neg(val) ) {
+      Apology( [&] { return error{ src.file_name(), src.function_name()
+                                    , err_codes::neg_arg, src.line() }; } );
+    }
     if constexpr ( std::is_integral_v<Ty> ) {
       return log2(static_cast<std::uint64_t>(val)) / log2(10ull);
     }
@@ -728,11 +787,17 @@ namespace kraken::cal {
   }
 
   ///@brief gives the `fibonacci` of `x`
-  template <class Ty>
+  template<class Ty>
+  requires std::is_integral_v<Ty>
   [[nodiscard]]
   inline constexpr
-  auto fibonacci(const Ty val) -> std::size_t
+  auto fibonacci(const Ty val, src_loc src = src_loc::current())
+    -> std::size_t
   {
+    if ( is_neg(val) ) {
+      Apology( [&] { return error{ src.file_name(), src.function_name()
+                                  , err_codes::neg_arg, src.line() }; } );
+    }
     if (val == 0) return 0ull;
     else if (val == 1) return 1ull;
     //
@@ -742,13 +807,18 @@ namespace kraken::cal {
                 static_cast<double>(val)) / sqrt_5 ));
   }
 
-  [[nodiscard]]
-  inline constexpr
-  auto factorial(std::size_t val) -> std::size_t
+  template<class Ty>
+  requires std::is_integral_v<Ty>
+  [[nodiscard]] constexpr
+  auto factorial(Ty val, src_loc src = src_loc::current())
+    -> std::size_t
   {
-    if ( val > 20ull ) throw std::out_of_range("- out of range...");
-    if ( val <= 1ull) return 1ull;
-    return val * factorial(val - 1ull);
+    if ( is_neg(val) ) {
+      Apology( [&] { return error{ src.file_name(), src.function_name()
+                                    , err_codes::neg_arg, src.line() }; } );
+    }
+    if ( val <= 1 ) return 1;
+    return val * factorial(val - 1);
   }
 
 } // namespace kraken
