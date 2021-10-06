@@ -107,7 +107,7 @@ And that folder is :-
   > C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\ **(version)** \include
 * just paste the `library` folder inside, then rename `library` into `Kraken`. you're done!
 
-## Check if the library is working by running this code
+## Check if the library is working by running this code:-
 
 * ```cpp
   #include <Kraken/all.hpp>
