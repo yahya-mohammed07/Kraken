@@ -16,7 +16,7 @@
 - [ ] **cosec()**
 - [ ] **cot()**
 - [x] **decimal_places()**
-- [ ] **trunc()**
+- [x] **trunc()**
 - [ ] **mod()**
 - [x] **div()**
 - [x] **min_max()**
