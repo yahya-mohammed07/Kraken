@@ -188,3 +188,11 @@ TEST_CASE("IS_NEG") {
   REQUIRE(cal::is_neg(-0.0435345) == true);
   REQUIRE(cal::is_neg(0.0435345) == false);
 }
+
+TEST_CASE("IS_PRIME") {
+  REQUIRE(cal::is_prime(5) == true);
+  REQUIRE(cal::is_prime(257) == true);
+  REQUIRE(cal::is_prime(7919) == true);
+  REQUIRE(cal::is_prime(115249) == true);
+  REQUIRE(cal::is_prime(115243) == false);
+}
