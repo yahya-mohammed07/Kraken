@@ -43,10 +43,10 @@ struct Min_Max {
   const Ty Max{};
 };
 
-template <class Ty>
+template <class Num, class Demon>
 struct Division {
-  Ty quot{}; // quotient
-  Ty rem{}; // reminder
+  Num quot{}; // quotient
+  Demon rem{}; // reminder
 };
 
 template <typename It> class My_Iota {
@@ -92,7 +92,7 @@ namespace kraken {
     {
       target = std::move(copy_org);
     }
-  } // namespace op
+  } // namespace kraken::op
 }
 
 /// @brief pure calculations for mostly any container or a collection
@@ -200,7 +200,7 @@ namespace kraken::cal {
     -> Ty
   {
     if ( is_neg(val) ) {
-      Apology( [&] { return error{ src.file_name(), src.function_name()
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
                               , err_codes::neg_arg, src.line() }; } );
     }
     if ( val == 1 ) { return 0; }
@@ -245,17 +245,18 @@ namespace kraken::cal {
   }
 
   /// @brief stores division of an `element` of type `Ty`
-  template<class Ty>
+  template<class Num, class Denom>
   [[nodiscard]]
   inline constexpr
       // numerator, denominator
-  auto div(Ty num, Ty denom, src_loc src = src_loc::current()) -> Division<Ty>
+  auto div(Num num, Denom denom, src_loc src = src_loc::current())
+    -> Division<Num, Denom>
   {
     if ( denom == 0 ) {
-      Apology( [&] { return error{ src.file_name(), src.function_name()
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
                                       , err_codes::zero, src.line() }; } );
     }
-    Division<Ty> res{};
+    Division<Num, Denom> res{};
     res.quot = num/denom;
     res.rem = num - (res.quot * denom);
     return res;
@@ -295,7 +296,7 @@ namespace kraken::cal {
       -> Ty
   {
     if ( is_neg(val) ) {
-      Apology( [&] { return error{ src.file_name(), src.function_name()
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
                               , err_codes::neg_arg, src.line() }; } );
     }
     return kraken::num_methods::newton(
@@ -721,7 +722,7 @@ namespace kraken::cal {
     -> Ty
   {
     if ( is_neg(val) ) {
-      Apology( [&] { return error{ src.file_name(), src.function_name()
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
                                   , err_codes::neg_arg, src.line() }; } );
     }
     constexpr std::size_t sysbits {(std::numeric_limits<unsigned char>::digits * sizeof(void*))};
@@ -742,7 +743,7 @@ namespace kraken::cal {
     -> Ty
   {
     if ( is_neg(val) ) {
-      Apology( [&] { return error{ src.file_name(), src.function_name()
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
                                     , err_codes::neg_arg, src.line() }; } );
     }
     if constexpr ( std::is_integral_v<Ty> ) {
@@ -751,8 +752,8 @@ namespace kraken::cal {
     else return ln(val) * constants::log10e_v<Ty>;
   }
 
-  ///@brief computes the greatest common divisor
-  ///@link https://lemire.me/blog/2013/12/26/fastest-way-to-compute-the-greatest-common-divisor/ @endlink
+  /// @brief computes the greatest common divisor
+  /// @link https://lemire.me/blog/2013/12/26/fastest-way-to-compute-the-greatest-common-divisor/ @endlink
   template <class A, class B>
   requires (std::is_integral_v<A> && std::is_integral_v<B>)
   [[nodiscard]]
@@ -774,7 +775,7 @@ namespace kraken::cal {
     return a << shift;
   }
 
-  ///@brief computes the least common multiples
+  /// @brief computes the least common multiples
   template <class A, class B>
   requires (std::is_integral_v<A> && std::is_integral_v<B>)
   [[nodiscard]]
@@ -786,7 +787,8 @@ namespace kraken::cal {
       : 0;
   }
 
-  ///@brief gives the `fibonacci` of `x`
+  /// @brief gives `nth` `fibonacci` number
+  /// @return Ty
   template<class Ty>
   requires std::is_integral_v<Ty>
   [[nodiscard]]
@@ -795,7 +797,7 @@ namespace kraken::cal {
     -> std::size_t
   {
     if ( is_neg(val) ) {
-      Apology( [&] { return error{ src.file_name(), src.function_name()
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
                                   , err_codes::neg_arg, src.line() }; } );
     }
     if (val == 0) return 0ull;
@@ -807,6 +809,8 @@ namespace kraken::cal {
                 static_cast<double>(val)) / sqrt_5 ));
   }
 
+  /// @brief give the factorial of a number
+  /// @return Ty
   template<class Ty>
   requires std::is_integral_v<Ty>
   [[nodiscard]] constexpr
@@ -814,13 +818,29 @@ namespace kraken::cal {
     -> std::size_t
   {
     if ( is_neg(val) ) {
-      Apology( [&] { return error{ src.file_name(), src.function_name()
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
                                     , err_codes::neg_arg, src.line() }; } );
     }
     if ( val <= 1 ) return 1;
     return val * factorial(val - 1);
   }
 
-} // namespace kraken
+  /// @brief checks if the number is prime
+  /// @return bool
+  template <class Ty>
+  requires std::is_integral_v<Ty>
+  [[nodiscard]] inline constexpr
+  auto is_prime( const Ty num )
+    -> bool
+  {
+    if ( num <= 1 ) { return false; } // ... - 1 //
+    if ( num <= 3 ) { return true; } // 2-3 //
+    if ( num % 2 == 0 || num % 3 == 0 ) { return false; } // multiples of 2 or 3
+    for ( std::size_t i { 5 }; (i * i) < num; ++i ) {
+      if ( num % i == 0 || num % (i+2) == 0 ) { return false; }
+    }
+    return true;
+  }
+} // namespace kraken::cal
 
 #endif // NUMERIC_HPP
