@@ -1,7 +1,7 @@
 #ifndef APOLOGY_HPP
 #define APOLOGY_HPP
 
-inline constexpr auto apology_version = "v0.1.5";
+/// @version v0.1.7
 
 /*
 
@@ -34,7 +34,7 @@ SOFTWARE.
 #include <iostream>
 
 
-#if __cplusplus >= 202002L
+#if __cplusplus > 201703L
 
 #if defined(_MSC_VER)
   #include <source_location>
