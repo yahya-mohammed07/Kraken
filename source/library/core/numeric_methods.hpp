@@ -27,7 +27,7 @@ SOFTWARE.
 
 */
 
-
+#include "../../Apology/apology.hpp"
 #include "common/newton.hpp"
 #include "matrix.hpp"
 #include "numeric.hpp"
@@ -100,7 +100,7 @@ namespace kraken::num_methods {
   inline constexpr
   auto least_squares(matrix_<Ty, 1ul, COL> xi,
                       matrix_<Ty, 1ul, COL> yi,
-                        Ty &&x = 1)
+                        Ty x = 1)
       -> Ty
   {
     const auto sum_xi = cal::acc(static_cast<Ty>(0), xi);
@@ -178,10 +178,14 @@ namespace kraken::num_methods {
   requires (std::is_floating_point_v<A> && std::is_floating_point_v<B>)
   [[nodiscard]]
   constexpr
-  auto simpson(const std::size_t n, const A a, const B b, Op op)
+  auto simpson(const std::size_t n, const A a, const B b, Op op,
+                  src_loc src = src_loc::current())
     -> A
   {
-    if ( n & 1 ) { std::cerr << "- `n` must be even!\n"; assert(false); }
+    if ( n & 1 ) {
+        Apology( [&src] { return error{ src.file_name(), src.function_name(),
+                                      err_codes::odd, src.line() }; } );
+    }
     const std::size_t N {n};
     const A h = { ((b-a) / N) };
     //
@@ -190,12 +194,12 @@ namespace kraken::num_methods {
     //
     A m{}, sum{}, result{};
     for ( std::size_t i = 1; i < N; ++i ) {
-      m = static_cast<decltype(A())>(a+(h*i));
+      m = static_cast<A>(a+(h*i));
       //
       if ( i & 1 ) { sum += op(m) * 4; }
       else { sum += op(m) * 2; }
     }
-    result = { ( h / static_cast<decltype(A())>(3.) )
+    result = { ( h / static_cast<A>(3.) )
                     *
               ( f_start + sum + f_end ) };
     return result;
@@ -225,6 +229,53 @@ namespace kraken::num_methods {
     return x;
   }
 
-} // namespace num_methods
+  /**
+   * @brief performes Newton's Forward Difference Formula on two dynamic containers
+   *
+   * @param xi container
+   * @param yi container
+   * @param x [by default it's `1`]
+   * @return Ty
+   */
+  template < class Ty, class Cont>
+  requires std::is_floating_point_v<Ty>
+  [[nodiscard]]
+  auto newtown_forward(const Cont &xi,
+                     Cont &yi, const Ty x = 1)
+    -> Ty
+  {
+    Cont forward { yi[0] }; // holds forward difference of `yi` init = yi[0]
+    std::size_t size = yi.size();
+    //
+    for ( std::size_t i = 0; i < size; ++i ) { // calculates forward difference of `yi`
+      Cont temp{};
+      for ( std::size_t j = 1; j < size; ++j ) {
+        temp.push_back( yi[j-1] = ( yi[j] - yi[j-1] ) );
+        if ( j == yi.size()-1 ) { yi.erase( yi.begin() + size-1 ); }
+      }
+      size = temp.size();
+      forward.push_back( temp[0] );
+    }
+    forward.push_back( yi[0] = yi[1]-yi[0] );
+    const auto cal_u = []( const Ty u, const std::size_t times )
+      -> Ty
+    {
+      Ty result = u;
+      for ( std::size_t i = 1; i < times; ++i ) {
+        result *= u - static_cast<Ty>( i );
+      }
+      return result;
+    };
+    const Ty u { ( x - xi[0] ) / ( xi[1] - xi[0] ) };
+    Ty y { (forward[0]) };
+    //
+    for ( std::size_t i = 1; i < xi.size(); ++i ) {
+      y = y + ( cal_u(u, i) * ( forward[i] ) )
+          /
+      static_cast<Ty>( cal::factorial( i ) );
+    }
+    return y;
+  }
+} // namespace kraken::num_methods
 
 #endif // NUMERIC_METHODS_HPP
