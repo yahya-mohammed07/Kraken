@@ -60,3 +60,11 @@ TEST_CASE("NEWTON'S METHOD") {
   constexpr float expected = 1.4142135623730951;
   REQUIRE(expected == actual);
 }
+
+TEST_CASE("Newton's Forward Difference Formula") {
+  std::vector<float> xi { 1891, 1901, 1911, 1921, 1931 };
+  std::vector<float> yi { 46, 66, 81, 93, 101 };
+  const auto actual = num_methods::newtown_forward(xi, yi, 1895.f);
+  const auto expected { 54.8528f };
+  REQUIRE(expected == actual);
+}
