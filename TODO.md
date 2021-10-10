@@ -28,5 +28,5 @@
 - [x] **factorial()**
 - [x] **fibonacci()**
 - [ ] **LU decomposition()**
-- [ ] **Newton's Forward Difference Formula()**
+- [x] **Newton's Forward Difference Formula()**
 - [ ] **Lagrange Interpolation()**
