@@ -1,7 +1,7 @@
 #ifndef APOLOGY_HPP
 #define APOLOGY_HPP
 
-/// @version v0.1.7
+/// @version v0.2.1
 
 /*
 
@@ -46,10 +46,14 @@ SOFTWARE.
   using src_loc = const std::experimental::source_location;
 #endif
 
+#endif // cplusplus standart must be 20
+
 namespace kraken::err_codes {
   constexpr int big_arg {99};
   constexpr int neg_arg {-1};
   constexpr int zero {0};
+  constexpr int even {44};
+  constexpr int odd {33};
 }
 
 using namespace kraken;
@@ -64,9 +68,11 @@ struct error {
 inline const
 std::unordered_map<int, std::string_view> apologies
 {
-  { err_codes::neg_arg, " -A negative number was given." },
-  { err_codes::big_arg,  " -A too big number was given." },
+  { err_codes::neg_arg, " -A negative value was given." },
+  { err_codes::big_arg,  " -A too big value was given." },
   { err_codes::zero,  " -A zero value was given." },
+  { err_codes::even,  " -An even value was given." },
+  { err_codes::odd,  " -An odd value was given." },
 };
 
 constexpr
@@ -85,7 +91,5 @@ auto Apology = [](auto apology)
             << apologies.at(err_code) << "` ]\n";
   throw(1);
 };
-
-#endif
 
 #endif // APOLOGY_HPP
