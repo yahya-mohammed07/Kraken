@@ -26,15 +26,15 @@ TEST_CASE("CHECK CALCULATE") {
 }
 
 TEST_CASE("LN(X)") {
-  REQUIRE(cal::ln(constants::e_v<float>) == 1.f);
-  REQUIRE(cal::ln(4.f) == 1.38629436112f);
-  REQUIRE(cal::ln(7.f) == 1.94591014906f);
+  REQUIRE( cal::ln(constants::e_v<float>) == 1. );
+  REQUIRE( cal::equal( cal::ln(4.), 1.38629436112 ) == true );
+  REQUIRE( cal::equal( cal::ln(7.), 1.94591014906, 0.0000001 ) == true );
 }
 
 TEST_CASE("SQRT(x)") {
   REQUIRE(cal::sqrt(4) == 2);
   REQUIRE(cal::sqrt(25) == 5);
-  REQUIRE(cal::sqrt(3.f) == 1.73205080757f);
+  REQUIRE(cal::equal(cal::sqrt(3.), 1.73205080757, 0.000000000001));
 }
 
 TEST_CASE("SQR(x)") {
@@ -48,11 +48,11 @@ TEST_CASE("BASE TO POWER OF POSITIVE INTEGER") {
 }
 
 TEST_CASE("BASE TO POWER OF NEGATIVE-INTEGER") {
-  REQUIRE(cal::pow(3.f, -4) == 0.01234567901f);
+  REQUIRE( cal::equal(cal::pow(3., -4), 0.01234567901, 0.000000001) );
 }
 
 TEST_CASE("BASE TO POWER OF FLOATING-POINT") {
-  REQUIRE( cal::pow(3.f, 1.5f) == 5.19615268707275390625f);
+  REQUIRE( cal::equal(cal::pow(3., 1.5), 5.19615242271, 0.000000000001) );
 }
 
 TEST_CASE("CONTAINER TO POWER") {
@@ -65,7 +65,7 @@ TEST_CASE("CONTAINER TO POWER") {
 TEST_CASE("LOG BASE 2 OF X") {
   REQUIRE(cal::log2(32) == 5u);
   REQUIRE(cal::log2(82) == 6u);
-  REQUIRE(cal::log2(32.f) == 5.f);
+  REQUIRE(cal::approx_equal(cal::log2(32.), 5., 0.1));
 }
 
 TEST_CASE("LOG BASE 10 OF X") {
@@ -153,7 +153,7 @@ TEST_CASE("ROUND") {
 
 TEST_CASE("HYPOT") {
   REQUIRE(cal::hypot(4, 3) == 5);
-  REQUIRE(cal::hypot(2.f, 3.f) == 3.605551242828369140625f);
+  REQUIRE(cal::approx_equal(cal::hypot(2., 3.) , 3.605, 0.001));
   REQUIRE(cal::hypot( {2,3,4,5} ) == 7 );
 }
 
@@ -195,4 +195,18 @@ TEST_CASE("IS_PRIME") {
   REQUIRE(cal::is_prime(7919) == true);
   REQUIRE(cal::is_prime(115249) == true);
   REQUIRE(cal::is_prime(115243) == false);
+}
+
+TEST_CASE("COMPARE FLOATING POINT NUMBERS") {
+  REQUIRE(cal::equal((.1+.2), .3) == true);
+  REQUIRE(cal::equal(0.000000, 0.) == true);
+  REQUIRE(cal::approx_equal( constants::π, 3.14, .01 ) == true);
+  ///
+  REQUIRE(cal::less_than(-.01, .01) == true);
+  REQUIRE(cal::less_or_equal(.0000000001, .01) == true);
+  REQUIRE(cal::less_or_equal(.01, .01) == true);
+  ///
+  REQUIRE(cal::greater_than(.34, .01) == true);
+  REQUIRE(cal::greater_or_equal(.34, .01) == true);
+  REQUIRE(cal::greater_or_equal(.01, .01) == true);
 }
