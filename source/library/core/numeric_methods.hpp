@@ -29,7 +29,7 @@ SOFTWARE.
 
 #include "../../Apology/apology.hpp"
 #include "common/newton.hpp"
-#include "common/float_comp.hpp"
+#include "common/comp_decimal_point_nums.hpp"      // comparing numbers with decimal point
 #include "matrix.hpp"
 #include "numeric.hpp"
 
