@@ -29,6 +29,7 @@ SOFTWARE.
 
 #include "../../Apology/apology.hpp"
 #include "common/newton.hpp"
+#include "common/float_comp.hpp"
 #include "matrix.hpp"
 #include "numeric.hpp"
 
@@ -48,7 +49,7 @@ namespace kraken::num_methods {
     for (std::size_t i = 0; i < ROW; ++i ) {
       for ( std::size_t j = 0; j < COL; ++j) {
         if ( i > j ) {
-          if ( matrix.at(i,j) == 0.0 ) gauss_sliminated = true;
+          if ( cal::equal(matrix.at( i,j ), static_cast<Ty>(0.)) ) gauss_sliminated = true;
         }
       }
     }
