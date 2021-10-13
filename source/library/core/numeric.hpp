@@ -29,21 +29,14 @@ SOFTWARE.
 
 #include "../../Apology/apology.hpp"  // Apology, kraken::err_codes
 #include "common/abs.hpp"             // abs
-#include "common/float_comp.hpp"      // float comparing
+#include "common/comp_decimal_point_nums.hpp"      // comparing numbers with decimal point
 #include "common/max_min.hpp"         // basic max & min
 #include "common/newton.hpp"          // newton
 #include <algorithm>                  // std::move, std::forward
-#include <initializer_list>
 #include <limits.h>                   // LLONG_MAX, LLONG_MIN
 #include "matrix.hpp"                 // matrix_<>
 #include "constants.hpp"
 #include <bit>                        // std::countl_zero
-
-template <class Ty>
-struct Min_Max {
-  const Ty Min{};
-  const Ty Max{};
-};
 
 template <class Num, class Demon>
 struct Division {
@@ -185,11 +178,13 @@ namespace kraken::cal {
   /// @brief check if the number is signed or not
   /// @return int
   template <class Ty>
-  requires (std::is_integral_v<Ty> || std::is_floating_point_v<Ty>)
   constexpr inline
   auto is_neg(Ty val) -> int
   {
-    if ( val < static_cast<Ty>(0) ) return true;
+    if constexpr ( std::is_floating_point_v<Ty> ) {
+      { return less_than(val, static_cast<Ty>(0.)); }
+    } else if constexpr ( std::is_integral_v<Ty> )
+      { if ( val < static_cast<Ty>(0) ) return true; }
     return false;
   }
 
@@ -366,16 +361,16 @@ namespace kraken::cal {
   {
     //check if float fits into integer
     if ( std::numeric_limits<std::uint64_t>::digits < std::numeric_limits<Ty>::digits) {
-        // check if float is smaller than max std::uint64_t
-        if( (val < static_cast<Ty>( std::numeric_limits<std::uint64_t>::max())) &&
-            (val > static_cast<Ty>( std::numeric_limits<std::uint64_t>::min())) ) {
-          return static_cast<std::uint64_t>(val); //safe to cast
-        } else {
-          return std::numeric_limits<std::uint64_t>::max();
-        }
+      // check if float is smaller than max std::uint64_t
+      if( (val < static_cast<Ty>( std::numeric_limits<std::uint64_t>::max())) &&
+          (val > static_cast<Ty>( std::numeric_limits<std::uint64_t>::min())) ) {
+        return static_cast<std::uint64_t>(val); //safe to cast
+      } else {
+        return std::numeric_limits<std::uint64_t>::max();
+      }
     } else {
-        //It is safe to cast
-        return static_cast<std::uint64_t>(val);
+      //It is safe to cast
+      return static_cast<std::uint64_t>(val);
     }
   }
 
@@ -483,214 +478,6 @@ namespace kraken::cal {
       sum += (i*i);
     }
     return sqrt(sum);
-  }
-
-  /// @brief calculates max in a init-list
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto max( std::initializer_list<Ty>&& args)
-      -> Ty
-  {
-    Ty high {*args.begin()};
-    for ( auto && i : args) {
-      if ( i > high ) { high = i; }
-    }
-    return high;
-  }
-
-  /// @brief calculates max in a init-list
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto max(const std::initializer_list<Ty>& args)
-      -> Ty
-  {
-    Ty high {*args.begin()};
-    for (const auto & i : args) {
-      if ( i > high ) { high = i; }
-    }
-    return high;
-  }
-
-  /**
-   * @brief calculate `max` with arbitrary numbers
-   * @param  a...  A thing of arbitrary type
-   * @return Ty
-   */
-  template<class First, class Second, class ...Args>
-  [[nodiscard]]
-  inline constexpr
-  auto max(First a, Second b,
-            Args... args)
-     -> First
-  {
-    if constexpr ( sizeof...(args) == 0 ) {
-      return a > b ? a : b;
-    } else {
-      return max(max(a,b), args...);
-    }
-  }
-
-  /// @brief: finds max in a container
-  template<class Cont>
-  requires std::is_class_v<Cont>
-  [[nodiscard]]
-  inline constexpr
-  auto max(const Cont &container)
-    -> auto
-  {
-    auto high {container[0]};
-    for (auto &i : container) {
-      if ( i > high ) { high = i; }
-    }
-    return high;
-  }
-
-  /// @brief calculates min in a init-list
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto min( std::initializer_list<Ty>&& args)
-      -> Ty
-  {
-    Ty low {*args.begin()};
-    for ( auto && i : args) {
-      if ( i < low ) { low = i; }
-    }
-    return low;
-  }
-
-  /// @brief calculates min in a init-list
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto min(const std::initializer_list<Ty>& args)
-      -> Ty
-  {
-    Ty low {*args.begin()};
-    for (const auto & i : args) {
-      if ( i < low ) { low = i; }
-    }
-    return low;
-  }
-
-  /**
-   * @brief calculate `min` with arbitrary numbers
-   * @param  a...  A thing of arbitrary number of arguments
-   * @return Ty
-   */
-  template<class First, class Second, class ...Args>
-  [[nodiscard]]
-  inline constexpr
-  auto min(First a, Second b,
-                Args... args)
-     -> First
-  {
-    if constexpr ( sizeof...(args) == 0 ) {
-      return a > b ? b : a;
-    } else {
-      return min(min(a,b), args...);
-    }
-  }
-
-  /// @brief: finds min in a container
-  template<class Cont>
-  requires std::is_class_v<Cont>
-  [[nodiscard]]
-  inline constexpr
-  auto min(const Cont &container)
-    -> auto
-  {
-    auto low {container[0]};
-    for (auto &i : container) {
-      if ( i < low ) { low = i; }
-    }
-    return low;
-  }
-
-  /**
-   * @brief calculate `min_max` with two numbers
-   * @param  a  A thing of arbitrary type.
-   * @param  b  Another thing of arbitrary type.
-   * @return Min_Max
-   */
-  template<class T>
-  requires std::is_floating_point_v<T> || std::is_integral_v<T>
-  [[nodiscard]]
-  inline constexpr
-  auto min_max(const T a, const T b)
-      -> Min_Max<T>
-  {
-    if ( a > b) {
-      return { b, a };
-    }
-    return { a, b };
-  }
-
-
-  /// @brief calculates `min_max` in a init-list
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto min_max(const std::initializer_list<Ty>& args)
-      -> Min_Max<Ty>
-  {
-    Ty low {*args.begin()};
-    Ty high {*args.begin()};
-    for (const auto & i : args) {
-      if ( i < low ) { low = i; }
-      if ( i > high ) { high = i; }
-    }
-    return {low, high};
-  }
-
-  /// @brief calculates `min_max` in a init-list
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto min_max(std::initializer_list<Ty> &&args)
-      -> Min_Max<Ty>
-  {
-    Ty low {*args.begin()};
-    Ty high {*args.begin()};
-    for ( auto &&i : args) {
-      if ( i < low ) { low = i; }
-      if ( i > high ) { high = i; }
-    }
-    return {low, high};
-  }
-
-  /**
-   * @brief calculate `min_max` with arbitrary numbers
-   * @param  a...  A thing of arbitrary number of arguments
-   * @return Min_Max
-   */
-  template<class First, class Second, class ...Args>
-  [[nodiscard]]
-  inline constexpr
-  auto min_max(First a, Second b,
-                Args ...args)
-     -> Min_Max<First>
-  {
-    return { min({a,b,args...}) , max({a,b,args...}) };
-  }
-
-  /// @brief: `finds min_max` in a container
-  template<class Cont>
-  requires std::is_class_v<Cont>
-  [[nodiscard]]
-  inline constexpr
-  auto min_max(const Cont &container)
-    -> Min_Max<decltype(container[0])>
-  {
-    auto low {container[0]};
-    auto high {container[0]};
-    for (auto &&i : container) {
-      if ( i < low ) { low = i; }
-      if ( i > high ) { high = i; }
-    }
-    return {low, high};
   }
 
   /// @brief returns log base2 of `x`
