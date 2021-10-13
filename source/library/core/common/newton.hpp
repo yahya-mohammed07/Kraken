@@ -28,8 +28,7 @@ SOFTWARE.
 */
 
 
-#include "abs.hpp" // abs
-#include <limits>
+#include "float_comp.hpp"
 
 namespace kraken::num_methods {
     template<class A, class Op1, class Op2>
@@ -41,15 +40,17 @@ namespace kraken::num_methods {
   {
     A x0 {init}; // initial guess
     A x1 {}; // initial guess
-    const double tolerance {1e-7}; // 7 digit accuracy is desired
+    constexpr A tolerance {1e-7}; // 7 digit accuracy is desired
+    constexpr A eps = std::numeric_limits<A>::epsilon();
     for ( std::size_t i {1}; i < max_it; ++i ) {
       A y  {fx(x0)};
       A y_ {static_cast<A>(fx_(x0))};
-      if ( kraken::cal::abs(y_) < std::numeric_limits<double>::epsilon() ) {
+      if ( cal::less_than(y_, eps, tolerance) ) {
         break;
       }
       x1 = x0-(y/y_); // Do Newton's computation
-      if ( kraken::cal::abs(x1-x0) <= tolerance ) {
+      if ( cal::less_or_equal(cal::abs(x1-x0), tolerance, eps) )
+      {
         // Stop when the result is within the desired tolerance
         break;
       }
