@@ -197,16 +197,32 @@ TEST_CASE("IS_PRIME") {
   REQUIRE(cal::is_prime(115243) == false);
 }
 
-TEST_CASE("COMPARE FLOATING POINT NUMBERS") {
+TEST_CASE("COMPARING NUMBERS WITH DECIMAL POINT") {
+  REQUIRE(cal::equal((.1+.2), .399) == false);
+  REQUIRE(cal::equal((.1f+.2f), .399f) == false);
   REQUIRE(cal::equal((.1+.2), .3) == true);
+  REQUIRE(cal::equal((.1f+.2f), .3f) == true);
   REQUIRE(cal::equal(0.000000, 0.) == true);
+  REQUIRE(cal::equal(0.000000f, 0.f) == true);
   REQUIRE(cal::approx_equal( constants::π, 3.14, .01 ) == true);
+  REQUIRE(cal::approx_equal( constants::π_v<float>, 3.14f, .01f ) == true);
   ///
   REQUIRE(cal::less_than(-.01, .01) == true);
+  REQUIRE(cal::less_than(.01, .01) == false);
+  REQUIRE(cal::less_than(-.01f, .01f) == true);
   REQUIRE(cal::less_or_equal(.0000000001, .01) == true);
+  REQUIRE(cal::less_or_equal(.0000000001f, .01f) == true);
   REQUIRE(cal::less_or_equal(.01, .01) == true);
+  REQUIRE(cal::less_or_equal(.01f, .01f) == true);
   ///
+  REQUIRE(cal::greater_than(.0, .01) == false);
+  REQUIRE(cal::greater_than(.0f, .01f) == false);
   REQUIRE(cal::greater_than(.34, .01) == true);
+  REQUIRE(cal::greater_than(.34f, .01f) == true);
   REQUIRE(cal::greater_or_equal(.34, .01) == true);
+  REQUIRE(cal::greater_or_equal(.34f, .01f) == true);
   REQUIRE(cal::greater_or_equal(.01, .01) == true);
+  REQUIRE(cal::greater_or_equal(.01f, .01f) == true);
+  REQUIRE(cal::greater_or_equal(.01, .45) == false);
+  REQUIRE(cal::greater_or_equal(.01f, .45f) == false);
 }
