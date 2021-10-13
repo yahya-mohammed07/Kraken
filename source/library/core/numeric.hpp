@@ -29,6 +29,8 @@ SOFTWARE.
 
 #include "../../Apology/apology.hpp"  // Apology, kraken::err_codes
 #include "common/abs.hpp"             // abs
+#include "common/float_comp.hpp"      // float comparing
+#include "common/max_min.hpp"         // basic max & min
 #include "common/newton.hpp"          // newton
 #include <algorithm>                  // std::move, std::forward
 #include <initializer_list>
@@ -203,10 +205,16 @@ namespace kraken::cal {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                               , err_codes::neg_arg, src.line() }; } );
     }
-    if ( val == 1 ) { return 0; }
-    if ( val <= 0 ) { return std::numeric_limits<Ty>::quiet_NaN(); }
-    if ( val >= 2 ) { return ln(val/2.) + static_cast<Ty>(0.69314718056); }
-    if ( val >= 1024) { return ln(val/1024.) + static_cast<Ty>(6.9314718056); }
+    if ( equal(val, static_cast<Ty>(1)) ) { return static_cast<Ty>(0.); }
+    if ( less_or_equal(val, static_cast<Ty>(0.)) ) {
+      return std::numeric_limits<Ty>::quiet_NaN();
+    }
+    if ( greater_or_equal(val, static_cast<Ty>(2.)) ) {
+      return ln(val/2.) + static_cast<Ty>(0.69314718056);
+    }
+    if ( greater_or_equal(val, static_cast<Ty>(1024.)) ) {
+      return ln(val/1024.) + static_cast<Ty>(6.9314718056);
+    }
     val -= 1;
     Ty res{0.};
     Ty x_pow {val};
@@ -221,7 +229,6 @@ namespace kraken::cal {
     return res;
   }
 
-
   /**
    * @brief calculates `floor` of float values
    * @return Ty
@@ -235,13 +242,15 @@ namespace kraken::cal {
   {
     constexpr Ty max_llong {static_cast<Ty>(LLONG_MAX)};
     constexpr Ty min_llong {static_cast<Ty>(LLONG_MIN)};
-    if ( val >= max_llong || val <= min_llong || val == 0 ) {
+    if ( greater_or_equal(val, max_llong) || less_or_equal(val, min_llong)
+            || equal(val, static_cast<Ty>(0.) ) )
+    {
       return val;
     }
-    const long long temp_n {static_cast<long long>(val)};
+    const auto temp_n {static_cast<long long>(val)};
     const Ty temp_d {static_cast<Ty>(temp_n)};
-    if (temp_d == val || val >= 0) { return temp_d; }
-    else {return  (temp_d) - static_cast<Ty>(1);}
+    if (equal(temp_d, val) || greater_or_equal(val, static_cast<Ty>(0.))) { return temp_d; }
+    else {return  (temp_d) - static_cast<Ty>(1.);}
   }
 
   /// @brief stores division of an `element` of type `Ty`
@@ -271,7 +280,7 @@ namespace kraken::cal {
       -> Ty
   {
     const std::int64_t temp {static_cast<std::int64_t>(val)};
-    if (is_neg(val) || val == static_cast<Ty>(temp) ) { return static_cast<Ty> (temp); }
+    if (is_neg(val) || equal(val, static_cast<Ty>(temp)) ) { return static_cast<Ty> (temp); }
     return static_cast<Ty> (temp + 1);
   }
 
@@ -332,7 +341,8 @@ namespace kraken::cal {
     auto temp {val - floor(val)};
     Ty factor {10};
     auto eps {std::numeric_limits<Ty>::epsilon() * temp};
-    while ((temp > eps && temp < (1 - eps)) && dec_count < std::numeric_limits<Ty>::max_digits10)
+    while ((greater_than(temp, eps) && less_than(temp, (static_cast<Ty>(1.)-eps)))
+                  && dec_count < std::numeric_limits<Ty>::max_digits10)
     {
       temp = val * factor;
       temp -= floor(temp);
@@ -475,22 +485,6 @@ namespace kraken::cal {
     return sqrt(sum);
   }
 
-  /**
-   * @brief calculate `max` with two numbers
-   * @param  a  A thing of arbitrary type.
-   * @param  b  Another thing of arbitrary type.
-   * @return Ty
-   */
-  template<class T>
-  requires std::is_floating_point_v<T> || std::is_integral_v<T>
-  [[nodiscard]]
-  inline constexpr
-  auto max(const T a, const T b)
-      -> T
-  {
-    return a > b ? a : b;
-  }
-
   /// @brief calculates max in a init-list
   template<class Ty>
   [[nodiscard]]
@@ -551,22 +545,6 @@ namespace kraken::cal {
       if ( i > high ) { high = i; }
     }
     return high;
-  }
-
-  /**
-   * @brief calculate `min` with two numbers
-   * @param  a  A thing of arbitrary type.
-   * @param  b  Another thing of arbitrary type.
-   * @return Ty
-   */
-  template<class T>
-  requires std::is_floating_point_v<T> || std::is_integral_v<T>
-  [[nodiscard]]
-  inline constexpr
-  auto min(const T a, const T b)
-      -> T
-  {
-    return a > b ? b : a;
   }
 
   /// @brief calculates min in a init-list
