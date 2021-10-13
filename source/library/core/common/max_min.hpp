@@ -27,6 +27,15 @@ SOFTWARE.
 
 */
 
+#include <type_traits>
+#include <initializer_list>
+
+template <class Ty>
+struct Min_Max {
+  const Ty Min{};
+  const Ty Max{};
+};
+
 namespace kraken::cal {
 
   /**
@@ -57,6 +66,215 @@ namespace kraken::cal {
       -> const T
   {
     return a > b ? b : a;
+  }
+
+
+  /// @brief calculates max in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto max( std::initializer_list<Ty>&& args)
+      -> Ty
+  {
+    Ty high {*args.begin()};
+    for ( auto && i : args) {
+      if ( i > high ) { high = i; }
+    }
+    return high;
+  }
+
+  /// @brief calculates max in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto max(const std::initializer_list<Ty>& args)
+      -> Ty
+  {
+    Ty high {*args.begin()};
+    for (const auto & i : args) {
+      if ( i > high ) { high = i; }
+    }
+    return high;
+  }
+
+  /**
+   * @brief calculate `max` with arbitrary numbers
+   * @param  a...  A thing of arbitrary type
+   * @return Ty
+   */
+  template<class First, class Second, class ...Args>
+  [[nodiscard]]
+  inline constexpr
+  auto max(First a, Second b,
+            Args... args)
+     -> First
+  {
+    if constexpr ( sizeof...(args) == 0 ) {
+      return a > b ? a : b;
+    } else {
+      return max(max(a,b), args...);
+    }
+  }
+
+  /// @brief: finds max in a container
+  template<class Cont>
+  requires std::is_class_v<Cont>
+  [[nodiscard]]
+  inline constexpr
+  auto max(const Cont &container)
+    -> auto
+  {
+    auto high {container[0]};
+    for (auto &i : container) {
+      if ( i > high ) { high = i; }
+    }
+    return high;
+  }
+
+  /// @brief calculates min in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto min( std::initializer_list<Ty>&& args)
+      -> Ty
+  {
+    Ty low {*args.begin()};
+    for ( auto && i : args) {
+      if ( i < low ) { low = i; }
+    }
+    return low;
+  }
+
+  /// @brief calculates min in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto min(const std::initializer_list<Ty>& args)
+      -> Ty
+  {
+    Ty low {*args.begin()};
+    for (const auto & i : args) {
+      if ( i < low ) { low = i; }
+    }
+    return low;
+  }
+
+  /**
+   * @brief calculate `min` with arbitrary numbers
+   * @param  a...  A thing of arbitrary number of arguments
+   * @return Ty
+   */
+  template<class First, class Second, class ...Args>
+  [[nodiscard]]
+  inline constexpr
+  auto min(First a, Second b,
+                Args... args)
+     -> First
+  {
+    if constexpr ( sizeof...(args) == 0 ) {
+      return a > b ? b : a;
+    } else {
+      return min(min(a,b), args...);
+    }
+  }
+
+  /// @brief: finds min in a container
+  template<class Cont>
+  requires std::is_class_v<Cont>
+  [[nodiscard]]
+  inline constexpr
+  auto min(const Cont &container)
+    -> auto
+  {
+    auto low {container[0]};
+    for (auto &i : container) {
+      if ( i < low ) { low = i; }
+    }
+    return low;
+  }
+
+  /**
+   * @brief calculate `min_max` with two numbers
+   * @param  a  A thing of arbitrary type.
+   * @param  b  Another thing of arbitrary type.
+   * @return Min_Max
+   */
+  template<class T>
+  requires std::is_floating_point_v<T> || std::is_integral_v<T>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(const T a, const T b)
+      -> Min_Max<T>
+  {
+    if ( a > b) {
+      return { b, a };
+    }
+    return { a, b };
+  }
+
+
+  /// @brief calculates `min_max` in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(const std::initializer_list<Ty>& args)
+      -> Min_Max<Ty>
+  {
+    Ty low {*args.begin()};
+    Ty high {*args.begin()};
+    for (const auto & i : args) {
+      if ( i < low ) { low = i; }
+      if ( i > high ) { high = i; }
+    }
+    return {low, high};
+  }
+
+  /// @brief calculates `min_max` in a init-list
+  template<class Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(std::initializer_list<Ty> &&args)
+      -> Min_Max<Ty>
+  {
+    Ty low {*args.begin()};
+    Ty high {*args.begin()};
+    for ( auto &&i : args) {
+      if ( i < low ) { low = i; }
+      if ( i > high ) { high = i; }
+    }
+    return {low, high};
+  }
+
+  /**
+   * @brief calculate `min_max` with arbitrary numbers
+   * @param  a...  A thing of arbitrary number of arguments
+   * @return Min_Max
+   */
+  template<class First, class Second, class ...Args>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(First a, Second b,
+                Args ...args)
+     -> Min_Max<First>
+  {
+    return { min({a,b,args...}) , max({a,b,args...}) };
+  }
+
+  /// @brief: `finds min_max` in a container
+  template<class Cont>
+  requires std::is_class_v<Cont>
+  [[nodiscard]]
+  inline constexpr
+  auto min_max(const Cont &container)
+    -> Min_Max<decltype(container[0])>
+  {
+    auto low {container[0]};
+    auto high {container[0]};
+    for (auto &&i : container) {
+      if ( i < low ) { low = i; }
+      if ( i > high ) { high = i; }
+    }
+    return {low, high};
   }
 
 }
