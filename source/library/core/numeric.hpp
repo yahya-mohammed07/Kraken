@@ -27,7 +27,7 @@ SOFTWARE.
 
 */
 
-#include "../../Apology/apology.hpp"  // Apology, kraken::err_codes
+#include "common/Apology/apology.hpp"  // Apology, kraken::err_codes
 #include "common/abs.hpp"             // abs
 #include "common/comp_decimal_point_nums.hpp"      // comparing numbers with decimal point
 #include "common/max_min.hpp"         // basic max & min
