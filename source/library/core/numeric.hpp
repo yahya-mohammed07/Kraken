@@ -196,10 +196,12 @@ namespace kraken::cal {
   auto ln( Ty val, src_loc src = src_loc::current() )
     -> Ty
   {
+  #ifdef APOLOGY
     if ( is_neg(val) ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                               , err_codes::neg_arg, src.line() }; } );
     }
+  #endif
     if ( equal(val, static_cast<Ty>(1)) ) { return static_cast<Ty>(0.); }
     if ( less_or_equal(val, static_cast<Ty>(0.)) ) {
       return std::numeric_limits<Ty>::quiet_NaN();
@@ -256,10 +258,12 @@ namespace kraken::cal {
   auto div(Num num, Denom denom, src_loc src = src_loc::current())
     -> Division<Num, Denom>
   {
+  #ifdef APOLOGY
     if ( denom == 0 ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                                       , err_codes::zero, src.line() }; } );
     }
+  #endif
     Division<Num, Denom> res{};
     res.quot = num/denom;
     res.rem = num - (res.quot * denom);
@@ -299,10 +303,12 @@ namespace kraken::cal {
   auto sqrt(const Ty val, src_loc src = src_loc::current())
       -> Ty
   {
+  #ifdef APOLOGY
     if ( is_neg(val) ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                               , err_codes::neg_arg, src.line() }; } );
     }
+  #endif
     return kraken::num_methods::newton(
       1., 20, [&val](auto &&x) {
         return (x*x) - val;
@@ -486,10 +492,12 @@ namespace kraken::cal {
   auto log2(Ty val, src_loc src = src_loc::current())
     -> Ty
   {
+  #ifdef APOLOGY
     if ( is_neg(val) ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                                   , err_codes::neg_arg, src.line() }; } );
     }
+  #endif
     constexpr std::size_t sysbits {(std::numeric_limits<unsigned char>::digits * sizeof(void*))};
     if constexpr ( std::is_integral_v<Ty> && sysbits == 64 ) {
       return (static_cast<std::uint64_t>(63ull -
@@ -507,10 +515,12 @@ namespace kraken::cal {
   auto log10(Ty val, src_loc src = src_loc::current())
     -> Ty
   {
+  #ifdef APOLOGY
     if ( is_neg(val) ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                                     , err_codes::neg_arg, src.line() }; } );
     }
+  #endif
     if constexpr ( std::is_integral_v<Ty> ) {
       return log2(static_cast<std::uint64_t>(val)) / log2(10ull);
     }
@@ -561,10 +571,12 @@ namespace kraken::cal {
   auto fibonacci(const Ty val, src_loc src = src_loc::current())
     -> std::size_t
   {
+  #ifdef APOLOGY
     if ( is_neg(val) ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                                   , err_codes::neg_arg, src.line() }; } );
     }
+  #endif
     if (val == 0) return 0ull;
     else if (val == 1) return 1ull;
     //
@@ -582,10 +594,12 @@ namespace kraken::cal {
   auto factorial(Ty val, src_loc src = src_loc::current())
     -> std::size_t
   {
+  #ifdef APOLOGY
     if ( is_neg(val) ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
                                     , err_codes::neg_arg, src.line() }; } );
     }
+  #endif
     if ( val <= 1 ) return 1;
     return val * factorial(val - 1);
   }

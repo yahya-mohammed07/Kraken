@@ -183,10 +183,12 @@ namespace kraken::num_methods {
                   src_loc src = src_loc::current())
     -> A
   {
+    #ifdef APOLOGY
     if ( n & 1 ) {
         Apology( [&src] { return error{ src.file_name(), src.function_name(),
                                       err_codes::odd, src.line() }; } );
     }
+    #endif
     const std::size_t N {n};
     const A h = { ((b-a) / N) };
     //
