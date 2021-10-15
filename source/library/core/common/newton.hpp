@@ -28,7 +28,7 @@ SOFTWARE.
 */
 
 
-#include "common/comp_decimal_point_nums.hpp"    // comparing numbers with decimal point
+#include "comp_decimal_point_nums.hpp"    // comparing numbers with decimal point
 
 namespace kraken::num_methods {
     template<class A, class Op1, class Op2>
