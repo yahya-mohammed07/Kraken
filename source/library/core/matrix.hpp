@@ -32,7 +32,6 @@ SOFTWARE.
 #include <array>              // std::array
 #include <initializer_list>
 #include <cstdio>             // std::puts, std::printf
-#include <iostream>           // std::cout
 #include <cassert>            // assert
 #include <type_traits>
 #include <ostream>            // std::ostream
@@ -215,23 +214,6 @@ public:
     return m_data[(row * COL) + col];
   }
 
-  /**
-   * @brief print matrix items, prints with %.11f if T is float
-   * @return nothing
-   */
-  constexpr
-  auto print() const
-      -> void
-  {
-    for (std::size_t count{}; auto &&i : *this) {
-      if (count == COL) { std::printf("%c", '\n'); count={}; }
-      if constexpr ( std::is_floating_point_v<T> ) {
-        std::printf("%.11f ", i);
-      }
-      else std::cout << i << ' ';
-      ++count;
-    }
-  }
   /**
    * @brief swaps row in given matrix
    * @param start which row
@@ -638,7 +620,7 @@ public:
    * @param i The index of the element for which data should be accessed.
    * @return constexpr T&
    */
-  constexpr T& operator[](const std::size_t& i) noexcept
+  constexpr T& operator[](const std::size_t i) noexcept
   {
     return m_data[i];
   }
@@ -649,28 +631,7 @@ public:
    * @param i The index of the element for which data should be accessed.
    * @return constexpr T&
    */
-  constexpr T& operator[](std::size_t&& i) noexcept
-  {
-    return m_data[i];
-  }
-
-  /**
-   * @brief element access
-   * @brief Subscript access to the data contained in the %matrix
-   * @param i The index of the element for which data should be accessed.
-   * @return constexpr T&
-   */
-  constexpr T operator[](const std::size_t& i) const noexcept
-  {
-    return m_data[i];
-  }
-  /**
-   * @brief element access
-   * @brief Subscript access to the data contained in the %matrix
-   * @param i The index of the element for which data should be accessed.
-   * @return constexpr T&
-   */
-  constexpr T operator[](std::size_t&& i) const noexcept
+  constexpr T operator[](const std::size_t i) const noexcept
   {
     return m_data[i];
   }
