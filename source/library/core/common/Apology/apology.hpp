@@ -1,7 +1,7 @@
 #ifndef APOLOGY_HPP
 #define APOLOGY_HPP
 
-/// @version v0.2.1
+/// @version v0.3.6
 
 /*
 
@@ -29,10 +29,6 @@ SOFTWARE.
 
 */
 
-#include <string_view>
-#include <unordered_map>
-#include <iostream>
-
 
 #if __cplusplus > 201703L
 
@@ -56,6 +52,12 @@ namespace kraken::err_codes {
   constexpr int odd {33};
 }
 
+#ifdef APOLOGY
+
+#include <string_view>
+#include <unordered_map>
+#include <iostream>
+
 using namespace kraken;
 
 struct error {
@@ -64,6 +66,7 @@ struct error {
   int err_code{};
   std::uint32_t line{};
 };
+
 
 inline const
 std::unordered_map<int, std::string_view> apologies
@@ -91,5 +94,7 @@ auto Apology = [](auto apology)
             << apologies.at(err_code) << "` ]\n";
   throw(1);
 };
+
+#endif
 
 #endif // APOLOGY_HPP
