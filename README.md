@@ -125,7 +125,7 @@ And that folder is :-
 ## in case if you want to use the library with `Apology` system:-
 
 * ```cpp
-  #define APOLOGY   // define this macro before include `Kraken`  
+  #define APOLOGY   // define this macro before including `Kraken`  
   #include <Kraken/all.hpp>
   #include <iostream>
 
