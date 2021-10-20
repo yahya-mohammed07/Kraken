@@ -48,7 +48,7 @@ template <class T, std::size_t ROW, std::size_t COL>
   requires (!std::is_class_v<T> && !std::is_same_v<T, char>)
 class matrix_
 {
-  static_assert(ROW > 0 && COL > 0, "ROW-COL must be greater than `0`");
+  static_assert(ROW > 0ull && COL > 0ull, "ROW-COL must be greater than `0`");
 
 private:
   std::array<T, (ROW*COL)>  m_data{};
@@ -64,7 +64,6 @@ public:
   }
 
   /// @brief move constructor
-  explicit
   constexpr matrix_(matrix_ &&move) noexcept
   {
     m_data  = std::move(move.m_data);
@@ -91,10 +90,13 @@ public:
   }
 
   /// @brief variadic constructor
+  explicit
   consteval matrix_( auto ...args )
   {
     m_data = {std::move(args)...};
   }
+
+  constexpr ~matrix_() = default;
 
   /// @brief read-only
   [[nodiscard]] constexpr
@@ -224,8 +226,9 @@ public:
   auto swap_rows(const std::size_t &start, const std::size_t &with)
       -> void
   {
-    for (std::size_t i {0}; i < ROW; ++i)
+    for (std::size_t i{0}; i < ROW; ++i) {
       std::swap(at(start, i), at(with, i));
+    }
   }
   /**
    * @brief swaps col in given matrix
@@ -236,8 +239,9 @@ public:
   auto swap_cols(const std::size_t &start, const std::size_t &with)
       -> void
   {
-    for (std::size_t i {0}; i < COL; ++i)
+    for (std::size_t i{0}; i < COL; ++i) {
       std::swap(at(i, start), at(i, with));
+    }
   }
 
   /**
@@ -382,7 +386,6 @@ public:
         --k;
       }
     }
-    return;
   }
 
 /// @operators: on matrices
@@ -649,8 +652,9 @@ public:
       if (count == COL) { std::printf("%c", '\n'); count={}; }
       if constexpr ( std::is_floating_point_v<T> ) {
         std::printf("%.11f ", i);
+      } else {
+        os << i << ' ';
       }
-      else os << i << ' ';
       ++count;
     }
     return os;
