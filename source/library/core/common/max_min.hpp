@@ -48,7 +48,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto max(const T a, const T b)
-      -> const T
+      -> T
   {
     return a > b ? a : b;
   }
@@ -63,7 +63,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto min(const T a, const T b)
-      -> const T
+      -> T
   {
     return a > b ? b : a;
   }
@@ -277,6 +277,6 @@ namespace kraken::cal {
     return {low, high};
   }
 
-}
+} // namespace kraken::cal
 
 #endif // MAX_MIN_HPP

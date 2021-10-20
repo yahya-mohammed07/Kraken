@@ -39,9 +39,9 @@ namespace kraken::cal {
   auto abs(const Ty val)
       -> Ty
   {
-    if  (val < static_cast<Ty>(0)) return -val;
-    else { return val; }
+    if  (val < static_cast<Ty>(0)) {return -val;}
+    return val;
   }
-}
+} // namespace kraken::cal
 
 #endif // ABS_HPP
