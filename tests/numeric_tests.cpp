@@ -26,7 +26,7 @@ TEST_CASE("CHECK CALCULATE") {
 }
 
 TEST_CASE("LN(X)") {
-  REQUIRE( cal::ln(constants::e_v<float>) == 1. );
+  REQUIRE( cal::equal(cal::ln(constants::e_v<float>), 1.f) == true );
   REQUIRE( cal::equal( cal::ln(4.), 1.38629436112 ) == true );
   REQUIRE( cal::equal( cal::ln(7.), 1.94591014906, 0.0000001 ) == true );
 }
@@ -38,7 +38,8 @@ TEST_CASE("SQRT(x)") {
 }
 
 TEST_CASE("SQR(x)") {
-  REQUIRE(cal::sqr(2.) == 4);
+  REQUIRE(cal::sqr(2) == 4);
+  REQUIRE(cal::sqr(4.5) == 20.25);
 }
 
 TEST_CASE("BASE TO POWER OF POSITIVE INTEGER") {
@@ -187,6 +188,9 @@ TEST_CASE("DIV") {
 TEST_CASE("IS_NEG") {
   REQUIRE(cal::is_neg(-0.0435345) == true);
   REQUIRE(cal::is_neg(0.0435345) == false);
+  REQUIRE(cal::is_neg(4) == false);
+  REQUIRE(cal::is_neg(-1) == true);
+  REQUIRE(cal::is_neg(0) == false);
 }
 
 TEST_CASE("IS_PRIME") {
