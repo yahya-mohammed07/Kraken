@@ -33,7 +33,7 @@ SOFTWARE.
 #include "common/max_min.hpp"         // basic max & min
 #include "common/newton.hpp"          // newton
 #include <algorithm>                  // std::move, std::forward
-#include <limits.h>                   // LLONG_MAX, LLONG_MIN
+#include <climits>                    // LLONG_MAX, LLONG_MIN
 #include "matrix.hpp"                 // matrix_<>
 #include "constants.hpp"
 #include <bit>                        // std::countl_zero
@@ -44,7 +44,9 @@ struct Division {
   Demon rem{}; // reminder
 };
 
-template <typename It> class My_Iota {
+template <typename It> 
+class My_Iota
+{
 private:
   It m_begin{};
   It m_end{};
@@ -55,69 +57,77 @@ public:
   constexpr My_Iota(const It a, const It b)   : m_begin(a), m_end(b) {}
 };
 
-namespace kraken {
-    namespace op {
-    struct plus {
-      constexpr auto operator()(auto &&...args) noexcept  { return (args + ...); }
-    };
-    struct multiplies {
-      constexpr auto operator()(auto &&...args) noexcept  { return (args * ...); }
-    };
-    struct minus {
-      constexpr auto operator()(auto &&...args) noexcept  { return (args - ...); }
-    };
-    struct devide {
-      template <class... T>
-      requires(
-          std::is_floating_point_v<std::decay_t<T>> &&...) constexpr auto
-      operator()(T &&...args) noexcept  {
-        return (args / ...);
-      }
-    };
-
-    /**
-    * @brief helper function gives back the original values of container after being minupilated
-    * @param target the container that has been minupilated
-    * @param copy_org copied version of that container
-    */
-    template <class T>
-    inline constexpr
-    auto restore( T &target, const T &copy_org )
-        -> void
-    {
-      target = std::move(copy_org);
+namespace kraken::op {
+  struct plus {
+    constexpr auto operator()(auto &&...args) noexcept  { return (args + ...); }
+  };
+  struct multiplies {
+    constexpr auto operator()(auto &&...args) noexcept  { return (args * ...); }
+  };
+  struct minus {
+    constexpr auto operator()(auto &&...args) noexcept  { return (args - ...); }
+  };
+  struct devide {
+    template <class... T>
+    requires(
+        std::is_floating_point_v<std::decay_t<T>> &&...) constexpr auto
+    operator()(T &&...args) noexcept  {
+      return (args / ...);
     }
-  } // namespace kraken::op
-}
+  };
+
+  /**
+  * @brief helper function gives back the original values of container after being minupilated
+  * @param target the container that has been minupilated
+  * @param copy_org copied version of that container
+  */
+  template <class T>
+  inline constexpr
+  auto restore( T &target, const T &copy_org )
+      -> void
+  {
+    target = std::move(copy_org);
+  }
+} // namespace kraken::op
+
+template<class Ty>
+concept real_num = (std::is_integral_v<Ty> || std::is_floating_point_v<Ty>);
+template<class Ty>
+concept is_int = (std::is_integral_v<Ty>);
+template<class Ty, class B>
+concept both_integral = (is_int<Ty> && is_int<B>);
+template<class Ty>
+concept is_floating_point = std::is_floating_point_v<Ty>;
 
 /// @brief pure calculations for mostly any container or a collection
 namespace kraken::cal {
 
   /// @brief  short name for => accumulate
-  template <class b, class Binary_op, class T>
+  template <class Ty, class Op, class Cont>
+  requires real_num<Ty>
   [[nodiscard]]
   inline constexpr
-  auto acc(b init, Binary_op &&Op,
-                  const T &container) noexcept
-      -> b
+  auto acc(Ty init, Op &&op,
+                  const Cont &container) noexcept
+      -> Ty
    {
     for (auto &&item : container) {
-      init = Op(item, std::move(init));
+      init = op(item, std::move(init));
     }
     return init;
   }
 
   //
-  template <class b, class Binary_op, class It_begin, class It_end>
+  template <class Ty, class Op, class It_begin, class It_end>
   [[nodiscard]]
   inline constexpr
-  auto acc(b &&init, Binary_op &&Op,
+  auto acc(Ty &&init, Op &&op,
                   const It_begin it_begin,
                     const It_end it_end)
-      -> b
+      -> Ty
   {
     for (auto &&item : My_Iota(it_begin, it_end)) {
-      init = Op(item, std::move(init));
+      init = op(item, init);
     }
     return init;
   }
@@ -150,27 +160,27 @@ namespace kraken::cal {
   }
 
   /// @brief  short name for => calculate
-  template <class Init, class Binray_op, class... Args>
+  template <class Init, class Op, class... Args>
   requires(std::is_same_v<Init, Args> &&...)
   [[nodiscard]]
   inline constexpr
-  auto calcu(Init &&init, Binray_op op,
+  auto calcu(Init &&init, Op op,
     Args &&...args)
       -> Init
   {
-    return (op(args..., std::move(init)));
+    return (op(args..., init));
   }
 
   //
-  template <class b, class T, class Binary_op>
+  template <class b, class T, class Op>
   [[nodiscard]]
   inline constexpr
-  auto calcu(b &&init, Binary_op op,
+  auto calcu(b &&init, Op op,
                     std::initializer_list<T> &&args)
       -> b
   {
     for ( auto &&i : args ) {
-      init = op(std::move(init), i);
+      init = op(init, i);
     }
     return init;
   }
@@ -181,19 +191,23 @@ namespace kraken::cal {
   constexpr inline
   auto is_neg(Ty val) -> int
   {
-    if constexpr ( std::is_floating_point_v<Ty> ) {
-      { return less_than(val, static_cast<Ty>(0.)); }
-    } else if constexpr ( std::is_integral_v<Ty> )
-      { if ( val < static_cast<Ty>(0) ) return true; }
+    if constexpr ( is_floating_point<Ty> ) {
+      return less_than(val, static_cast<Ty>(0.));
+    } else if constexpr (is_int<Ty>) {
+      if (val < static_cast<Ty>(0)) {
+        return true;
+      }
+    }
     return false;
   }
 
   /// @brief returns ln of `x`
+  /// @param src works if `Apology` macro is defined
   template<class Ty>
-  requires (std::is_floating_point_v<Ty>)
+  requires ( is_floating_point<Ty> )
   [[nodiscard]]
   inline constexpr
-  auto ln( Ty val, src_loc src = src_loc::current() )
+  auto ln( Ty val, [[maybe_unused]] src_loc src = src_loc::current() )
     -> Ty
   {
   #ifdef APOLOGY
@@ -207,16 +221,18 @@ namespace kraken::cal {
       return std::numeric_limits<Ty>::quiet_NaN();
     }
     if ( greater_or_equal(val, static_cast<Ty>(2.)) ) {
-      return ln(val/2.) + static_cast<Ty>(0.69314718056);
+      constexpr Ty ln_2 {static_cast<Ty>(0.69314718056)};
+      return ln(val/static_cast<Ty>(2.)) + ln_2;
     }
     if ( greater_or_equal(val, static_cast<Ty>(1024.)) ) {
-      return ln(val/1024.) + static_cast<Ty>(6.9314718056);
+      constexpr Ty ln_1024 {static_cast<Ty>(6.9314718056)};
+      return ln(val/static_cast<Ty>(1024.)) + ln_1024;
     }
     val -= 1;
-    Ty res{0.};
+    Ty res{};
     Ty x_pow {val};
-    for ( std::size_t i {1}; i < 100; ++i ) {
-      if ( i & 1 ) {
+    for ( std::size_t i {1}; i < 100ul; ++i ) {
+      if ( i & 1ull ) {
         res += x_pow / i;
       } else {
         res -= x_pow / i;
@@ -231,7 +247,7 @@ namespace kraken::cal {
    * @return Ty
    */
   template<class Ty>
-  requires std::is_floating_point_v<Ty>
+  requires is_floating_point<Ty>
   [[nodiscard]]
   inline constexpr
   auto floor(Ty val)
@@ -244,18 +260,21 @@ namespace kraken::cal {
     {
       return val;
     }
-    const auto temp_n {static_cast<long long>(val)};
+    const auto temp_n {static_cast<std::int64_t>(val)};
     const Ty temp_d {static_cast<Ty>(temp_n)};
-    if (equal(temp_d, val) || greater_or_equal(val, static_cast<Ty>(0.))) { return temp_d; }
-    else {return  (temp_d) - static_cast<Ty>(1.);}
+    if (equal(temp_d, val) || greater_or_equal(val, static_cast<Ty>(0.))) {
+      return temp_d;
+    }
+    return  (temp_d) - static_cast<Ty>(1.);
   }
 
   /// @brief stores division of an `element` of type `Ty`
+  /// @param src works if `Apology` macro is defined
   template<class Num, class Denom>
   [[nodiscard]]
   inline constexpr
       // numerator, denominator
-  auto div(Num num, Denom denom, src_loc src = src_loc::current())
+  auto div(Num num, Denom denom, [[maybe_unused]]src_loc src = src_loc::current())
     -> Division<Num, Denom>
   {
   #ifdef APOLOGY
@@ -272,20 +291,22 @@ namespace kraken::cal {
 
   /// @brief gives ceil of a float value
   template<class Ty>
-  requires std::is_floating_point_v<Ty>
+  requires is_floating_point<Ty>
   [[nodiscard]]
   inline constexpr
   auto ceil(Ty val)
       -> Ty
   {
     const std::int64_t temp {static_cast<std::int64_t>(val)};
-    if (is_neg(val) || equal(val, static_cast<Ty>(temp)) ) { return static_cast<Ty> (temp); }
+    if (is_neg(val) || equal(val, static_cast<Ty>(temp)) ) {
+      return static_cast<Ty> (temp);
+    }
     return static_cast<Ty> (temp + 1);
   }
 
   /// @brief rounds float numbers
   template<class Ty>
-  requires std::is_floating_point_v<Ty>
+  requires is_floating_point<Ty>
   [[nodiscard]]
   inline constexpr
   auto round(Ty val)
@@ -295,12 +316,13 @@ namespace kraken::cal {
                             floor(val+static_cast<Ty>(.5));
   }
 
-/// @brief gives the sqrt of a integral or a a float number
+  /// @brief gives the sqrt of a integral or a a float number
+  /// @param src works if `Apology` macro is defined
   template<class Ty>
-  requires (std::is_integral_v<Ty> || std::is_floating_point_v<Ty>)
+  requires real_num<Ty>
   [[nodiscard]]
   inline constexpr
-  auto sqrt(const Ty val, src_loc src = src_loc::current())
+  auto sqrt(const Ty val, [[maybe_unused]] src_loc src = src_loc::current())
       -> Ty
   {
   #ifdef APOLOGY
@@ -332,7 +354,7 @@ namespace kraken::cal {
    * @return std::uint64_t
    */
   template<class Ty>
-  requires std::is_floating_point_v<Ty>
+  requires is_floating_point<Ty>
   [[nodiscard]]
   inline constexpr auto decimal_places(Ty val)
     -> std::uint64_t
@@ -360,7 +382,7 @@ namespace kraken::cal {
    * @return std::uint64_t
    */
   template<class Ty>
-  requires std::is_floating_point_v<Ty>
+  requires is_floating_point<Ty>
   [[nodiscard]]
   inline constexpr auto trunc(Ty val)
     -> std::uint64_t
@@ -374,10 +396,9 @@ namespace kraken::cal {
       } else {
         return std::numeric_limits<std::uint64_t>::max();
       }
-    } else {
-      //It is safe to cast
-      return static_cast<std::uint64_t>(val);
     }
+    //It is safe to cast
+    return static_cast<std::uint64_t>(val);
   }
 
   /**
@@ -391,7 +412,7 @@ namespace kraken::cal {
   auto pow(Ty base, P power, const Ty eps = std::numeric_limits<Ty>::epsilon())
       -> Ty
   {
-    if constexpr ( std::is_integral_v<Ty> && std::is_integral_v<P>) {
+    if constexpr ( both_integral<Ty, P> ) {
         if ( power > 0 ) {
         Ty res {static_cast<Ty>(1)};
         Ty base_copy {std::move(base)};
@@ -451,7 +472,7 @@ namespace kraken::cal {
 
   ///@brief  returns the square root of the sum of squares of its arguments
   template<class Ty>
-  requires (std::is_floating_point_v<Ty> || std::is_integral_v<Ty>)
+  requires (real_num<Ty>)
   [[nodiscard]]
   inline constexpr
   auto hypot(Ty x, Ty y, Ty z)
@@ -462,7 +483,7 @@ namespace kraken::cal {
 
   ///@brief  returns the square root of the sum of squares of its arguments
   template<class Ty>
-  requires (std::is_floating_point_v<Ty> || std::is_integral_v<Ty>)
+  requires (real_num<Ty>)
   [[nodiscard]]
   inline constexpr
   auto hypot(Ty x, Ty y)
@@ -473,7 +494,7 @@ namespace kraken::cal {
 
   ///@brief  returns the square root of the sum of squares of its arguments
   template<class Ty>
-  requires (std::is_floating_point_v<Ty> || std::is_integral_v<Ty>)
+  requires (real_num<Ty>)
   [[nodiscard]]
   inline constexpr
   auto hypot( const std::initializer_list<Ty>& args)
@@ -487,9 +508,10 @@ namespace kraken::cal {
   }
 
   /// @brief returns log base2 of `x`
+  /// @param src works if `Apology` macro is defined
   template<class Ty>
   [[nodiscard]] constexpr
-  auto log2(Ty val, src_loc src = src_loc::current())
+  auto log2(Ty val, [[maybe_unused]] src_loc src = src_loc::current())
     -> Ty
   {
   #ifdef APOLOGY
@@ -498,21 +520,25 @@ namespace kraken::cal {
                                   , err_codes::neg_arg, src.line() }; } );
     }
   #endif
-    constexpr std::size_t sysbits {(std::numeric_limits<unsigned char>::digits * sizeof(void*))};
-    if constexpr ( std::is_integral_v<Ty> && sysbits == 64 ) {
+    constexpr std::size_t sysbits {
+          (std::numeric_limits<unsigned char>::digits * sizeof(void*))
+        };
+    if constexpr ( is_int<Ty> && sysbits == 64 ) {
       return (static_cast<std::uint64_t>(63ull -
                     std::countl_zero(static_cast<std::uint64_t>(val))));
-    } else if constexpr ( std::is_integral_v<Ty> && sysbits == 32 ) {
+    } else if constexpr ( is_int<Ty> && sysbits == 32 ) {
       return (static_cast<std::uint32_t>(31ul -
                     std::countl_zero(static_cast<std::uint32_t>(val))));
+    } else {
+      return ln(val) * constants::log2e_v<Ty>;
     }
-    else return ln(val) * constants::log2e_v<Ty>;
   }
 
   /// @brief returns log base10 of `x`
+  /// @param src works if `Apology` macro is defined
   template<class Ty>
   [[nodiscard]] constexpr
-  auto log10(Ty val, src_loc src = src_loc::current())
+  auto log10(Ty val, [[maybe_unused]] src_loc src = src_loc::current())
     -> Ty
   {
   #ifdef APOLOGY
@@ -521,23 +547,23 @@ namespace kraken::cal {
                                     , err_codes::neg_arg, src.line() }; } );
     }
   #endif
-    if constexpr ( std::is_integral_v<Ty> ) {
+    if constexpr ( is_int<Ty> ) {
       return log2(static_cast<std::uint64_t>(val)) / log2(10ull);
+    } else {
+      return ln(val) * constants::log10e_v<Ty>;
     }
-    else return ln(val) * constants::log10e_v<Ty>;
   }
 
   /// @brief computes the greatest common divisor
-  /// @link https://lemire.me/blog/2013/12/26/fastest-way-to-compute-the-greatest-common-divisor/ @endlink
   template <class A, class B>
-  requires (std::is_integral_v<A> && std::is_integral_v<B>)
+  requires (both_integral<A,B>)
   [[nodiscard]]
   inline constexpr
   auto gcd(A a, B b) -> A
   {
     int shift{};
-    if (a == 0) return b;
-    if (b == 0) return a;
+    if (a == 0) {return b;}
+    if (b == 0) {return a;}
     shift = std::countr_zero(static_cast<std::uint64_t>(a | b));
     a >>= std::countr_zero(static_cast<std::uint64_t>(a));
     do {
@@ -552,7 +578,7 @@ namespace kraken::cal {
 
   /// @brief computes the least common multiples
   template <class A, class B>
-  requires (std::is_integral_v<A> && std::is_integral_v<B>)
+  requires (both_integral<A,B>)
   [[nodiscard]]
   inline constexpr
   auto lcm(A a, B b) -> A
@@ -563,12 +589,14 @@ namespace kraken::cal {
   }
 
   /// @brief gives `nth` `fibonacci` number
+  /// @param val `nth` value
+  /// @param src works if `Apology` macro is defined
   /// @return Ty
   template<class Ty>
-  requires std::is_integral_v<Ty>
+  requires is_int<Ty>
   [[nodiscard]]
   inline constexpr
-  auto fibonacci(const Ty val, src_loc src = src_loc::current())
+  auto fibonacci(const Ty val, [[maybe_unused]] src_loc src = src_loc::current())
     -> std::size_t
   {
   #ifdef APOLOGY
@@ -577,8 +605,8 @@ namespace kraken::cal {
                                   , err_codes::neg_arg, src.line() }; } );
     }
   #endif
-    if (val == 0) return 0ull;
-    else if (val == 1) return 1ull;
+    if (val == 0) {return 0ull;}
+    else if (val == 1) {return 1ull;}
     //
     constexpr double sqrt_5 { sqrt(5.) };
     return static_cast<std::size_t>
@@ -587,33 +615,35 @@ namespace kraken::cal {
   }
 
   /// @brief give the factorial of a number
+  /// @param val that number
+  /// @param src works if `Apology` macro is defined
   /// @return Ty
   template<class Ty>
-  requires std::is_integral_v<Ty>
+  requires is_int<Ty>
   [[nodiscard]] constexpr
-  auto factorial(Ty val, src_loc src = src_loc::current())
+  auto factorial(Ty val, [[maybe_unused]] src_loc src = src_loc::current())
     -> std::size_t
   {
   #ifdef APOLOGY
     if ( is_neg(val) ) {
-      Apology( [&src] { return error{ src.file_name(), src.function_name()
-                                    , err_codes::neg_arg, src.line() }; } );
+      Apology( [&src] { return Err{ src.file_name(), src.function_name()
+                                    , Err_codes::neg_arg, src.line() }; } );
     }
   #endif
-    if ( val <= 1 ) return 1;
+    if ( val <= 1 ) {return 1;}
     return val * factorial(val - 1);
   }
 
   /// @brief checks if the number is prime
   /// @return bool
   template <class Ty>
-  requires std::is_integral_v<Ty>
+  requires is_int<Ty>
   [[nodiscard]] inline constexpr
   auto is_prime( const Ty num )
     -> bool
   {
     if ( num <= 1 ) { return false; } // ... - 1 //
-    if ( num <= 3 ) { return true; } // 2-3 //
+    if ( num <= 3 ) { return true; } // 2 - 3 //
     if ( num % 2 == 0 || num % 3 == 0 ) { return false; } // multiples of 2 or 3
     for ( std::size_t i { 5 }; (i * i) < num; ++i ) {
       if ( num % i == 0 || num % (i+2) == 0 ) { return false; }
