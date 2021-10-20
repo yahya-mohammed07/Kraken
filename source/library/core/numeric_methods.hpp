@@ -43,7 +43,7 @@ namespace kraken::num_methods {
     requires ( std::is_floating_point_v<Ty> )
   [[nodiscard]] constexpr
   auto gauss_elimination(const matrix_<Ty, ROW, COL> &matrix)
-      -> const auto
+      -> auto
   {
     bool gauss_sliminated = false;
     for (std::size_t i = 0; i < ROW; ++i ) {
@@ -140,13 +140,13 @@ namespace kraken::num_methods {
 
     ++changed;
   }
-/**
- * @brief performs cramer's rule on given matrix
- *
- * @param arr the gavin matrix
- * @param right_side the values after =
- * @return matrix_<Ty, 1, COL>
- */
+  /**
+    * @brief performs cramer's rule on given matrix
+    *
+    * @param arr the gavin matrix
+    * @param right_side the values after =
+    * @return matrix_<Ty, 1, COL>
+    */
   template <class Ty, const size_t ROW, const size_t COL>
   auto cramer(matrix_<Ty, ROW, COL> arr, const matrix_<Ty, 1, COL> &right_side)
       -> auto
@@ -180,7 +180,7 @@ namespace kraken::num_methods {
   [[nodiscard]]
   constexpr
   auto simpson(const std::size_t n, const A a, const B b, Op op,
-                  src_loc src = src_loc::current())
+                 [[maybe_unused]] src_loc src = src_loc::current())
     -> A
   {
     #ifdef APOLOGY
@@ -199,7 +199,7 @@ namespace kraken::num_methods {
     for ( std::size_t i = 1; i < N; ++i ) {
       m = static_cast<A>(a+(h*i));
       //
-      if ( i & 1 ) { sum += op(m) * 4; }
+      if ( i & 1ull ) { sum += op(m) * 4; }
       else { sum += op(m) * 2; }
     }
     result = { ( h / static_cast<A>(3.) )
@@ -222,9 +222,9 @@ namespace kraken::num_methods {
     static_assert(ROW < COL, "--`col` must always be greater than `row`...");
     matrix_<Ty, 1, COL - 1> x;
     //
-    for (int64_t i = static_cast<int64_t>(ROW - 1); i >= 0; --i) {
+    for (auto i = static_cast<int64_t>(ROW - 1); i >= 0; --i) {
       x.at(0, i) = {arr.at(i, COL - 1)};
-      for (std::size_t j = static_cast<std::size_t>(i); j < COL - 1; ++j)
+      for (auto j = static_cast<std::size_t>(i); j < COL - 1; ++j)
         x.at(0, i) -= arr.at(i, j) * x.at(0, j);
 
       x.at(0, i) /= arr.at(i, i);
