@@ -1,7 +1,7 @@
 #ifndef APOLOGY_HPP
 #define APOLOGY_HPP
 
-/// @version v0.3.6
+/// @version v0.4.8
 
 /*
 
@@ -44,46 +44,43 @@ SOFTWARE.
 
 #endif // cplusplus standart must be 20
 
-namespace kraken::err_codes {
-  constexpr int big_arg {99};
-  constexpr int neg_arg {-1};
-  constexpr int zero {0};
-  constexpr int even {44};
-  constexpr int odd {33};
-}
-
 #ifdef APOLOGY
 
 #include <string_view>
 #include <unordered_map>
 #include <iostream>
 
-using namespace kraken;
-
-struct error {
+struct Err {
   std::string_view file_name{};
   std::string_view func_name{};
   int err_code{};
   std::uint32_t line{};
 };
 
+enum Err_codes {
+  big_arg=0,
+  neg_arg,
+  zero,
+  even,
+  odd,
+};
 
 inline const
 std::unordered_map<int, std::string_view> apologies
 {
-  { err_codes::neg_arg, " -A negative value was given." },
-  { err_codes::big_arg,  " -A too big value was given." },
-  { err_codes::zero,  " -A zero value was given." },
-  { err_codes::even,  " -An even value was given." },
-  { err_codes::odd,  " -An odd value was given." },
+  { Err_codes::neg_arg, " -A negative value was given." },
+  { Err_codes::big_arg,  " -A too big value was given." },
+  { Err_codes::zero,  " -A zero value was given." },
+  { Err_codes::even,  " -An even value was given." },
+  { Err_codes::odd,  " -An odd value was given." },
 };
 
 constexpr
 auto Apology = [](auto apology)
   -> bool
 {
-  const auto &[file_name, function_name, err_code, line] = apology();
-  if ( apologies.find(err_code) == apologies.end() ) {
+  auto [file_name, function_name, code, line] = apology();
+  if ( apologies.find(code) == apologies.end() ) {
     std::cerr << "-Err_code not defined.\n";
     throw(1);
   }
@@ -91,7 +88,7 @@ auto Apology = [](auto apology)
             << "` inside the function: `" << function_name
             << "` at line: " << line
             << " and the reason was: `"
-            << apologies.at(err_code) << "` ]\n";
+            << apologies.at(code) << "` ]\n";
   throw(1);
 };
 
