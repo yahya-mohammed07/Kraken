@@ -27,7 +27,6 @@ SOFTWARE.
 
 */
 
-
 #include "comp_decimal_point_nums.hpp"    // comparing numbers with decimal point
 
 namespace kraken::num_methods {
@@ -58,6 +57,6 @@ namespace kraken::num_methods {
     }
     return x1;
   }
-}
+} // namespace kraken::num_methods
 
 #endif // NEWTON_HPP
