@@ -42,7 +42,7 @@ SOFTWARE.
   using src_loc = const std::experimental::source_location;
 #endif
 
-#endif // cplusplus standart must be 20
+#endif // cplusplus standard must be 20
 
 #ifdef APOLOGY
 
