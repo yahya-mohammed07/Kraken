@@ -1,7 +1,7 @@
 #ifndef APOLOGY_HPP
 #define APOLOGY_HPP
 
-/// @version v0.4.8
+/// @version v0.6.7
 
 /*
 
@@ -30,7 +30,7 @@ SOFTWARE.
 */
 
 
-#if __cplusplus > 201703L
+#if __cplusplus > 201703L || __cplusplus > 199710L
 
 #if defined(_MSC_VER)
   #include <source_location>
@@ -42,7 +42,7 @@ SOFTWARE.
   using src_loc = const std::experimental::source_location;
 #endif
 
-#endif // cplusplus standart must be 20
+#endif // cplusplus standard must be 20
 
 #ifdef APOLOGY
 
