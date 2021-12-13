@@ -45,7 +45,7 @@ struct row_col
 };
 
 template <class T, std::size_t ROW, std::size_t COL>
-  requires (!std::is_class_v<T> && !std::is_same_v<T, char>)
+  requires (!std::is_class_v<T>)
 class matrix_
 {
   static_assert(ROW > 0ull && COL > 0ull, "ROW-COL must be greater than `0`");
@@ -649,7 +649,7 @@ public:
   constexpr
   friend std::ostream &operator<<(std::ostream &os, const matrix_ & mat) {
     for (std::size_t count{}; auto &&i : mat) {
-      if (count == COL) { std::printf("%c", '\n'); count={}; }
+      if (count == COL) { std::printf("%c", '\n'); count=0; }
       if constexpr ( std::is_floating_point_v<T> ) {
         std::printf("%.11f ", i);
       } else {
