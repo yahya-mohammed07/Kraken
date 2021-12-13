@@ -44,7 +44,7 @@ struct Division {
   Demon rem{}; // reminder
 };
 
-template <typename It> 
+template <typename It>
 class My_Iota
 {
 private:
@@ -67,7 +67,7 @@ namespace kraken::op {
   struct minus {
     constexpr auto operator()(auto &&...args) noexcept  { return (args - ...); }
   };
-  struct devide {
+  struct divide {
     template <class... T>
     requires(
         std::is_floating_point_v<std::decay_t<T>> &&...) constexpr auto
@@ -97,7 +97,7 @@ concept is_int = (std::is_integral_v<Ty>);
 template<class Ty, class B>
 concept both_integral = (is_int<Ty> && is_int<B>);
 template<class Ty>
-concept is_floating_point = std::is_floating_point_v<Ty>;
+concept is_float = std::is_floating_point_v<Ty>;
 
 /// @brief pure calculations for mostly any container or a collection
 namespace kraken::cal {
@@ -191,7 +191,7 @@ namespace kraken::cal {
   constexpr inline
   auto is_neg(Ty val) -> int
   {
-    if constexpr ( is_floating_point<Ty> ) {
+    if constexpr ( is_float<Ty> ) {
       return less_than(val, static_cast<Ty>(0.));
     } else if constexpr (is_int<Ty>) {
       if (val < static_cast<Ty>(0)) {
@@ -204,7 +204,7 @@ namespace kraken::cal {
   /// @brief returns ln of `x`
   /// @param src works if `Apology` macro is defined
   template<class Ty>
-  requires ( is_floating_point<Ty> )
+  requires ( is_float<Ty> )
   [[nodiscard]]
   inline constexpr
   auto ln( Ty val, [[maybe_unused]] src_loc src = src_loc::current() )
@@ -247,7 +247,7 @@ namespace kraken::cal {
    * @return Ty
    */
   template<class Ty>
-  requires is_floating_point<Ty>
+  requires is_float<Ty>
   [[nodiscard]]
   inline constexpr
   auto floor(Ty val)
@@ -274,7 +274,7 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
       // numerator, denominator
-  auto div(Num num, Denom denom, [[maybe_unused]]src_loc src = src_loc::current())
+  auto div(Num num, Denom denom, [[maybe_unused]] src_loc src = src_loc::current())
     -> Division<Num, Denom>
   {
   #ifdef APOLOGY
@@ -291,7 +291,7 @@ namespace kraken::cal {
 
   /// @brief gives ceil of a float value
   template<class Ty>
-  requires is_floating_point<Ty>
+  requires is_float<Ty>
   [[nodiscard]]
   inline constexpr
   auto ceil(Ty val)
@@ -306,7 +306,7 @@ namespace kraken::cal {
 
   /// @brief rounds float numbers
   template<class Ty>
-  requires is_floating_point<Ty>
+  requires is_float<Ty>
   [[nodiscard]]
   inline constexpr
   auto round(Ty val)
@@ -354,7 +354,7 @@ namespace kraken::cal {
    * @return std::uint64_t
    */
   template<class Ty>
-  requires is_floating_point<Ty>
+  requires is_float<Ty>
   [[nodiscard]]
   inline constexpr auto decimal_places(Ty val)
     -> std::uint64_t
@@ -378,11 +378,12 @@ namespace kraken::cal {
 
   /**
    * @brief chops of the fractional part of any floating-point number
+          and returns that reamining value
    * @param val
    * @return std::uint64_t
    */
   template<class Ty>
-  requires is_floating_point<Ty>
+  requires is_float<Ty>
   [[nodiscard]]
   inline constexpr auto trunc(Ty val)
     -> std::uint64_t
@@ -399,6 +400,36 @@ namespace kraken::cal {
     }
     //It is safe to cast
     return static_cast<std::uint64_t>(val);
+  }
+
+  /**
+   * @brief returns the fractional portion of a scalar
+   * @param val
+   */
+  template<class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto frac(Ty val)
+    -> Ty
+  {
+    val = abs(val);
+    return val - floor(val);
+  }
+
+  /**
+   * @brief returns the remainder of x/y with the same sign as x
+   * @param val
+   */
+  template<class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto fmod(const Ty a, const Ty b)
+    -> Ty
+  {
+    const Ty t {frac( abs(a) / abs(b) ) * abs(b)};
+    return ( less_than( a, static_cast<Ty>(0.) ) ? -t : t );
   }
 
   /**
@@ -649,6 +680,164 @@ namespace kraken::cal {
       if ( num % i == 0 || num % (i+2) == 0 ) { return false; }
     }
     return true;
+  }
+
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto to_radian( const Ty degree ) -> Ty
+  {
+    return degree * constants::π_v<Ty> / static_cast<Ty>(180.);
+  }
+
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto to_degree( const Ty radian ) -> Ty
+  {
+    return radian * static_cast<Ty>(180.) / constants::π_v<Ty>;
+  }
+
+  /// @brief gets the sine value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its Sine value
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto sin ( Ty angle ) noexcept -> Ty
+  {
+    angle = to_radian(angle);
+    const Ty  b = static_cast<Ty> (4.) / constants::π_v<Ty>;
+    const Ty  c = static_cast<Ty> (-4.) / (constants::π_v<Ty> * constants::π_v<Ty>);
+    const Ty  p = static_cast<Ty> (.225);
+    const Ty temp = b * angle + c * angle
+          * (less_than(angle, static_cast<Ty>(0.)) ? -angle : angle);
+    return p * (temp *
+        (less_than(temp, static_cast<Ty>(0.))? -temp : temp) - temp) + temp;
+  }
+
+  /// @brief gets the cosine value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its Cosine value
+  /// @link thanks to: https://stackoverflow.com/a/28050328
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto cos ( Ty angle ) noexcept -> Ty
+  {
+    angle = to_radian(angle);
+    constexpr Ty tp = static_cast<Ty>(1.)/(2.*constants::π_v<Ty>);
+    angle *= tp;
+    angle -= static_cast<Ty>(.25) + floor(angle + static_cast<Ty>(.25));
+    angle *= static_cast<Ty>(16.) * (abs(angle) - static_cast<Ty>(.5));
+    angle += static_cast<Ty>(.225) * angle * (abs(angle) - static_cast<Ty>(1.));
+    return angle;
+  }
+
+  /// @brief gets the Tangent value of an angle
+  /// @param angle (IN DEGREE)the angle that you want to find its Tangent value
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto tan ( const Ty angle ) noexcept -> Ty
+  {
+    return sin(angle) / cos(angle);
+  }
+
+  /// @brief gets the cosecant value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its cosecant value
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto cosc ( Ty angle ) noexcept -> Ty
+  {
+    return static_cast<Ty>(1.) / sin(angle);
+  }
+
+  /// @brief gets the secant value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its secant value
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto sec ( Ty angle ) noexcept -> Ty
+  {
+    return static_cast<Ty>(1.) / cos(angle);
+  }
+
+  /// @brief gets the cotan value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its cotan value
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto cot ( Ty angle ) noexcept -> Ty
+  {
+    return static_cast<Ty>(1.) / tan(angle);
+  }
+
+  /// @brief gets the arc cosine value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its arc cosine value
+  /// @link https://stackoverflow.com/a/36387954/13060681
+  /// @note acos(x) ≈ π/2 + (ax + bx³) / (1 + cx² + dx⁴)
+  /// @note range [0,pi], expecting x to be in the range [-1,+1].
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto arc_cos ( Ty angle ) noexcept -> Ty
+  {
+    const Ty a = static_cast<Ty>(-0.939115566365855);
+    const Ty b = static_cast<Ty>(0.9217841528914573);
+    const Ty c = static_cast<Ty>(-1.2845906244690837);
+    const Ty d = static_cast<Ty>(0.295624144969963174);
+    return constants::π_v<Ty>/static_cast<Ty>(2.)
+        +  (a * angle + b * angle * angle * angle)
+                                /
+      (static_cast<Ty>(1.) + c * angle * angle + d * angle * angle * angle * angle);
+  }
+
+  /// @brief gets the arc sine value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its arc sine value
+  /// @note Handbook of Mathematical Functions, M. Abramowitz and I.A. Stegun, Ed.
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto arc_sin ( Ty angle ) noexcept -> Ty
+  {
+    const Ty negate {Ty( less_than(angle, static_cast<Ty>(0.)) )};
+    angle = abs(angle);
+    Ty res{static_cast<Ty>(-0.0187293)};
+    res *= angle;
+    res += static_cast<Ty>(0.0742610);
+    res *= angle;
+    res -= static_cast<Ty>(0.2121144);
+    res *= angle;
+    res += static_cast<Ty>(1.5707288);
+    res = constants::π_v<Ty> * static_cast<Ty>(0.5) -
+                            sqrt(static_cast<Ty>(1.0) - angle) * res;
+    return res - 2 * negate * res;
+  }
+
+  /// @brief gets the arc sine value of an angle
+  /// @param angle (IN DEGREE) the angle that you want to find its arc sine value
+  /// @note
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto arc_tan ( Ty angle ) noexcept -> Ty
+  {
+    const Ty double_angle { angle * angle };
+    const Ty A {0.0776509570923569};
+    const Ty B {-0.287434475393028};
+    const Ty C {(constants::π_v<Ty>/static_cast<Ty>(4.)) - A - B};
+    return ((A*double_angle + B)*double_angle + C)*angle;
   }
 } // namespace kraken::cal
 
