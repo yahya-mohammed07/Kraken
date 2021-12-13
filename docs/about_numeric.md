@@ -42,6 +42,19 @@
   - `factorial` **recursive**
   - `is_neg`
   - `is_prime`
+  - `cos`
+  - `sin`
+  - `tan`
+  - `sec`
+  - `cosc`
+  - `cot`
+  - `arc_sin` Handbook of Mathematical Functions, M. Abramowitz and I.A. Stegun, Ed.
+  - `arc_cos` range [0,pi], expecting x to be in the range [-1,+1].
+  - `arc_tan`
+  - `frac`
+  - `fmod`
+  - `to_radian`
+  - `to_degree`
 
 ## Note: for usage please check the `tests` folder
 
