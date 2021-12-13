@@ -2,8 +2,6 @@
 #include "../source/library/core/constants.hpp"
 #include "../Catch2/catch.hpp"
 
-#include <cstdio>
-
 using namespace kraken;
 
 constexpr matrix_<int, 1, 5> numeric_test ( 1, 2, 3, 4, 5 );
@@ -201,6 +199,21 @@ TEST_CASE("IS_PRIME") {
   REQUIRE(cal::is_prime(115243) == false);
 }
 
+TEST_CASE("FRACTION") {
+  REQUIRE( cal::equal(cal::frac(10.25), .25) );
+  REQUIRE( cal::equal(cal::frac(2251799813685240.0) , .0 ));
+  REQUIRE( cal::equal(cal::frac(-34.25), 0.25));
+  REQUIRE( cal::equal(cal::frac(345.4324324234124), .4324324234124, 0.00001));
+}
+
+
+TEST_CASE("FMOD") {
+  REQUIRE(cal::equal( cal::fmod(+5.1, +3.0), 2.1 ) );
+  REQUIRE(cal::equal( cal::fmod(-5.1, +3.0), -2.1 ) );
+  REQUIRE(cal::equal( cal::fmod(-5.1, -3.0), -2.1 ) );
+  REQUIRE(cal::equal( cal::fmod(-5.1, 0.0), -2.1 ) );
+}
+
 TEST_CASE("COMPARING FLOAT NUMBERS") {
   REQUIRE(cal::equal((.1f+.2f), .399f) == false);
   REQUIRE(cal::equal((.1f+.2f), .3f) == true);
@@ -234,4 +247,38 @@ TEST_CASE("COMPARING DOUBLE NUMBERS") {
   REQUIRE(cal::greater_or_equal(.34, .01) == true);
   REQUIRE(cal::greater_or_equal(.01, .01) == true);
   REQUIRE(cal::greater_or_equal(.01, .45) == false);
+}
+
+TEST_CASE("TRIGONOMETRY FUNCTIONS") {
+  REQUIRE( cal::equal( cal::sin(30.), .5) );
+  REQUIRE( cal::equal( cal::sin(90.), 1.) );
+  //
+  REQUIRE( cal::equal( cal::cos(90.), .0) );
+  REQUIRE( cal::equal( cal::cos(45.), .70781, .001) );
+  REQUIRE( cal::equal( cal::cos(60.), 0.5) );
+  //
+  REQUIRE( cal::equal( cal::tan(45.), 1.) );
+  REQUIRE( cal::equal( cal::tan(-135.), 1.) );
+  REQUIRE( cal::equal( cal::tan(32.), .624, .001) );
+  //
+  REQUIRE( cal::equal( cal::sec(45.), 1.414213, .001) );
+  REQUIRE( cal::equal( cal::sec(40.), 1.305, .001) );
+  REQUIRE( cal::equal( cal::sec(135.), -1.414, .001) );
+  //
+  REQUIRE( cal::equal( cal::cosc(30.), 2.) );
+  REQUIRE( cal::equal( cal::cosc(12.), 4.80, 0.01) );
+  REQUIRE( cal::equal( cal::cosc(89.), 1.000, 0.001) );
+  //
+  REQUIRE( cal::equal( cal::cot(45.), 1.) );
+  REQUIRE( cal::equal( cal::cot(72.),  0.3239, 0.01) );
+  //
+  REQUIRE( cal::equal( cal::arc_cos(-1.), 3.14, .1) );
+  REQUIRE( cal::equal( cal::arc_cos(-.9), 2.69, .1) );
+  REQUIRE( cal::equal( cal::arc_cos(-.8), 2.49, .1) );
+  //
+  REQUIRE( cal::equal( cal::arc_sin(-1.), -1.570796, .0001) );
+  REQUIRE( cal::equal( cal::to_degree(cal::arc_sin(0.5)), 30.,0.01) );
+  //
+  REQUIRE( cal::equal( cal::arc_tan(-1.), -0.785398163, .00000001) );
+  REQUIRE( cal::equal( cal::arc_tan(1.), 0.785398163, 0.0000001) );
 }
