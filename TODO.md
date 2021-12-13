@@ -9,15 +9,19 @@
 
 ## Implement :-
 
-- [ ] **sin()**
-- [ ] **cos()**
-- [ ] **tan()**
-- [ ] **sec()**
-- [ ] **cosec()**
-- [ ] **cot()**
+- [x] **sin()**
+- [x] **cos()**
+- [x] **tan()**
+- [x] **sec()**
+- [x] **cosec()**
+- [x] **cot()**
+- [x] **arc_sin()**
+- [x] **arc_cos()**
+- [x] **arc_tan()**
 - [x] **decimal_places()**
 - [x] **trunc()**
-- [ ] **mod()**
+- [x] **frac()**
+- [x] **fmod()**
 - [x] **div()**
 - [x] **min_max()**
 - [ ] **modf()**
