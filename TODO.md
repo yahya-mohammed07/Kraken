@@ -6,6 +6,7 @@
   - [ ] Must write a better algorithm for matrix transpose.
 
 - [x] Add error-handling system.
+- [ ] Replace symbolic constants with alphabetical ones
 
 ## Implement :-
 
