@@ -1,19 +1,18 @@
 #include "../source/library/core/numeric.hpp"
-#include "../source/library/core/constants.hpp"
 #include "../Catch2/catch.hpp"
 
 using namespace kraken;
 
-constexpr matrix_<int, 1, 5> numeric_test ( 1, 2, 3, 4, 5 );
 
-TEST_CASE("CHECK ACCUMULATE") {
+TEST_CASE("ACCUMULATE") {
+  constexpr matrix_<int, 1, 5> numeric_test ( 1, 2, 3, 4, 5 );
   REQUIRE( cal::acc(0, numeric_test) == 15 ); // plus by default - or check next way:
   REQUIRE( cal::acc(0, numeric_test.begin(), numeric_test.end()) == 15 ); // plus by default
   REQUIRE( cal::acc(0, op::minus{}, numeric_test) == 3 );
   REQUIRE( cal::acc(1, op::multiplies{}, numeric_test) == 120 );
 }
 
-TEST_CASE("CHECK CALCULATE") {
+TEST_CASE("CALCULATE") {
 // variadic
   REQUIRE( cal::calcu(0 , op::plus{} ,1 , 2, 3, 4, 5) == 15);
   REQUIRE( cal::calcu(1 , op::multiplies{}, 1, 2, 3, 4, 5) == 120);
@@ -23,19 +22,19 @@ TEST_CASE("CHECK CALCULATE") {
   REQUIRE( cal::calcu(1 , op::multiplies{}, {1, 2, 3, 4, 5}) == 120);
 }
 
-TEST_CASE("LN(X)") {
+TEST_CASE("LN") {
   REQUIRE( cal::equal(cal::ln(constants::e_v<float>), 1.f) == true );
   REQUIRE( cal::equal( cal::ln(4.), 1.38629436112 ) == true );
   REQUIRE( cal::equal( cal::ln(7.), 1.94591014906, 0.0000001 ) == true );
 }
 
-TEST_CASE("SQRT(x)") {
+TEST_CASE("SQRT") {
   REQUIRE(cal::sqrt(4) == 2);
   REQUIRE(cal::sqrt(25) == 5);
   REQUIRE(cal::equal(cal::sqrt(3.), 1.73205080757, 0.000000000001));
 }
 
-TEST_CASE("SQR(x)") {
+TEST_CASE("SQR") {
   REQUIRE(cal::sqr(2) == 4);
   REQUIRE(cal::sqr(4.5) == 20.25);
 }
@@ -143,6 +142,12 @@ TEST_CASE("TRUNC") {
   REQUIRE(cal::trunc(345.4324324234124) == 345);
 }
 
+TEST_CASE("MODF") {
+  const auto [integral, fractional] = cal::modf(10.25);
+  REQUIRE(integral == 10);
+  REQUIRE(fractional == .25);
+}
+
 TEST_CASE("ROUND") {
   REQUIRE(cal::round(10.25) == 10);
   REQUIRE(cal::round(10.55) == 11);
@@ -211,14 +216,13 @@ TEST_CASE("FMOD") {
   REQUIRE(cal::equal( cal::fmod(+5.1, +3.0), 2.1 ) );
   REQUIRE(cal::equal( cal::fmod(-5.1, +3.0), -2.1 ) );
   REQUIRE(cal::equal( cal::fmod(-5.1, -3.0), -2.1 ) );
-  REQUIRE(cal::equal( cal::fmod(-5.1, 0.0), -2.1 ) );
 }
 
 TEST_CASE("COMPARING FLOAT NUMBERS") {
   REQUIRE(cal::equal((.1f+.2f), .399f) == false);
   REQUIRE(cal::equal((.1f+.2f), .3f) == true);
   REQUIRE(cal::equal(0.000000f, 0.f) == true);
-  REQUIRE(cal::approx_equal( constants::π_v<float>, 3.14f, .01f ) == true);
+  REQUIRE(cal::approx_equal( constants::pi_v<float>, 3.14f, .01f ) == true);
   ///
   REQUIRE(cal::less_than(-.01f, .01f) == true);
   REQUIRE(cal::less_or_equal(.0000000001f, .01f) == true);
@@ -235,7 +239,7 @@ TEST_CASE("COMPARING DOUBLE NUMBERS") {
   REQUIRE(cal::equal((.1+.2), .399) == false);
   REQUIRE(cal::equal((.1+.2), .3) == true);
   REQUIRE(cal::equal(0.000000, 0.) == true);
-  REQUIRE(cal::approx_equal( constants::π, 3.14, .01 ) == true);
+  REQUIRE(cal::approx_equal( constants::pi, 3.14, .01 ) == true);
   ///
   REQUIRE(cal::less_than(-.01, .01) == true);
   REQUIRE(cal::less_than(.01, .01) == false);
