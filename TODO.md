@@ -6,7 +6,7 @@
   - [ ] Must write a better algorithm for matrix transpose.
 
 - [x] Add error-handling system.
-- [ ] Replace symbolic constants with alphabetical ones
+- [x] Replace symbolic constants with alphabetical ones
 
 ## Implement :-
 
@@ -25,7 +25,7 @@
 - [x] **fmod()**
 - [x] **div()**
 - [x] **min_max()**
-- [ ] **modf()**
+- [x] **modf()**
 - [ ] **gamma()**
 - [ ] **beta()**
 - [x] **gcd()**
