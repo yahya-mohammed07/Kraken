@@ -414,7 +414,7 @@ namespace kraken::cal {
     -> Ty
   {
     val = abs(val);
-    return val - floor(val);
+    return val - trunc(val); // 3.14 - 3 = .14
   }
 
   /**
@@ -641,7 +641,7 @@ namespace kraken::cal {
     //
     constexpr double sqrt_5 { sqrt(5.) };
     return static_cast<std::size_t>
-            (round( pow(constants::ϕ,
+            (round( pow(constants::phi,
                 static_cast<double>(val)) / sqrt_5 ));
   }
 
@@ -688,7 +688,7 @@ namespace kraken::cal {
   inline constexpr
   auto to_radian( const Ty degree ) -> Ty
   {
-    return degree * constants::π_v<Ty> / static_cast<Ty>(180.);
+    return degree * constants::pi_v<Ty> / static_cast<Ty>(180.);
   }
 
   template <class Ty>
@@ -697,7 +697,7 @@ namespace kraken::cal {
   inline constexpr
   auto to_degree( const Ty radian ) -> Ty
   {
-    return radian * static_cast<Ty>(180.) / constants::π_v<Ty>;
+    return radian * static_cast<Ty>(180.) / constants::pi_v<Ty>;
   }
 
   /// @brief gets the sine value of an angle
@@ -709,8 +709,8 @@ namespace kraken::cal {
   auto sin ( Ty angle ) noexcept -> Ty
   {
     angle = to_radian(angle);
-    const Ty  b = static_cast<Ty> (4.) / constants::π_v<Ty>;
-    const Ty  c = static_cast<Ty> (-4.) / (constants::π_v<Ty> * constants::π_v<Ty>);
+    const Ty  b = static_cast<Ty> (4.) / constants::pi_v<Ty>;
+    const Ty  c = static_cast<Ty> (-4.) / (constants::pi_v<Ty> * constants::pi_v<Ty>);
     const Ty  p = static_cast<Ty> (.225);
     const Ty temp = b * angle + c * angle
           * (less_than(angle, static_cast<Ty>(0.)) ? -angle : angle);
@@ -728,7 +728,7 @@ namespace kraken::cal {
   auto cos ( Ty angle ) noexcept -> Ty
   {
     angle = to_radian(angle);
-    constexpr Ty tp = static_cast<Ty>(1.)/(2.*constants::π_v<Ty>);
+    constexpr Ty tp = static_cast<Ty>(1.)/(2.*constants::pi_v<Ty>);
     angle *= tp;
     angle -= static_cast<Ty>(.25) + floor(angle + static_cast<Ty>(.25));
     angle *= static_cast<Ty>(16.) * (abs(angle) - static_cast<Ty>(.5));
@@ -795,7 +795,7 @@ namespace kraken::cal {
     const Ty b = static_cast<Ty>(0.9217841528914573);
     const Ty c = static_cast<Ty>(-1.2845906244690837);
     const Ty d = static_cast<Ty>(0.295624144969963174);
-    return constants::π_v<Ty>/static_cast<Ty>(2.)
+    return constants::pi_v<Ty>/static_cast<Ty>(2.)
         +  (a * angle + b * angle * angle * angle)
                                 /
       (static_cast<Ty>(1.) + c * angle * angle + d * angle * angle * angle * angle);
@@ -819,7 +819,7 @@ namespace kraken::cal {
     res -= static_cast<Ty>(0.2121144);
     res *= angle;
     res += static_cast<Ty>(1.5707288);
-    res = constants::π_v<Ty> * static_cast<Ty>(0.5) -
+    res = constants::pi_v<Ty> * static_cast<Ty>(0.5) -
                             sqrt(static_cast<Ty>(1.0) - angle) * res;
     return res - 2 * negate * res;
   }
@@ -836,8 +836,19 @@ namespace kraken::cal {
     const Ty double_angle { angle * angle };
     const Ty A {0.0776509570923569};
     const Ty B {-0.287434475393028};
-    const Ty C {(constants::π_v<Ty>/static_cast<Ty>(4.)) - A - B};
+    const Ty C {(constants::pi_v<Ty>/static_cast<Ty>(4.)) - A - B};
     return ((A*double_angle + B)*double_angle + C)*angle;
+  }
+
+  /// @brief returns a pair of the integral and the fractional part of a floating-point value
+  /// @param x the float value
+  template <class Ty>
+  requires is_float<Ty>
+  [[nodiscard]]
+  inline constexpr
+  auto modf ( const Ty x ) noexcept
+  {
+    return std::pair( trunc(x), frac(x) );
   }
 } // namespace kraken::cal
 
