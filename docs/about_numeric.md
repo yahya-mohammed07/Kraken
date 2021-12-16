@@ -55,6 +55,7 @@
   - `fmod`
   - `to_radian`
   - `to_degree`
+  - `modf` returns a pair of the integral and the fractional part of a floating-point value
 
 ## Note: for usage please check the `tests` folder
 
