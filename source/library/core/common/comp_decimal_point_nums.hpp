@@ -29,7 +29,6 @@ SOFTWARE.
 
 #include "abs.hpp"
 #include "max_min.hpp"
-#include <limits>
 
 namespace kraken::cal {
 
@@ -42,6 +41,17 @@ namespace kraken::cal {
     -> bool
   {
     return abs(a - b) <= ( min( abs(a),abs(b) ) * eps );
+  }
+
+  /// @brief checks if two floating-point numbers are not equal
+  template <class Ty>
+  requires std::is_floating_point_v<Ty>
+  [[nodiscard]] inline constexpr
+  auto not_equal(Ty a, Ty b,
+        const Ty eps = std::numeric_limits<Ty>::epsilon())
+    -> bool
+  {
+    return !equal(a, b, eps);
   }
 
   /// @brief checks if two floating-point numbers are approximately equal
@@ -74,7 +84,7 @@ namespace kraken::cal {
       const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
   {
-    return ( (a - b) > ( max( abs(a),abs(b) ) * eps ) || equal(a, b, eps));
+    return ( greater_than(a, b, eps) ) || equal(a, b, eps);
   }
 
   /// @brief checks if `A` is less than `B`
@@ -96,7 +106,7 @@ namespace kraken::cal {
       const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
   {
-    return ( (b - a) > ( max( abs(a),abs(b) ) * eps ) || equal(a, b, eps) );
+    return ( less_than(a, b, eps) ) || equal(a, b, eps) ;
   }
 } // namespace kraken::cal
 
