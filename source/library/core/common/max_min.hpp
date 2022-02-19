@@ -38,38 +38,41 @@ struct Min_Max {
 
 namespace kraken::cal {
 
-  /**
-   * @brief calculate `max` with two numbers
-   * @param  a  A thing of arbitrary type.
-   * @param  b  Another thing of arbitrary type.
-   * @return Ty
-   */
+  /// @brief calculate `max` with two numbers
+  /// @param  a  A thing of arbitrary type.
+  /// @param  b  Another thing of arbitrary type.
+  /// @return Ty
   template<class T>
   [[nodiscard]]
   inline constexpr
   auto max(const T a, const T b)
       -> T
   {
-    return a > b ? a : b;
+    if constexpr ( std::is_integral_v<T>) {
+      return a ^ ((a ^ b) & -(a < b));
+    } else
+    { return a > b ? a : b; }
   }
 
-  /**
-   * @brief calculate `min` with two numbers
-   * @param  a  A thing of arbitrary type.
-   * @param  b  Another thing of arbitrary type.
-   * @return Ty
-   */
+  /// @brief calculate `min` with two numbers
+  /// @param  a  A thing of arbitrary type.
+  /// @param  b  Another thing of arbitrary type.
+  /// @return Ty
   template<class T>
   [[nodiscard]]
   inline constexpr
   auto min(const T a, const T b)
       -> T
   {
-    return a > b ? b : a;
+    if constexpr ( std::is_integral_v<T> ) {
+      return b ^ ((a ^ b) & -(a < b));
+    } else
+    { return a > b ? b : a; }
   }
 
 
   /// @brief calculates max in a init-list
+  /// @return Ty
   template<class Ty>
   [[nodiscard]]
   inline constexpr
@@ -84,6 +87,7 @@ namespace kraken::cal {
   }
 
   /// @brief calculates max in a init-list
+  /// @return Ty
   template<class Ty>
   [[nodiscard]]
   inline constexpr
@@ -97,11 +101,9 @@ namespace kraken::cal {
     return high;
   }
 
-  /**
-   * @brief calculate `max` with arbitrary numbers
-   * @param  a...  A thing of arbitrary type
-   * @return Ty
-   */
+  /// @brief calculate `max` with arbitrary numbers
+  /// @param  a...  arbitrary number of arguments
+  /// @return First
   template<class First, class Second, class ...Args>
   [[nodiscard]]
   inline constexpr
@@ -110,7 +112,7 @@ namespace kraken::cal {
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
-      return a > b ? a : b;
+      return max(a, b);
     } else {
       return max(max(a,b), args...);
     }
@@ -122,7 +124,6 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto max(const Cont &container)
-    -> auto
   {
     auto high {container[0]};
     for (auto &i : container) {
@@ -132,6 +133,7 @@ namespace kraken::cal {
   }
 
   /// @brief calculates min in a init-list
+  /// @return Ty
   template<class Ty>
   [[nodiscard]]
   inline constexpr
@@ -146,6 +148,7 @@ namespace kraken::cal {
   }
 
   /// @brief calculates min in a init-list
+  /// @return Ty
   template<class Ty>
   [[nodiscard]]
   inline constexpr
@@ -159,11 +162,9 @@ namespace kraken::cal {
     return low;
   }
 
-  /**
-   * @brief calculate `min` with arbitrary numbers
-   * @param  a...  A thing of arbitrary number of arguments
-   * @return Ty
-   */
+  /// @brief calculate `min` with arbitrary numbers
+  /// @param  a...  arbitrary number of arguments
+  /// @return First
   template<class First, class Second, class ...Args>
   [[nodiscard]]
   inline constexpr
@@ -172,7 +173,7 @@ namespace kraken::cal {
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
-      return a > b ? b : a;
+      return min(a, b);
     } else {
       return min(min(a,b), args...);
     }
@@ -184,7 +185,6 @@ namespace kraken::cal {
   [[nodiscard]]
   inline constexpr
   auto min(const Cont &container)
-    -> auto
   {
     auto low {container[0]};
     for (auto &i : container) {
@@ -193,27 +193,23 @@ namespace kraken::cal {
     return low;
   }
 
-  /**
-   * @brief calculate `min_max` with two numbers
-   * @param  a  A thing of arbitrary type.
-   * @param  b  Another thing of arbitrary type.
-   * @return Min_Max
-   */
-  template<class T>
-  requires std::is_floating_point_v<T> || std::is_integral_v<T>
+  /// @brief calculate `min_max` with two numbers
+  /// @param  a  A thing of arbitrary type.
+  /// @param  b  Another thing of arbitrary type.
+  /// @return Min_Max<Ty>
+  template<class Ty>
+  requires std::is_floating_point_v<Ty> || std::is_integral_v<Ty>
   [[nodiscard]]
   inline constexpr
-  auto min_max(const T a, const T b)
-      -> Min_Max<T>
+  auto min_max(const Ty a, const Ty b)
+      -> Min_Max<Ty>
   {
-    if ( a > b) {
-      return { b, a };
-    }
-    return { a, b };
+    return { min(a, b), max( a, b) };
   }
 
 
   /// @brief calculates `min_max` in a init-list
+  /// @return Min_Max<Ty>
   template<class Ty>
   [[nodiscard]]
   inline constexpr
@@ -230,6 +226,7 @@ namespace kraken::cal {
   }
 
   /// @brief calculates `min_max` in a init-list
+  /// @return Min_Max<Ty>
   template<class Ty>
   [[nodiscard]]
   inline constexpr
@@ -245,11 +242,9 @@ namespace kraken::cal {
     return {low, high};
   }
 
-  /**
-   * @brief calculate `min_max` with arbitrary numbers
-   * @param  a...  A thing of arbitrary number of arguments
-   * @return Min_Max
-   */
+  /// @brief calculate `min_max` with arbitrary numbers
+  /// @param  a...  A thing of arbitrary number of arguments
+  /// @return Min_Max<Ty>
   template<class First, class Second, class ...Args>
   [[nodiscard]]
   inline constexpr
@@ -261,6 +256,7 @@ namespace kraken::cal {
   }
 
   /// @brief: `finds min_max` in a container
+  /// @return Min_Max<decltype(container[0])>
   template<class Cont>
   requires std::is_class_v<Cont>
   [[nodiscard]]
