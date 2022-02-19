@@ -148,6 +148,16 @@ TEST_CASE("MODF") {
   REQUIRE(fractional == .25);
 }
 
+TEST_CASE("1's complement") {
+  REQUIRE(cal::ones_complement<4>(1) == 0b1110);
+  REQUIRE(cal::ones_complement(1, 4) == 14);
+}
+
+TEST_CASE("2's complement") {
+  REQUIRE(cal::twos_complement<4>(1) == 0b1111);
+  REQUIRE(cal::twos_complement(1, 4) == 15);
+}
+
 TEST_CASE("ROUND") {
   REQUIRE(cal::round(10.25) == 10);
   REQUIRE(cal::round(10.55) == 11);
@@ -159,6 +169,13 @@ TEST_CASE("HYPOT") {
   REQUIRE(cal::hypot(4, 3) == 5);
   REQUIRE(cal::approx_equal(cal::hypot(2., 3.) , 3.605, 0.001));
   REQUIRE(cal::hypot( {2,3,4,5} ) == 7 );
+}
+
+TEST_CASE("ABSOLUTE") {
+  REQUIRE(cal::abs(-4) == 4);
+  REQUIRE(cal::abs( -(std::numeric_limits<long long>::max()) )
+                                    == std::numeric_limits<long long>::max());
+  REQUIRE(cal::equal(cal::abs(-4.034), 4.034));
 }
 
 TEST_CASE("FIBONACCI") {
@@ -188,12 +205,22 @@ TEST_CASE("DIV") {
   REQUIRE(rem == 42);
 }
 
-TEST_CASE("IS_NEG") {
-  REQUIRE(cal::is_neg(-0.0435345) == true);
-  REQUIRE(cal::is_neg(0.0435345) == false);
+TEST_CASE("IS NEGATIVE") {
   REQUIRE(cal::is_neg(4) == false);
   REQUIRE(cal::is_neg(-1) == true);
   REQUIRE(cal::is_neg(0) == false);
+  REQUIRE(cal::is_neg(-std::numeric_limits<long long>::max()) == true);
+  REQUIRE(cal::is_neg(std::numeric_limits<std::size_t>::max()) == false);
+  REQUIRE(cal::is_neg(-std::numeric_limits<std::size_t>::max()) == false);
+}
+
+TEST_CASE("HAS A SIGN BIT") {
+  REQUIRE(cal::sign(-0.0f) == true);
+  REQUIRE(cal::sign(+0.0f) == false);
+  REQUIRE(cal::sign(-0.0l) == true);
+  REQUIRE(cal::sign(+0.0l) == false);
+  REQUIRE(cal::sign(-0.0435345) == true);
+  REQUIRE(cal::sign(0.0435345) == false);
 }
 
 TEST_CASE("IS_PRIME") {
@@ -205,12 +232,11 @@ TEST_CASE("IS_PRIME") {
 }
 
 TEST_CASE("FRACTION") {
-  REQUIRE( cal::equal(cal::frac(10.25), .25) );
+  REQUIRE( cal::not_equal(cal::frac(10.25), .30) );
   REQUIRE( cal::equal(cal::frac(2251799813685240.0) , .0 ));
   REQUIRE( cal::equal(cal::frac(-34.25), 0.25));
   REQUIRE( cal::equal(cal::frac(345.4324324234124), .4324324234124, 0.00001));
 }
-
 
 TEST_CASE("FMOD") {
   REQUIRE(cal::equal( cal::fmod(+5.1, +3.0), 2.1 ) );
@@ -285,4 +311,29 @@ TEST_CASE("TRIGONOMETRY FUNCTIONS") {
   //
   REQUIRE( cal::equal( cal::arc_tan(-1.), -0.785398163, .00000001) );
   REQUIRE( cal::equal( cal::arc_tan(1.), 0.785398163, 0.0000001) );
+}
+
+TEST_CASE("EXP") {
+  REQUIRE( cal::equal( cal::exp( 1.f ),  constants::e_v<float>) );
+}
+
+TEST_CASE("GAMMA") {
+  REQUIRE( cal::equal( cal::gamma( 10. ),  362880., 0.001) );
+  REQUIRE( cal::equal( cal::gamma( 0.5 ),  1.77245, 0.001) );
+  REQUIRE( cal::equal( cal::gamma( 1. ),  1., 0.001) );
+}
+
+TEST_CASE("BETA") {
+  REQUIRE( cal::equal( cal::beta( 10., 9.),  2.2853e-06, 0.001) );
+  REQUIRE( cal::equal( cal::beta( 3., 7.),  0.00396825, 0.001) );
+}
+
+TEST_CASE("BIT CAST") {
+  const double f64v{ 19880124.0 };
+  const auto u64v { cal::bit_cast<std::uint64_t>(f64v) };
+  REQUIRE( cal::bit_cast<double>(u64v) == f64v );
+//
+  const std::uint64_t u64v2{ 0x3fe9000000000000ull };
+  const auto f64v2 { cal::bit_cast<double>(u64v2) };
+  REQUIRE( cal::bit_cast<std::uint64_t>(f64v2) == u64v2 );
 }
