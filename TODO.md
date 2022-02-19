@@ -26,12 +26,11 @@
 - [x] **div()**
 - [x] **min_max()**
 - [x] **modf()**
-- [ ] **gamma()**
-- [ ] **beta()**
+- [x] **gamma()**
+- [x] **beta()**
 - [x] **gcd()**
 - [x] **lcm()**
 - [x] **factorial()**
 - [x] **fibonacci()**
-- [ ] **LU decomposition()**
 - [x] **Newton's Forward Difference Formula()**
-- [ ] **Lagrange Interpolation()**
+- [x] **Lagrange Interpolation()**
