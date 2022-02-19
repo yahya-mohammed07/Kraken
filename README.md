@@ -118,14 +118,14 @@ And that folder is :-
   auto main()
       -> int
   {
-    std::cout << constants::π << '\n';
+    std::cout << constants::pi << '\n';
   }
   ```
 
 ## in case if you want to use the library with `Apology` system:-
 
 * ```cpp
-  #define APOLOGY   // define this macro before including `Kraken`  
+  #define APOLOGY   // define this macro before including `Kraken`
   #include <Kraken/all.hpp>
   #include <iostream>
 
@@ -134,9 +134,9 @@ And that folder is :-
   auto main()
       -> int
   {
-    std::cout << constants::π << '\n';
+    std::cout << constants::pi << '\n';
   }
   ```
-  
+
 [PeaZip]: https://peazip.github.io/
 [keka]: https://www.keka.io/en/
