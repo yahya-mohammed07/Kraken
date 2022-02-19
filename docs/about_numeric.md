@@ -4,11 +4,11 @@
 
 ### - Most of the functions are already exist in `<cmath>` what is the difference?
 
-- In `numeric.hpp` all functions are built in `cpp20` standard and the special guests are `constexpr` and `type_traits` so, some of these functions are actually faster and more accurate! + you get compile time error checks!
+- In `numeric.hpp` most of these functions are built in `cpp20` standard and the special guests are `constexpr` and `type_traits` so, some of these functions are actually faster and more accurate! + you get compile time error checks!
 
 ### - All the functions are built with `constexpr`?
 
-- Yes!
+- mostly, Yes!
 
 ## What's inside?
 
@@ -18,7 +18,7 @@
 - inside `kraken::cal`:
   - `acc`Is short for `accumulate`: It can compute `scalar operations (+,-,*)` of a container with no need of iterators
   - `calcu` Is short for `calculate`: It can compute `scalar operations (+,-,*)` on a `init-list` or `variadic` argument ( not recommended for `subtraction` )
-  - `abs`
+  - `abs` uses bit masking for integrals
   - `floor`
   - `ceil`
   - `ln` : log base `e` of x
@@ -40,7 +40,7 @@
   - `fibonacci`
   - `div` gives a pair of `quotient` and `remainder`
   - `factorial` **recursive**
-  - `is_neg`
+  - `is_neg` uses `Bit Twiddling` or integral types
   - `is_prime`
   - `cos`
   - `sin`
@@ -56,6 +56,12 @@
   - `to_radian`
   - `to_degree`
   - `modf` returns a pair of the integral and the fractional part of a floating-point value
+  - `ones_complement` computes 1's complement
+  - `twos_complement` computes 2's complement
+  - `exp` e^n
+  - `gamma`
+  - `beta`
+  - `sign` gives sign bit of a floating point
 
 ## Note: for usage please check the `tests` folder
 
