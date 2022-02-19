@@ -28,19 +28,27 @@ SOFTWARE.
 */
 
 
-#include <type_traits>
+#include <cstdint>
+#include <limits>
+#include "my_concepts.hpp"
+#include "basic_bit_cast.hpp"
 
 namespace kraken::cal {
   /// @brief gives the absolute of a value
+  /// @param val
+  /// @return Ty
   template<class Ty>
-  requires (!std::is_class_v<Ty>)
   [[nodiscard]]
   inline constexpr
-  auto abs(const Ty val)
-      -> Ty
+  real_num auto abs(const Ty val) noexcept
   {
-    if  (val < static_cast<Ty>(0)) {return -val;}
-    return val;
+    if constexpr ( std::is_integral_v<Ty> ) {
+      const Ty mask { val >> (sizeof(Ty) *
+          std::numeric_limits<unsigned char>::digits-1UL) };
+      return (val ^ mask) - mask;
+    } else {
+      return val < static_cast<Ty>(0) ? -(val) : val;
+    }
   }
 } // namespace kraken::cal
 
