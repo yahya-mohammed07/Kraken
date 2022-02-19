@@ -48,7 +48,7 @@ template <class T, std::size_t ROW, std::size_t COL>
   requires (!std::is_class_v<T>)
 class matrix_
 {
-  static_assert(ROW > 0ull && COL > 0ull, "ROW-COL must be greater than `0`");
+  static_assert(ROW > 0UL && COL > 0UL, "ROW-COL must be greater than `0`");
 
 private:
   std::array<T, (ROW*COL)>  m_data{};
@@ -98,24 +98,24 @@ public:
 
   constexpr ~matrix_() = default;
 
-  /// @brief read-only
+  ///
   [[nodiscard]] constexpr
-  auto begin() const noexcept   { return m_data.begin(); }
+  auto begin() const noexcept     { return m_data.begin(); }
   [[nodiscard]] constexpr
-  auto end() const noexcept     { return m_data.end();   }
+  auto end() const noexcept       { return m_data.end();   }
   [[nodiscard]] constexpr
-  auto rbegin() const noexcept   { return m_data.rbegin(); }
+  auto rbegin() const noexcept    { return m_data.rbegin(); }
   [[nodiscard]] constexpr
-  auto rend() const noexcept     { return m_data.rend();   }
-  /// @brief modifiable
+  auto rend() const noexcept      { return m_data.rend();   }
+  ///
   [[nodiscard]] constexpr
-  auto begin() noexcept   { return m_data.begin(); }
+  auto begin() noexcept           { return m_data.begin(); }
   [[nodiscard]] constexpr
-  auto end() noexcept     { return m_data.end();   }
+  auto end() noexcept             { return m_data.end();   }
   [[nodiscard]] constexpr
-  auto rbegin() noexcept   { return m_data.rbegin(); }
+  auto rbegin() noexcept          { return m_data.rbegin(); }
   [[nodiscard]] constexpr
-  auto rend() noexcept     { return m_data.rend();   }
+  auto rend() noexcept            { return m_data.rend();   }
   /// @methods:
 
   /// @get: column
@@ -126,7 +126,7 @@ public:
     return COL;
   }
 
-  /// @ge: row
+  /// @get: row
   [[nodiscard]] constexpr
   auto row() const
       -> std::size_t
@@ -134,6 +134,7 @@ public:
     return ROW;
   }
 
+  /// @get: row and column
   [[nodiscard]] constexpr
   auto row_col() const
       -> row_col
@@ -148,23 +149,19 @@ public:
     return ROW*COL;
   }
 
-  /**
-   * @brief yes
-   * @return bool
-   */
+  /// @brief yes
+  /// @return bool
   [[nodiscard]] constexpr
   auto empty() const
     -> bool
   {
-    return ROW*COL == 0ul;
+    return ROW*COL == 0UL;
   }
 
-  /**
-   * @brief get/change element at given row-col
-   * @tparam row row-number
-   * @tparam col column-number
-   * @return T&
-   */
+  /// @brief get/modify element at given row-col
+  /// @tparam row row-number
+  /// @tparam col column-number
+  /// @return T&
   template<const std::size_t row, std::size_t col>
   [[nodiscard]] constexpr
   auto at()
@@ -174,12 +171,10 @@ public:
     return m_data[(row * COL) + col];
   }
 
-  /**
-   * @brief get/change element at given row-col
-   * @tparam row row-number
-   * @tparam col column-number
-   * @return T
-   */
+  /// @brief get element at given row-col
+  /// @tparam row row-number
+  /// @tparam col column-number
+  /// @return T&
   template<const std::size_t row, std::size_t col>
   [[nodiscard]] constexpr
   auto at() const
@@ -188,12 +183,11 @@ public:
     static_assert( (row >= 0 && col >= 0) && (row < ROW && col < COL) );
     return m_data[(row * COL) + col];
   }
-  /**
-   * @brief get/change element at given row-col
-   * @param row row-number
-   * @param col column-number
-   * @return T&
-   */
+
+  /// @brief get/modify element at given row-col
+  /// @param row row-number
+  /// @param col column-number
+  /// @return T&
   [[nodiscard]] constexpr
   auto at(const std::size_t &row, const std::size_t &col)
       -> auto &
@@ -202,12 +196,10 @@ public:
     return m_data[(row * COL) + col];
   }
 
-  /**
-   * @brief get/change element at given row-col
-   * @param row row-number
-   * @param col column-number
-   * @return T
-   */
+  /// @brief get element at given row-col
+  /// @param row row-number
+  /// @param col column-number
+  /// @return T
   [[nodiscard]] constexpr
   auto at(const std::size_t &row, const std::size_t &col) const
       -> auto
@@ -216,12 +208,9 @@ public:
     return m_data[(row * COL) + col];
   }
 
-  /**
-   * @brief swaps row in given matrix
-   * @param start which row
-   * @param with change with row
-   * @return nothing
-   */
+  /// @brief swaps row in given matrix
+  /// @param start which row
+  /// @param with change with row
   constexpr
   auto swap_rows(const std::size_t &start, const std::size_t &with)
       -> void
@@ -230,11 +219,10 @@ public:
       std::swap(at(start, i), at(with, i));
     }
   }
-  /**
-   * @brief swaps col in given matrix
-   * @param start which col
-   * @param with change with col
-   */
+
+  /// @brief swaps column in given matrix
+  /// @param start which column
+  /// @param with change with column
   constexpr
   auto swap_cols(const std::size_t &start, const std::size_t &with)
       -> void
@@ -244,17 +232,15 @@ public:
     }
   }
 
-  /**
-   * @brief sorts using insertion-sort if and only-if the size was less than 256
-   * else it will sort using std::sort
-   * @param order bool value -true ascending -false descending
-   * @return nothing
-   */
+  /// @brief sorts using insertion-sort if and only-if the size IS less than 256
+  /// else it will sort using std::sort
+  /// @param order bool value `true` for ascending and `false` for descending
+  /// @return nothing
   constexpr
   auto sort(const bool order = true)
       -> void
   {
-    if ( size() < 256ul ) { // insertion-sort
+    if ( size() < 256UL ) { // insertion-sort
       if ( order ) {
         for ( std::size_t i {0}; i < size(); ++i) {
           std::size_t j {i};
@@ -278,10 +264,8 @@ public:
     std::sort( begin(), end(), std::greater<T>{} );
   }
 
-  /**
-   * @brief changes its rows into columns and its columns into rows
-   * @return nothing
-   */
+  /// @brief changes its rows into columns and its columns into rows
+  /// @return nothing
   constexpr
   auto transpose_squared() -> void
   {
@@ -292,25 +276,22 @@ public:
     }
   }
 
-  /**
-   * @brief changes its rows into columns and its columns into rows
-   * @return a tmatrix
-   */
+  /// @brief changes its rows into columns and its columns into rows
+  /// @return a tmatrix
   [[nodiscard]] constexpr
-  auto transpose_triangular() const -> auto
+  auto transpose_triangular() const
   {
-    matrix_<T, COL, ROW> temp;
-    for ( std::size_t i {0}; i < ROW; ++i ) {
-      for ( std::size_t j {0}; j < COL; ++j ) {
+    matrix_<T, COL, ROW> temp{};
+    for ( std::size_t i {}; i < ROW; ++i ) {
+      for ( std::size_t j {}; j < COL; ++j ) {
         temp[(ROW*j)+i] = std::move(m_data[(COL*i)+j]);
       }
     }
     return temp;
   }
-  /**
-   * @brief fills the container with a certain value
-   * @return nothing
-   */
+
+  /// @brief fills the container with a certain value
+  /// @return nothing
   constexpr
   auto fill( T&& value ) -> void
   {
@@ -319,14 +300,12 @@ public:
     }
   }
 
-  /**
-   * @brief rotate the matrix clock-wise or anti-clock-wise
-   * default is clock-wise, put false for anti-clock-wise
-   * @tparam row - new row after transposing
-   * @tparam col - new column after transposing
-   * @tparam clock_wise - default = true
-   * @return nothing
-   */
+  /// @brief rotate the matrix clock-wise or anti-clock-wise
+  /// default is clock-wise, put false for anti-clock-wise
+  /// @tparam row - new row after transposing
+  /// @tparam col - new column after transposing
+  /// @tparam clock_wise - default = true
+  /// @return nothing
   template<const std::size_t row, const std::size_t col
                       ,const bool clock_wise = true>
   constexpr
@@ -356,12 +335,10 @@ public:
     }
   }
 
-  /**
-   * @brief rotate the matrix clock-wise or anti-clock-wise
-   * default is clock-wise, put false for anti-clock-wise
-   * @tparam clock_wise - default = true
-   * @return nothing
-   */
+  /// @brief rotate the matrix clock-wise or anti-clock-wise
+  /// default is clock-wise, put false for anti-clock-wise
+  /// @tparam clock_wise - default = true
+  /// @return nothing
   template<const bool clock_wise = true>
   constexpr
   auto rotate_squared()
@@ -389,10 +366,8 @@ public:
   }
 
 /// @operators: on matrices
-  /**
-   * @brief assigns two matrices
-   * @return matrix
-   */
+  /// @brief assigns two matrices
+  /// @return matrix
   constexpr matrix_& operator=(const matrix_ &other) noexcept
   {
     if (this == &other) {
@@ -421,10 +396,8 @@ public:
     return *this;
   }
 
-  /**
-   * @brief adds two matrix containers
-   * @return matrix
-   */
+  /// @brief adds two matrix containers
+  /// @return matrix
   constexpr friend matrix_ operator+(matrix_ lhs ,const matrix_ &rhs) noexcept
   {
     lhs += rhs;
@@ -437,20 +410,16 @@ public:
     return *this;
   }
 
-  /**
-   * @brief adds a matrix containers with a scalar
-   * @return matrix
-   */
+  /// @brief adds a matrix containers with a scalar
+  /// @return matrix
   constexpr friend matrix_ operator+(matrix_ lhs , const T scalar) noexcept
   {
     lhs += scalar;
     return lhs;
   }
 
-  /**
-   * @brief multiplies a matrix containers with a `scalar`
-   * @return matrix
-   */
+  /// @brief multiplies a matrix containers with a `scalar`
+  /// @return matrix
   [[nodiscard]] constexpr
   matrix_& operator*( T val)  noexcept
   {
@@ -460,15 +429,13 @@ public:
     return *this;
   }
 
-  /**
-   * @brief multiplies two matrix containers
-   * `col` of a must be equal to `row` b
-   * @return matrix
-   */
+  /// @brief multiplies two matrix containers
+  /// `col` of a must be equal to `row` b
+  /// @return matrix
   [[nodiscard]] constexpr
   matrix_ operator*(const matrix_ &rhs)  noexcept
   {
-    if constexpr ( ROW == 1ull ) {
+    if constexpr ( ROW == 1UL ) {
       for ( std::size_t j{} ; const auto& i : rhs ) {
         m_data[j] *= i;
         ++j;
@@ -490,15 +457,13 @@ public:
     return temp;
   }
 
-  /**
-   * @brief multiplies two matrix collections
-   * `col` of a must be equal to `row` b
-   * @return matrix
-   */
+  /// @brief multiplies two matrix collections
+  /// `col` of a must be equal to `row` b
+  /// @return matrix
   [[nodiscard]] constexpr
   matrix_ operator*(matrix_ &&rhs) noexcept
   {
-    if constexpr ( ROW == 1ull ) {
+    if constexpr ( ROW == 1UL ) {
       for ( std::size_t j{} ; const auto& i : rhs ) {
         m_data[j] *= i;
         ++j;
@@ -520,12 +485,9 @@ public:
     return temp;
   }
 
-
-  /**
-   * @brief multiplies two matrix containers
-   * `col` of a must be equal to `row` b
-   * @return matrix
-   */
+  /// @brief multiplies two matrix containers
+  /// `col` of a must be equal to `row` b
+  /// @return matrix
   template<const std::size_t L>
   [[nodiscard]] constexpr
   matrix_<T , ROW, L> operator*(const matrix_<T , COL, L> &rhs) const noexcept
@@ -545,11 +507,9 @@ public:
     return temp;
   }
 
-  /**
-   * @brief multiplies two matrix collections
-   * `col` of a must be equal to `row` b
-   * @return matrix
-   */
+  /// @brief multiplies two matrix collections
+  /// col` of a must be equal to `row` b
+  /// @return matrix
   template<const std::size_t L>
   [[nodiscard]] constexpr
   matrix_<T , ROW, L> operator*(matrix_<T , COL, L> &&rhs) const noexcept
@@ -578,10 +538,8 @@ public:
     return *this;
   }
 
-  /**
-   * @brief subtructs two matrix containers
-   * @return matrix
-   */
+  /// @brief subtructs two matrix containers
+  /// @return matrix
   constexpr friend matrix_ operator-(matrix_ lhs ,const matrix_ &rhs) noexcept
   {
     lhs -= rhs;
@@ -594,20 +552,16 @@ public:
     return *this;
   }
 
-  /**
-   * @brief adds a matrix containers with a scalar
-   * @return matrix
-   */
+  /// @brief adds a matrix containers with a scalar
+  /// @return matrix
   constexpr friend matrix_ operator-(matrix_ lhs , const T scalar) noexcept
   {
     lhs -= scalar;
     return lhs;
   }
 
-  /**
-   * @brief subtructs a matrix containers with a scalar
-   * @return matrix
-   */
+  /// @brief subtructs a matrix containers with a scalar
+  /// @return matrix
   constexpr matrix_& operator-(const T val) noexcept
   {
     for ( std::size_t j{} ; auto &&i : *this ) {
@@ -617,37 +571,37 @@ public:
     return *this;
   }
 
-  /**
-   * @brief element access
-   * @brief Subscript access to the data contained in the %matrix
-   * @param i The index of the element for which data should be accessed.
-   * @return constexpr T&
-   */
+  /// @brief get/modify an element in a given index
+  /// @brief Subscript access to the data contained in the %matrix
+  /// @param i The index of the element for which data should be accessed.
+  /// @return T&
   constexpr T& operator[](const std::size_t i) noexcept
   {
     return m_data[i];
   }
 
-  /**
-   * @brief element access
-   * @brief Subscript access to the data contained in the %matrix
-   * @param i The index of the element for which data should be accessed.
-   * @return constexpr T&
-   */
+  /// @brief get an element in a given index
+  /// @brief Subscript access to the data contained in the %matrix
+  /// @param i The index of the element for which data should be accessed.
+  /// @return T
   constexpr T operator[](const std::size_t i) const noexcept
   {
     return m_data[i];
   }
 
-  constexpr bool operator!=(const matrix_ &rhs) const noexcept {
+  constexpr bool operator!=(const matrix_ &rhs) const noexcept
+  {
     return m_data != rhs.m_data;
   }
-  constexpr bool operator==(const matrix_ &rhs) const noexcept {
+  constexpr bool operator==(const matrix_ &rhs) const noexcept
+  {
     return m_data == rhs.m_data;
   }
 
+  /// @brief prints data in matrix form
   constexpr
-  friend std::ostream &operator<<(std::ostream &os, const matrix_ & mat) {
+  friend std::ostream &operator<<(std::ostream &os, const matrix_ & mat)
+  {
     for (std::size_t count{}; auto &&i : mat) {
       if (count == COL) { std::printf("%c", '\n'); count=0; }
       if constexpr ( std::is_floating_point_v<T> ) {
