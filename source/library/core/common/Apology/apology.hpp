@@ -1,7 +1,7 @@
 #ifndef APOLOGY_HPP
 #define APOLOGY_HPP
 
-/// @version v0.6.7
+/// @version v0.7
 
 /*
 
@@ -58,7 +58,7 @@ struct Err {
 };
 
 enum Err_codes {
-  big_arg=0,
+  big_arg,
   neg_arg,
   zero,
   even,
@@ -76,10 +76,10 @@ std::unordered_map<int, std::string_view> apologies
 };
 
 constexpr
-auto Apology = [](auto apology)
-  -> bool
+auto Apology = [](auto&& apology)
+  -> int
 {
-  auto [file_name, function_name, code, line] = apology();
+  const auto& [file_name, function_name, code, line] = apology();
   if ( apologies.find(code) == apologies.end() ) {
     std::cerr << "-Err_code not defined.\n";
     throw(1);
