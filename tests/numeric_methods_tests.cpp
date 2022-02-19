@@ -35,9 +35,9 @@ TEST_CASE("CRAMER'S RULE") {
   );
   constexpr matrix_<float, 1, 3> right_side{12, 11, 2};
   const auto actual =
-    std::move(kraken::num_methods::cramer(mat, right_side));
+    kraken::num_methods::cramer(mat, right_side);
   constexpr matrix_<float, 1, 3> expected
-  (2.99999928474f, 1.00000035763f, 1.99999976158f);
+  (2.99999928474f, 1.00000023842f, 1.99999976158f);
   REQUIRE(expected == actual);
 }
 
@@ -57,7 +57,7 @@ TEST_CASE("NEWTON'S METHOD") {
                 }, [](auto x){
                   return (2.*x);
                 });
-  constexpr float expected = 1.4142135623730951;
+  constexpr float expected = 1.4142135623730951f;
   REQUIRE(expected == actual);
 }
 
@@ -66,5 +66,13 @@ TEST_CASE("Newton's Forward Difference Formula") {
   std::vector<float> yi { 46, 66, 81, 93, 101 };
   const auto actual = kraken::num_methods::newtown_forward(xi, yi, 1895.f);
   const auto expected { 54.8528f };
+  REQUIRE(expected == actual);
+}
+
+TEST_CASE("Lagrange Interpolation") {
+  constexpr std::array<float, 4> xi { 2, 3, 4, 5};
+  constexpr std::array<float, 4> yi { 10, 30, 68, 150};
+  constexpr auto actual{ kraken::num_methods::lagrange(xi, yi, 1.f) };
+  constexpr auto expected { -18.f };
   REQUIRE(expected == actual);
 }
