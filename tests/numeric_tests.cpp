@@ -61,13 +61,14 @@ TEST_CASE("CONTAINER TO POWER") {
 }
 
 TEST_CASE("LOG BASE 2 OF X") {
-  REQUIRE(cal::log2(32) == 5u);
-  REQUIRE(cal::log2(82) == 6u);
+  REQUIRE(cal::log2(32) == 5);
+  REQUIRE(cal::log2(82) == 6);
   REQUIRE(cal::approx_equal(cal::log2(32.), 5., 0.1));
 }
 
 TEST_CASE("LOG BASE 10 OF X") {
-  REQUIRE(cal::log10(100) == 2u);
+  REQUIRE(cal::log10(100) == 2);
+  REQUIRE(cal::log10(10) == 1);
 }
 
 TEST_CASE("MAX") {
@@ -76,6 +77,7 @@ TEST_CASE("MAX") {
   REQUIRE(cal::max({33, 87, 3, 66}) == 87);
   constexpr matrix_<int, 1, 4> nums {33, 87, 3, 66};
   REQUIRE(cal::max(nums) == 87);
+  REQUIRE(*cal::max_range(nums.begin(), nums.end()) == 87);
 }
 
 TEST_CASE("MIN") {
@@ -84,6 +86,7 @@ TEST_CASE("MIN") {
   REQUIRE(cal::min({33, 87, 3, 66}) == 3);
   constexpr matrix_<int, 1, 4> nums ( 33, 87, 3, 66 );
   REQUIRE(cal::min(nums) == 3);
+  REQUIRE(*cal::min_range(nums.begin(), nums.end()) == 3);
 }
 
 TEST_CASE("MIN_MAX") {
@@ -336,4 +339,11 @@ TEST_CASE("BIT CAST") {
   const std::uint64_t u64v2{ 0x3fe9000000000000ull };
   const auto f64v2 { cal::bit_cast<double>(u64v2) };
   REQUIRE( cal::bit_cast<std::uint64_t>(f64v2) == u64v2 );
+}
+
+TEST_CASE("MEDIAN") {
+  constexpr matrix_<int, 1, 7> nums { 12, 16, 12, 6, 18, 2, 4};
+  REQUIRE( cal::median(nums) == 12 );
+  constexpr matrix_<double, 1, 8> nums2 { 42, 7, 17, 14, 7, 24, 15, 29};
+  REQUIRE( cal::median(nums2) == 16 );
 }
