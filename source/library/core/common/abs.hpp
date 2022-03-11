@@ -27,28 +27,36 @@ SOFTWARE.
 
 */
 
-
+#include "basic_bit_cast.hpp"
+#include "my_concepts.hpp"
 #include <cstdint>
 #include <limits>
-#include "my_concepts.hpp"
-#include "basic_bit_cast.hpp"
 
-namespace kraken::cal {
+namespace kraken::cal
+{
   /// @brief gives the absolute of a value
   /// @param val
   /// @return Ty
-  template<class Ty>
+  template <class Ty>
   [[nodiscard]]
-  inline constexpr
-  real_num auto abs(const Ty val) noexcept
+  constexpr
+  auto abs(const Ty val) noexcept
+    -> Ty
   {
-    if constexpr ( std::is_integral_v<Ty> ) {
-      const Ty mask { val >> (sizeof(Ty) *
-          std::numeric_limits<unsigned char>::digits-1UL) };
-      return (val ^ mask) - mask;
-    } else {
-      return val < static_cast<Ty>(0) ? -(val) : val;
-    }
+    return val < static_cast<Ty>(0) ? -(val) : val;
+  }
+
+  /// @note special case for ints
+  template <>
+  [[nodiscard]]
+  constexpr inline
+  auto abs<std::int32_t>(std::int32_t val) noexcept
+    -> std::int32_t
+  {
+    const std::int32_t mask{
+        val >>
+        (sizeof(std::int32_t) * std::numeric_limits<unsigned char>::digits - 1)};
+    return (val ^ mask) - mask;
   }
 } // namespace kraken::cal
 
