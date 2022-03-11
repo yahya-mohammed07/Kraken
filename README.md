@@ -1,5 +1,7 @@
 # Kraken :octopus:
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8c856b79282e4c8f90dae55dc026f3a2)](https://www.codacy.com/gh/yahya-mohammed07/Kraken/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yahya-mohammed07/Kraken&amp;utm_campaign=Badge_Grade)
+
 ## Table of Contents
 
 * [Introduction](#introduction)
