@@ -11,7 +11,7 @@ namespace kraken::cal {
   requires (sizeof(To) == sizeof(From)) &&
       std::is_trivially_copyable_v<From> &&
       std::is_trivially_copyable_v<To>
-  constexpr inline
+  constexpr
   auto bit_cast(const From& src) noexcept
     -> To
   {
