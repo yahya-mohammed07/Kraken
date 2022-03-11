@@ -45,19 +45,6 @@ struct Division {
   Demon Rem{}; // reminder
 };
 
-template <typename It>
-class My_Iota
-{
-private:
-  It m_begin{};
-  It m_end{};
-
-public:
-  constexpr auto begin() const -> It { return m_begin; }
-  constexpr auto end() const -> It { return m_end; }
-  constexpr My_Iota(const It a, const It b)   : m_begin(a), m_end(b) {}
-};
-
 namespace kraken::op {
   struct plus {
     constexpr auto operator()(auto &&...args) noexcept  { return (args + ...); }
@@ -81,7 +68,7 @@ namespace kraken::op {
   /// @param target the container that has been minupilated
   /// @param copy_org copied version of that container
   template <class T>
-  inline constexpr
+   constexpr
   auto restore( T &target, const T &copy_org )
       -> void
   {
@@ -102,7 +89,7 @@ namespace kraken::cal {
   template <class Ty, class Op, class Cont>
   requires real_num<Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto acc(Ty init, Op &&op,
                   const Cont &container) noexcept
       -> Ty
@@ -122,10 +109,10 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty, class Op, class It_begin, class It_end>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto acc(Ty &&init, Op &&op,
                   const It_begin it_begin,
-                    const It_end it_end)
+                    const It_end it_end) noexcept
       -> Ty
   {
     for (auto &&item : My_Iota(it_begin, it_end)) {
@@ -142,12 +129,12 @@ namespace kraken::cal {
   /// @return A
   template <class A, class It_begin, class It_end>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto acc(A &&init, It_begin &&it_begin,
-                  It_end &&it_end)
+                  It_end &&it_end) noexcept
       -> A
   {
-    for ( auto && i : My_Iota(it_begin, it_end)) {
+    for (auto && i : My_Iota(it_begin, it_end)) {
       init += i;
     }
     return init;
@@ -160,12 +147,12 @@ namespace kraken::cal {
   /// @return A
   template <class A, class T>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto acc(A &&init, const T &container)
       -> A
   {
-    for ( auto && i : container) {
-      init += i;
+    for (auto && i : container) {
+      init += std::move(i);
     }
     return init;
   }
@@ -179,7 +166,7 @@ namespace kraken::cal {
   template <class Init, class Op, class... Args>
   requires(std::is_same_v<Init, Args> &&...)
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto calcu(Init &&init, Op op,
     Args &&...args)
       -> Init
@@ -196,12 +183,12 @@ namespace kraken::cal {
   /// return A
   template <class A, class T, class Op>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto calcu(A &&init, Op op,
                     std::initializer_list<T> &&args)
       -> A
   {
-    for ( auto &&i : args ) {
+    for ( auto &&i : My_Iota(args.begin(), args.end()) ) {
       init = op(init, i);
     }
     return init;
@@ -211,8 +198,19 @@ namespace kraken::cal {
   /// @param val
   /// @return int
   template <class Ty>
-  constexpr inline
+  constexpr
   is_int auto is_neg(Ty val) noexcept
+  {
+    return (val < 0) ? true : false;
+  }
+
+  /// @brief checks if the integral number is negative or not
+  /// @param val
+  /// @return int
+  /// @note special case
+  template <>
+  inline constexpr
+  is_int auto is_neg<std::int32_t>(std::int32_t val) noexcept
   {
     return (val ^ +0) < +0;
   }
@@ -222,7 +220,7 @@ namespace kraken::cal {
   /// @return bool
   template <class Ty>
   requires is_float<Ty>
-  constexpr inline
+  constexpr
   auto sign(const Ty val) noexcept
     -> bool
   {
@@ -240,7 +238,7 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto ln( Ty val, [[maybe_unused]] src_loc src = src_loc::current() )
   {
   #ifdef APOLOGY
@@ -280,11 +278,11 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto floor(Ty val)
   {
-    constexpr Ty max_llong {std::numeric_limits<long long>::max()};
-    constexpr Ty min_llong {std::numeric_limits<long long>::min()};
+    constexpr Ty max_llong {static_cast<Ty>(std::numeric_limits<long long>::max())};
+    constexpr Ty min_llong {static_cast<Ty>(std::numeric_limits<long long>::min())};
     if (
                greater_or_equal(val, max_llong)
             || less_or_equal(val, min_llong)
@@ -308,7 +306,7 @@ namespace kraken::cal {
   /// @return Division<Num, Denom>
   template<class Num, class Denom>
   [[nodiscard]]
-  inline constexpr
+   constexpr
       // numerator, denominator
   auto div(Num num, Denom denom, [[maybe_unused]] src_loc src =
                                     src_loc::current())
@@ -323,7 +321,7 @@ namespace kraken::cal {
     Division<Num, Denom> res{};
     res.Quot  = num/denom;
     res.Rem   = num - (res.Quot * denom);
-    return std::move(res);
+    return res;
   }
 
   /// @brief gives ceil of a float value
@@ -331,7 +329,7 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto ceil(Ty val)
   {
     const auto temp {static_cast<std::int64_t>(val)};
@@ -344,7 +342,7 @@ namespace kraken::cal {
   /// @brief rounds float numbers
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto round(Ty val)
   {
     return (val > static_cast<Ty>(0.)) ? ceil(val-static_cast<Ty>(.5)) :
@@ -357,7 +355,7 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   real_num auto sqrt(const Ty val, const std::size_t times = 20,
                     [[maybe_unused]] src_loc src = src_loc::current() )
   {
@@ -379,7 +377,7 @@ namespace kraken::cal {
   /// @param a
   /// @return T
   template<class T>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto sqr(const T a)
     -> T
   {
@@ -392,7 +390,7 @@ namespace kraken::cal {
   template<class Ty>
   requires is_float<Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto decimal_places(Ty val)
     -> std::uint64_t
   {
@@ -424,7 +422,7 @@ namespace kraken::cal {
   template<class Ty>
   requires is_float<Ty>
   [[nodiscard]]
-  inline constexpr auto trunc(Ty val)
+   constexpr auto trunc(Ty val)
     -> std::uint64_t
   {
     //check if float fits into integer
@@ -447,7 +445,7 @@ namespace kraken::cal {
   /// @param val
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto frac(Ty val)
   {
     val = abs(val);
@@ -459,7 +457,7 @@ namespace kraken::cal {
   /// @param b
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto fmod(const Ty a, const Ty b)
   {
     const Ty t {frac( abs(a) / abs(b) ) * abs(b)};
@@ -471,7 +469,7 @@ namespace kraken::cal {
   /// @param power
   /// @param eps
   template<class Ty, class P>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto pow(Ty base, P power, const Ty eps = std::numeric_limits<Ty>::epsilon())
       -> Ty
   {
@@ -542,7 +540,7 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   real_num auto hypot(Ty x, Ty y, Ty z)
   {
     return sqrt((x*x) + (y*y) + (z*z));
@@ -554,7 +552,7 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   real_num auto hypot(Ty x, Ty y)
   {
     return sqrt((x*x) + (y*y));
@@ -564,7 +562,7 @@ namespace kraken::cal {
   /// @param args provide an initializer list
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   real_num auto hypot( const std::initializer_list<Ty>& args)
   {
     Ty sum {static_cast<Ty>(1.)};
@@ -580,8 +578,27 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]] constexpr
-  auto log2(Ty val, [[maybe_unused]] src_loc src = src_loc::current())
+  auto log2(const Ty val, [[maybe_unused]] src_loc src = src_loc::current())
     -> Ty
+  {
+  #ifdef APOLOGY
+    if ( is_neg(val) ) {
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
+                                  , err_codes::neg_arg, src.line() }; } );
+    }
+  #endif
+    return ln(val) * constants::log2e_v<Ty>;
+  }
+
+  /// @brief returns log base2 of `x`
+  /// @param val the value you want yo get it's log2
+  /// @param src works if `Apology` macro is defined
+  /// @return Ty
+  /// @note special case
+  template<>
+  [[nodiscard]] constexpr
+  auto log2<std::int32_t>(const std::int32_t val, [[maybe_unused]] src_loc src)
+    -> std::int32_t
   {
   #ifdef APOLOGY
     if ( is_neg(val) ) {
@@ -592,17 +609,9 @@ namespace kraken::cal {
     constexpr std::size_t sysbits {
           (std::numeric_limits<unsigned char>::digits * sizeof(void*))
         };
-    if constexpr ( is_int<Ty> && sysbits == 64 ) {
-      return (static_cast<Ty>(63UL -
-                   static_cast<std::uint64_t>
-                      (std::countl_zero(static_cast<std::uint64_t>(val)))));
-    } else if constexpr ( is_int<Ty> && sysbits == 32 ) {
-      return (static_cast<Ty>(31UL -
-                    static_cast<std::uint32_t>
-                        (std::countl_zero(static_cast<std::uint32_t>(val)))));
-    } else {
-      return ln(val) * constants::log2e_v<Ty>;
-    }
+    return (static_cast<std::int32_t>((sysbits-1U) -
+                   static_cast<std::size_t>
+                      (std::countl_zero(static_cast<std::size_t>(val)))));
   }
 
   /// @brief returns log base10 of `x`
@@ -611,20 +620,35 @@ namespace kraken::cal {
   /// @return Ty
   template<class Ty>
   [[nodiscard]] constexpr
-  auto log10(Ty val, [[maybe_unused]] src_loc src = src_loc::current())
+  auto log10(const Ty val, [[maybe_unused]] src_loc src = src_loc::current())
     -> Ty
+  {
+    #ifdef APOLOGY
+    if ( is_neg(val) ) {
+      Apology( [&src] { return error{ src.file_name(), src.function_name()
+                                  , err_codes::neg_arg, src.line() }; } );
+    }
+    #endif
+    return ln(val) * constants::log10e_v<Ty>;
+  }
+
+  /// @brief returns log base10 of `x`
+  /// @param val the value you want yo get it's log10
+  /// @param src works if `Apology` macro is defined
+  /// @return Ty
+  /// @note special case
+  template<>
+  [[nodiscard]] constexpr inline
+  auto log10<std::int32_t>(const std::int32_t val, [[maybe_unused]] src_loc src)
+    -> std::int32_t
   {
   #ifdef APOLOGY
     if ( is_neg(val) ) {
       Apology( [&src] { return error{ src.file_name(), src.function_name()
-                                    , err_codes::neg_arg, src.line() }; } );
+                                  , err_codes::neg_arg, src.line() }; } );
     }
   #endif
-    if constexpr ( is_int<Ty> ) {
-      return log2(val) / log2(10);
-    } else {
-      return ln(val) * constants::log10e_v<Ty>;
-    }
+    return log2(val) / log2(10);
   }
 
   /// @brief computes the greatest common divisor
@@ -634,7 +658,7 @@ namespace kraken::cal {
   template <class A, class B>
   requires (both_integral<A,B>)
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto gcd(A a, B b) noexcept
     -> A
   {
@@ -660,7 +684,7 @@ namespace kraken::cal {
   template <class A, class B>
   requires (both_integral<A,B>)
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto lcm(A a, B b) noexcept
     -> A
   {
@@ -676,7 +700,7 @@ namespace kraken::cal {
   template<class Ty>
   requires is_int<Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto fibonacci(const Ty val, [[maybe_unused]] src_loc src = src_loc::current())
     -> std::size_t
   {
@@ -689,7 +713,7 @@ namespace kraken::cal {
     if (val == 0) {return 0UL;}
     if (val == 1) {return 1UL;}
     //
-    constexpr double sqrt_5 { sqrt(5.) };
+    const double sqrt_5 { 2.23606797749978969 };
     return static_cast<std::size_t>
             (round( pow(constants::phi,
                 static_cast<double>(val)) / sqrt_5 ));
@@ -717,14 +741,14 @@ namespace kraken::cal {
   /// @return bool
   template <class Ty>
   requires is_int<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto is_prime( const Ty num ) noexcept
     -> bool
   {
     if ( num <= 1 ) { return false; } // ... - 1 //
     if ( num <= 3 ) { return true; } // 2 - 3 //
     if ( num % 2 == 0 || num % 3 == 0 ) { return false; } // multiples of 2 or 3
-    for ( Ty i { 5 }; (i * i) < num; ++i ) {
+    for ( Ty i { 5 }; (i * i) < num; i += 6 ) {
       if ( num % i == 0 || num % (i+2) == 0 ) { return false; }
     }
     return true;
@@ -734,7 +758,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto to_radian( const Ty degree ) noexcept
   {
     return degree * constants::pi_v<Ty> / static_cast<Ty>(180.);
@@ -745,7 +769,7 @@ namespace kraken::cal {
   template <class Ty>
   requires is_float<Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto to_degree( const Ty radian ) noexcept
     -> Ty
   {
@@ -757,15 +781,15 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto sin ( Ty angle ) noexcept
   {
     angle = to_radian(angle);
-    const Ty  b = static_cast<Ty> (4.) / constants::pi_v<Ty>;
-    const Ty  c = static_cast<Ty> (-4.) / (constants::pi_v<Ty> * constants::pi_v<Ty>);
-    const Ty  p = static_cast<Ty> (.225);
-    const Ty temp = b * angle + c * angle
-          * (less_than(angle, static_cast<Ty>(0.)) ? -angle : angle);
+    const Ty  b {static_cast<Ty> (4.) / constants::pi_v<Ty>};
+    const Ty  c {static_cast<Ty> (-4.) / (constants::pi_v<Ty> * constants::pi_v<Ty>)};
+    const Ty  p {static_cast<Ty> (.225)};
+    const Ty temp {b * angle + c * angle
+          * (less_than(angle, static_cast<Ty>(0.)) ? -angle : angle)};
     return p * (temp *
         (less_than(temp, static_cast<Ty>(0.))? -temp : temp) - temp) + temp;
   }
@@ -776,7 +800,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto cos ( Ty angle ) noexcept
   {
     angle = to_radian(angle);
@@ -793,7 +817,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto tan ( const Ty angle ) noexcept
   {
     return sin(angle) / cos(angle);
@@ -804,7 +828,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto cosc ( Ty angle ) noexcept
   {
     return static_cast<Ty>(1.) / sin(angle);
@@ -815,7 +839,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto sec ( Ty angle ) noexcept
   {
     return static_cast<Ty>(1.) / cos(angle);
@@ -826,7 +850,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto cot ( Ty angle ) noexcept
   {
     return static_cast<Ty>(1.) / tan(angle);
@@ -840,7 +864,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto arc_cos ( Ty angle ) noexcept
   {
     const Ty a {static_cast<Ty>(-0.939115566365855)};
@@ -859,7 +883,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto arc_sin ( Ty angle ) noexcept
   {
     const Ty negate {Ty( less_than(angle, static_cast<Ty>(0.)) )};
@@ -881,7 +905,7 @@ namespace kraken::cal {
   /// @return Ty
   template <class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   is_float auto arc_tan ( Ty angle ) noexcept
   {
     const Ty double_angle { angle * angle };
@@ -897,7 +921,7 @@ namespace kraken::cal {
   template <class Ty>
   requires is_float<Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto modf ( const Ty x ) noexcept
   {
     return std::pair( trunc(x), frac(x) );
@@ -909,7 +933,7 @@ namespace kraken::cal {
   /// @return std::bitset<n_bits>
   template <const std::size_t n_bits>
   [[nodiscard]]
-  constexpr inline
+  constexpr
   auto ones_complement( const std::size_t val )
   {
     const std::bitset<n_bits> b_set{ val };
@@ -922,7 +946,7 @@ namespace kraken::cal {
   /// @return std::bitset<n_bits>
   template <const std::size_t n_bits>
   [[nodiscard]]
-  constexpr inline
+  constexpr
   auto twos_complement( const std::size_t val )
   {
     const std::bitset<n_bits> b{ 1ULL };
@@ -934,8 +958,8 @@ namespace kraken::cal {
   /// @param n_bits number of bits required
   /// @return std::size_t
   [[nodiscard]]
-  constexpr inline
-  auto ones_complement( const std::size_t val, const std::size_t n_bits )
+  constexpr
+  auto ones_complement( const std::size_t val, const std::size_t n_bits ) noexcept
     -> std::size_t
   {
     return ((1ULL << n_bits) - 1ULL ) ^ val;
@@ -946,8 +970,8 @@ namespace kraken::cal {
   /// @param n_bits number of bits required
   /// @return std::size_t
   [[nodiscard]]
-  constexpr inline
-  auto twos_complement( const std::size_t val, const std::size_t n_bits )
+  constexpr
+  auto twos_complement( const std::size_t val, const std::size_t n_bits ) noexcept
     -> std::size_t
   {
     return ones_complement( val, n_bits ) + 1ULL;
@@ -958,7 +982,7 @@ namespace kraken::cal {
   /// @return Ty
   template< class Ty >
   [[nodiscard]]
-  constexpr inline
+  constexpr
   is_float auto exp( const Ty power )
   {
     return pow( constants::e_v<Ty>, power );
@@ -972,20 +996,21 @@ namespace kraken::cal {
   [[nodiscard]]
   constexpr is_float auto gamma( const Ty arg) noexcept
   {
-    const Ty a          {12};
+    const Ty a{12};
     std::array<Ty, 12> c{};
-    Ty k_factrl {static_cast<Ty>(1.)};
-    c[0]        = sqrt( static_cast<Ty>(2.0)*constants::pi_v<Ty> );
-    for( Ty k{static_cast<Ty>(1)}; k < a; ++k) {
-      c[static_cast<std::size_t>(k)] = exp( a-k )
-                * pow( a-k, k-static_cast<Ty>(0.5) ) / k_factrl;
-      k_factrl                       *= -k;
+    Ty k_factrl{static_cast<Ty>(1.)};
+    c[0] = sqrt(static_cast<Ty>(2.0) * constants::pi_v<Ty>);
+    for (Ty k{static_cast<Ty>(1)}; k < a; ++k) {
+      c[static_cast<std::size_t>(k)] =
+          exp(a - k) * pow(a - k, k - static_cast<Ty>(0.5)) / k_factrl;
+      k_factrl *= -k;
     }
     Ty accumulate{c[0]};
-    for( Ty k {static_cast<Ty>(1)}; k < a; ++k ) {
-      accumulate  += c[static_cast<std::size_t>(k)] / ( arg + k );
+    for (Ty k{static_cast<Ty>(1)}; k < a; ++k) {
+      accumulate += c[static_cast<std::size_t>(k)] / (arg + k);
     }
-    accumulate    *= exp( -(arg+a) ) * pow( arg+a, arg+static_cast<Ty>(0.5) ); /* Gamma(z+1) */
+    accumulate *= exp(-(arg + a)) *
+                  pow(arg + a, arg + static_cast<Ty>(0.5));
     return accumulate / arg;
   }
 
@@ -995,10 +1020,27 @@ namespace kraken::cal {
   /// @return Ty
   template < class Ty >
   [[nodiscard]]
-  constexpr inline is_float auto beta ( const Ty x, const Ty y )
-    noexcept
+  constexpr is_float auto beta ( const Ty x, const Ty y ) noexcept
   {
     return ( gamma( x ) * gamma( y ) ) / gamma( x+y );
+  }
+
+  /// @brief Finds the `Median` of a given container
+  /// @param container some container
+  /// @return Cont::value_type
+  template< class Cont >
+  [[nodiscard]]
+  constexpr auto median( Cont container )
+    -> typename Cont::value_type
+  {
+    if ( !container.size() ) { throw 0; }
+    const auto n { container.size()/2 };
+    std::nth_element(container.begin(), container.begin()+n, container.end());
+    const auto med { container[n] };
+    if ( !(container.size() & 1) ) {
+      return (*max_range( container.begin(), container.begin()+n ) + med)/2;
+    }
+    return med;
   }
 } // namespace kraken::cal
 
