@@ -30,6 +30,8 @@
   - `round`
   - `sqr`
   - `sqrt`: works using `newton's method`
+  - `max_range` : finds maximum value in a range
+  - `min_range` : finds minium value in a range
   - `max`
   - `min`
   - `min_max`: gives a pair of `min` and `max`
@@ -40,7 +42,7 @@
   - `fibonacci`
   - `div` gives a pair of `quotient` and `remainder`
   - `factorial` **recursive**
-  - `is_neg` uses `Bit Twiddling` or integral types
+  - `is_neg` uses `Bit Twiddling` for integral types
   - `is_prime`
   - `cos`
   - `sin`
@@ -62,6 +64,7 @@
   - `gamma`
   - `beta`
   - `sign` gives sign bit of a floating point
+  - `median`
 
 ## Note: for usage please check the `tests` folder
 
