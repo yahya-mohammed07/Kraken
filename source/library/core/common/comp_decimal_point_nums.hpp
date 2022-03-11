@@ -35,7 +35,7 @@ namespace kraken::cal {
   /// @brief checks if two floating-point numbers are equal
   template <class Ty>
   requires std::is_floating_point_v<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto equal(Ty a, Ty b,
         const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
@@ -46,7 +46,7 @@ namespace kraken::cal {
   /// @brief checks if two floating-point numbers are not equal
   template <class Ty>
   requires std::is_floating_point_v<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto not_equal(Ty a, Ty b,
         const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
@@ -57,7 +57,7 @@ namespace kraken::cal {
   /// @brief checks if two floating-point numbers are approximately equal
   template <class Ty>
   requires std::is_floating_point_v<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto approx_equal(Ty a, Ty b,
               const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
@@ -68,7 +68,7 @@ namespace kraken::cal {
   /// @brief checks if `A` is greater than `B`
   template <class Ty>
   requires std::is_floating_point_v<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto greater_than(Ty a, Ty b,
       const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
@@ -79,7 +79,7 @@ namespace kraken::cal {
   /// @brief checks if `A` is greater than `B` or equal
   template <class Ty>
   requires std::is_floating_point_v<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto greater_or_equal(Ty a, Ty b,
       const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
@@ -90,7 +90,7 @@ namespace kraken::cal {
   /// @brief checks if `A` is less than `B`
   template <class Ty>
   requires std::is_floating_point_v<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto less_than(Ty a, Ty b,
       const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
@@ -101,7 +101,7 @@ namespace kraken::cal {
   /// @brief checks if `A` is less than `B` or equal
   template <class Ty>
   requires std::is_floating_point_v<Ty>
-  [[nodiscard]] inline constexpr
+  [[nodiscard]]  constexpr
   auto less_or_equal(Ty a, Ty b,
       const Ty eps = std::numeric_limits<Ty>::epsilon())
     -> bool
