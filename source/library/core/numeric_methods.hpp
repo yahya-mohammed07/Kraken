@@ -182,7 +182,7 @@ namespace kraken::num_methods {
                                       err_codes::odd, src.line() }; } );
     }
     #endif
-    const A h { ((b-a) / n) };
+    const A h { ((b-a) / static_cast<A>(n)) };
     //
     const A f_start {op(a)};
     const A f_end   {op(b)};
