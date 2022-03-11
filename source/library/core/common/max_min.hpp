@@ -27,8 +27,23 @@ SOFTWARE.
 
 */
 
+#include <cstdint>
+#include <functional>
 #include <type_traits>
 #include <initializer_list>
+
+template <typename It>
+class My_Iota
+{
+private:
+  It m_begin{};
+  It m_end{};
+
+public:
+  constexpr auto begin() const -> It    { return m_begin; }
+  constexpr auto end() const -> It      { return m_end; }
+  constexpr My_Iota(const It a, const It b)   : m_begin(a), m_end(b) {}
+};
 
 template <class Ty>
 struct Min_Max {
@@ -38,67 +53,143 @@ struct Min_Max {
 
 namespace kraken::cal {
 
+  /// @brief Finds the greatest element in the range [first, last).
+  /// @param first
+  /// @param last
+  /// @param comp comparison function object
+  /// @return Iterator to the greatest element in the range [first, last).
+  /// If several elements in the range are equivalent to the greatest element,
+  /// returns the iterator to the first such element.
+  /// Returns last if the range is empty.
+  template<class Forward_iter, class Comp>
+  [[nodiscard]]
+   constexpr
+  auto max_range(Forward_iter first, const Forward_iter last, Comp comp)
+    -> Forward_iter
+  {
+    if ( first == last ) { return last; }
+    Forward_iter res {first};
+    for ( ;++first != last; ) {
+      if ( comp(*first, *res) ) { res = first; }
+    }
+    return res;
+  }
+  /// @brief Finds the greatest element in the range [first, last).
+  /// @param first
+  /// @param last
+  /// @return Iterator to the greatest element in the range [first, last).
+  /// If several elements in the range are equivalent to the greatest element,
+  /// returns the iterator to the first such element.
+  /// Returns last if the range is empty.
+  template<class Forward_iter>
+  [[nodiscard]]
+   constexpr
+  auto max_range(Forward_iter first, const Forward_iter last)
+    -> Forward_iter
+  {
+    return max_range(first, last, std::greater<>{});
+  }
+
+  /// @brief Finds the minimum element in the range [first, last).
+  /// @param first
+  /// @param last
+  /// @param comp comparison function object
+  /// @return Iterator to the greatest element in the range [first, last).
+  /// If several elements in the range are equivalent to the greatest element,
+  /// returns the iterator to the first such element.
+  /// Returns last if the range is empty.
+  template<class Forward_iter, class Comp>
+  [[nodiscard]]
+   constexpr
+  auto min_range(Forward_iter first, const Forward_iter last, Comp comp)
+    -> Forward_iter
+  {
+    if ( first == last ) { return last; }
+    Forward_iter res {first};
+    for ( ;++first != last; ) {
+      if ( comp(*first, *res) ) { res = first; }
+    }
+    return res;
+  }
+  /// @brief Finds the minimum element in the range [first, last).
+  /// @param first
+  /// @param last
+  /// @return Iterator to the greatest element in the range [first, last).
+  /// If several elements in the range are equivalent to the greatest element,
+  /// returns the iterator to the first such element.
+  /// Returns last if the range is empty.
+  template<class Forward_iter>
+  [[nodiscard]]
+   constexpr
+  auto min_range(Forward_iter first, const Forward_iter last)
+    -> Forward_iter
+  {
+    return min_range(first, last, std::less<>{});
+  }
+
   /// @brief calculate `max` with two numbers
   /// @param  a  A thing of arbitrary type.
   /// @param  b  Another thing of arbitrary type.
   /// @return Ty
   template<class T>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto max(const T a, const T b)
       -> T
   {
-    if constexpr ( std::is_integral_v<T>) {
-      return a ^ ((a ^ b) & -(a < b));
-    } else
-    { return a > b ? a : b; }
+    return a > b ? a : b;
+  }
+
+  /// @brief calculate `max` with two numbers
+  /// @param  a  A thing of arbitrary type.
+  /// @param  b  Another thing of arbitrary type.
+  /// @return Ty
+  /// @note special case
+  template<>
+  [[nodiscard]]
+   constexpr inline
+  auto max<std::int32_t>(std::int32_t a, std::int32_t b)
+      -> std::int32_t
+  {
+    return a ^ ((a ^ b) & -(a < b));
   }
 
   /// @brief calculate `min` with two numbers
   /// @param  a  A thing of arbitrary type.
   /// @param  b  Another thing of arbitrary type.
   /// @return Ty
+  /// @note special case
   template<class T>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto min(const T a, const T b)
       -> T
   {
-    if constexpr ( std::is_integral_v<T> ) {
-      return b ^ ((a ^ b) & -(a < b));
-    } else
-    { return a > b ? b : a; }
+   return a > b ? b : a;
   }
 
-
-  /// @brief calculates max in a init-list
+  /// @brief calculate `min` with two numbers
+  /// @param  a  A thing of arbitrary type.
+  /// @param  b  Another thing of arbitrary type.
   /// @return Ty
-  template<class Ty>
+  template<>
   [[nodiscard]]
-  inline constexpr
-  auto max( std::initializer_list<Ty>&& args)
-      -> Ty
+   constexpr inline
+  auto min<std::int32_t>(std::int32_t a, std::int32_t b)
+      -> std::int32_t
   {
-    Ty high {*args.begin()};
-    for ( auto && i : args) {
-      if ( i > high ) { high = i; }
-    }
-    return high;
+    return b ^ ((a ^ b) & -(a < b));
   }
 
   /// @brief calculates max in a init-list
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto max(const std::initializer_list<Ty>& args)
       -> Ty
   {
-    Ty high {*args.begin()};
-    for (const auto & i : args) {
-      if ( i > high ) { high = i; }
-    }
-    return high;
+    return *max_range(args.begin(), args.end());
   }
 
   /// @brief calculate `max` with arbitrary numbers
@@ -106,9 +197,8 @@ namespace kraken::cal {
   /// @return First
   template<class First, class Second, class ...Args>
   [[nodiscard]]
-  inline constexpr
-  auto max(First a, Second b,
-            Args... args)
+   constexpr
+  auto max(First a, Second b, Args... args)
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
@@ -122,44 +212,21 @@ namespace kraken::cal {
   template<class Cont>
   requires std::is_class_v<Cont>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto max(const Cont &container)
   {
-    auto high {container[0]};
-    for (auto &i : container) {
-      if ( i > high ) { high = i; }
-    }
-    return high;
+    return *max_range(container.begin(), container.end());
   }
 
   /// @brief calculates min in a init-list
   /// @return Ty
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
-  auto min( std::initializer_list<Ty>&& args)
-      -> Ty
-  {
-    Ty low {*args.begin()};
-    for ( auto && i : args) {
-      if ( i < low ) { low = i; }
-    }
-    return low;
-  }
-
-  /// @brief calculates min in a init-list
-  /// @return Ty
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
+   constexpr
   auto min(const std::initializer_list<Ty>& args)
       -> Ty
   {
-    Ty low {*args.begin()};
-    for (const auto & i : args) {
-      if ( i < low ) { low = i; }
-    }
-    return low;
+    return *min_range(args.begin(), args.end());
   }
 
   /// @brief calculate `min` with arbitrary numbers
@@ -167,9 +234,8 @@ namespace kraken::cal {
   /// @return First
   template<class First, class Second, class ...Args>
   [[nodiscard]]
-  inline constexpr
-  auto min(First a, Second b,
-                Args... args)
+   constexpr
+  auto min(First a, Second b, Args... args)
      -> First
   {
     if constexpr ( sizeof...(args) == 0 ) {
@@ -183,14 +249,10 @@ namespace kraken::cal {
   template<class Cont>
   requires std::is_class_v<Cont>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto min(const Cont &container)
   {
-    auto low {container[0]};
-    for (auto &i : container) {
-      if ( i < low ) { low = i; }
-    }
-    return low;
+    return *min_range(container.begin(), container.end());
   }
 
   /// @brief calculate `min_max` with two numbers
@@ -200,11 +262,11 @@ namespace kraken::cal {
   template<class Ty>
   requires std::is_floating_point_v<Ty> || std::is_integral_v<Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto min_max(const Ty a, const Ty b)
       -> Min_Max<Ty>
   {
-    return { min(a, b), max( a, b) };
+    return { min(a, b), max(a, b) };
   }
 
 
@@ -212,34 +274,12 @@ namespace kraken::cal {
   /// @return Min_Max<Ty>
   template<class Ty>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto min_max(const std::initializer_list<Ty>& args)
       -> Min_Max<Ty>
   {
-    Ty low {*args.begin()};
-    Ty high {*args.begin()};
-    for (const auto & i : args) {
-      if ( i < low ) { low = i; }
-      if ( i > high ) { high = i; }
-    }
-    return {low, high};
-  }
-
-  /// @brief calculates `min_max` in a init-list
-  /// @return Min_Max<Ty>
-  template<class Ty>
-  [[nodiscard]]
-  inline constexpr
-  auto min_max(std::initializer_list<Ty> &&args)
-      -> Min_Max<Ty>
-  {
-    Ty low {*args.begin()};
-    Ty high {*args.begin()};
-    for ( auto &&i : args) {
-      if ( i < low ) { low = i; }
-      if ( i > high ) { high = i; }
-    }
-    return {low, high};
+    return {*min_range(args.begin(), args.end()),
+              *max_range(args.begin(), args.end())};
   }
 
   /// @brief calculate `min_max` with arbitrary numbers
@@ -247,9 +287,8 @@ namespace kraken::cal {
   /// @return Min_Max<Ty>
   template<class First, class Second, class ...Args>
   [[nodiscard]]
-  inline constexpr
-  auto min_max(First a, Second b,
-                Args ...args)
+   constexpr
+  auto min_max(First a, Second b, Args ...args)
      -> Min_Max<First>
   {
     return { min({a,b,args...}) , max({a,b,args...}) };
@@ -260,17 +299,24 @@ namespace kraken::cal {
   template<class Cont>
   requires std::is_class_v<Cont>
   [[nodiscard]]
-  inline constexpr
+   constexpr
   auto min_max(const Cont &container)
     -> Min_Max<decltype(container[0])>
   {
-    auto low {container[0]};
-    auto high {container[0]};
-    for (auto &&i : container) {
-      if ( i < low ) { low = i; }
-      if ( i > high ) { high = i; }
-    }
-    return {low, high};
+    return {*min_range(container.begin(), container.end()),
+              *max_range(container.begin(), container.end())};
+  }
+
+  /// @brief: `finds min_max` in a range
+  /// @return Min_Max<decltype(first)>
+  template<class Forward_iter>
+  [[nodiscard]]
+   constexpr
+  auto min_max_range(Forward_iter first, Forward_iter last)
+    -> Min_Max<decltype(first)>
+  {
+    return {*min_range(first, last),
+              *max_range(first, last)};
   }
 
 } // namespace kraken::cal
