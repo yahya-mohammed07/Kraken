@@ -29,7 +29,7 @@
 
 * namespace `kraken` which has:-
 
-  * namespace `constants`: contains mathematical and physical constants presented as symbols, just like in julia.
+  * namespace `constants`: contains mathematical and physical constants.
   * namespace `cal`: contains functions that do some calculations.
   * namespace `op`: contains variadic function objects.
   * and a bonus namespace! `num_methods` : contains implementation of some numerical methods.
@@ -61,7 +61,7 @@
   auto main()
       -> int
   {
-    std::cout << constants::π << '\n';
+    std::cout << constants::pi << '\n';
   }
   ```
 
