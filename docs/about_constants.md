@@ -13,8 +13,4 @@
   std::cout << "π= " << constants::pi << '\n';
   std::cout << "π= " << constants::pi_v<float> << '\n';
   std::cout << "π= " << constants::pi_v<long double> << '\n';
-  std::cout << "γ= " << constants::gama << '\n';)
-  constexpr auto pi_f = std::move(constants::pi_v<float>);
-  std::cout << pi_f << '\n';
-  constexpr auto speed_of_light = std::move(constants::c);
 ```
