@@ -27,41 +27,38 @@ SOFTWARE.
 
 */
 
-#include "comp_decimal_point_nums.hpp"    // comparing numbers with decimal point
+#include "comp_decimal_point_nums.hpp" // comparing numbers with decimal point
 #include <utility>
 
 namespace kraken::num_methods {
 
-  /// @brief computes the newton method given `init` and two function ops
-  /// @param init inital value
-  /// @param max_it max iterations
-  /// @param fx f(x)
-  /// @param fx_ f`(x)
-  template<class A, class Op1, class Op2>
-  [[nodiscard]]
-  constexpr
-  is_float auto newton(const A init, const std::size_t max_it, Op1 &&fx, Op2 &&fx_ )
-  {
-    A x0 {static_cast<A>(init)}; // initial guess
-    A x1 {}; // initial guess
-    constexpr A tolerance {static_cast<A>(1e-7)}; // 7 digit accuracy is desired
-    constexpr A eps = std::numeric_limits<A>::epsilon();
-    for ( std::size_t i {1}; i < max_it; ++i ) {
-      A y  {static_cast<A>(fx(x0))};
-      A y_ {static_cast<A>(fx_(x0))};
-      if ( cal::less_than(y_, eps, tolerance) ) {
-        break;
-      }
-      x1 = x0-(y/y_); // Do Newton's computation
-      if ( cal::less_or_equal(cal::abs(x1-x0), tolerance, eps) )
-      {
-        // Stop when the result is within the desired tolerance
-        break;
-      }
-      x0 = std::move(x1);
+/// @brief computes the newton method given `init` and two function ops
+/// @param init inital value
+/// @param max_it max iterations
+/// @param fx f(x)
+/// @param fx_ f`(x)
+template <class A, class Op1, class Op2>
+[[nodiscard]] constexpr is_float auto
+newton(const A init, const std::size_t max_it, Op1 &&fx, Op2 &&fx_) {
+  A x0{static_cast<A>(init)};                  // initial guess
+  A x1{};                                      // initial guess
+  constexpr A tolerance{static_cast<A>(1e-7)}; // 7 digit accuracy is desired
+  constexpr A eps = std::numeric_limits<A>::epsilon();
+  for (std::size_t i{1}; i < max_it; ++i) {
+    A y{static_cast<A>(fx(x0))};
+    A y_{static_cast<A>(fx_(x0))};
+    if (cal::less_than(y_, eps, tolerance)) {
+      break;
     }
-    return x1;
+    x1 = x0 - (y / y_); // Do Newton's computation
+    if (cal::less_or_equal(cal::abs(x1 - x0), tolerance, eps)) {
+      // Stop when the result is within the desired tolerance
+      break;
+    }
+    x0 = std::move(x1);
   }
+  return x1;
+}
 } // namespace kraken::num_methods
 
 #endif // NEWTON_HPP

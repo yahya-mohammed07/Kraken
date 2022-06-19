@@ -27,16 +27,15 @@ SOFTWARE.
 
 */
 
-
 #include <type_traits>
 
-template<class Ty>
-concept is_float  = std::is_floating_point_v<Ty>;
-template<class Ty>
-concept is_int    = (std::is_integral_v<Ty>);
-template<class Ty>
+template <class Ty>
+concept is_float = std::is_floating_point_v<Ty>;
+template <class Ty>
+concept is_int = (std::is_integral_v<Ty>);
+template <class Ty>
 concept real_num = (std::is_integral_v<Ty> || std::is_floating_point_v<Ty>);
-template<class Ty, class B>
+template <class Ty, class B>
 concept both_integral = (is_int<Ty> && is_int<B>);
 
 #endif // MY_CONPECPTS_HPP

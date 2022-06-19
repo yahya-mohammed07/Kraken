@@ -32,82 +32,67 @@ SOFTWARE.
 
 namespace kraken::cal {
 
-  /// @brief checks if two floating-point numbers are equal
-  template <class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]  constexpr
-  auto equal(Ty a, Ty b,
-        const Ty eps = std::numeric_limits<Ty>::epsilon())
-    -> bool
-  {
-    return abs(a - b) <= ( min( abs(a),abs(b) ) * eps );
-  }
+/// @brief checks if two floating-point numbers are equal
+template <class Ty>
+requires std::is_floating_point_v<Ty>
+[[nodiscard]] constexpr auto
+equal(Ty a, Ty b, const Ty eps = std::numeric_limits<Ty>::epsilon()) -> bool {
+  return abs(a - b) <= (min(abs(a), abs(b)) * eps);
+}
 
-  /// @brief checks if two floating-point numbers are not equal
-  template <class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]  constexpr
-  auto not_equal(Ty a, Ty b,
-        const Ty eps = std::numeric_limits<Ty>::epsilon())
-    -> bool
-  {
-    return !equal(a, b, eps);
-  }
+/// @brief checks if two floating-point numbers are not equal
+template <class Ty>
+requires std::is_floating_point_v<Ty>
+[[nodiscard]] constexpr auto
+not_equal(Ty a, Ty b, const Ty eps = std::numeric_limits<Ty>::epsilon())
+    -> bool {
+  return !equal(a, b, eps);
+}
 
-  /// @brief checks if two floating-point numbers are approximately equal
-  template <class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]  constexpr
-  auto approx_equal(Ty a, Ty b,
-              const Ty eps = std::numeric_limits<Ty>::epsilon())
-    -> bool
-  {
-    return abs(a - b) <= ( max( abs(a),abs(b) ) * eps );
-  }
+/// @brief checks if two floating-point numbers are approximately equal
+template <class Ty>
+requires std::is_floating_point_v<Ty>
+[[nodiscard]] constexpr auto
+approx_equal(Ty a, Ty b, const Ty eps = std::numeric_limits<Ty>::epsilon())
+    -> bool {
+  return abs(a - b) <= (max(abs(a), abs(b)) * eps);
+}
 
-  /// @brief checks if `A` is greater than `B`
-  template <class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]  constexpr
-  auto greater_than(Ty a, Ty b,
-      const Ty eps = std::numeric_limits<Ty>::epsilon())
-    -> bool
-  {
-    return (a - b) > ( max( abs(a),abs(b) ) * eps );
-  }
+/// @brief checks if `A` is greater than `B`
+template <class Ty>
+requires std::is_floating_point_v<Ty>
+[[nodiscard]] constexpr auto
+greater_than(Ty a, Ty b, const Ty eps = std::numeric_limits<Ty>::epsilon())
+    -> bool {
+  return (a - b) > (max(abs(a), abs(b)) * eps);
+}
 
-  /// @brief checks if `A` is greater than `B` or equal
-  template <class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]  constexpr
-  auto greater_or_equal(Ty a, Ty b,
-      const Ty eps = std::numeric_limits<Ty>::epsilon())
-    -> bool
-  {
-    return ( greater_than(a, b, eps) ) || equal(a, b, eps);
-  }
+/// @brief checks if `A` is greater than `B` or equal
+template <class Ty>
+requires std::is_floating_point_v<Ty>
+[[nodiscard]] constexpr auto
+greater_or_equal(Ty a, Ty b, const Ty eps = std::numeric_limits<Ty>::epsilon())
+    -> bool {
+  return (greater_than(a, b, eps)) || equal(a, b, eps);
+}
 
-  /// @brief checks if `A` is less than `B`
-  template <class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]  constexpr
-  auto less_than(Ty a, Ty b,
-      const Ty eps = std::numeric_limits<Ty>::epsilon())
-    -> bool
-  {
-    return (b - a) > ( max( abs(a),abs(b) ) * eps );
-  }
+/// @brief checks if `A` is less than `B`
+template <class Ty>
+requires std::is_floating_point_v<Ty>
+[[nodiscard]] constexpr auto
+less_than(Ty a, Ty b, const Ty eps = std::numeric_limits<Ty>::epsilon())
+    -> bool {
+  return (b - a) > (max(abs(a), abs(b)) * eps);
+}
 
-  /// @brief checks if `A` is less than `B` or equal
-  template <class Ty>
-  requires std::is_floating_point_v<Ty>
-  [[nodiscard]]  constexpr
-  auto less_or_equal(Ty a, Ty b,
-      const Ty eps = std::numeric_limits<Ty>::epsilon())
-    -> bool
-  {
-    return ( less_than(a, b, eps) ) || equal(a, b, eps) ;
-  }
+/// @brief checks if `A` is less than `B` or equal
+template <class Ty>
+requires std::is_floating_point_v<Ty>
+[[nodiscard]] constexpr auto
+less_or_equal(Ty a, Ty b, const Ty eps = std::numeric_limits<Ty>::epsilon())
+    -> bool {
+  return (less_than(a, b, eps)) || equal(a, b, eps);
+}
 } // namespace kraken::cal
 
 #endif // COMP_DECIMAL_POINT_NUMS_HPP

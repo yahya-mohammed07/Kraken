@@ -24,13 +24,12 @@ SOFTWARE.
 
 */
 
-
 #ifndef ALL_HPP
 #define ALL_HPP
 
-#include "core/numeric_methods.hpp"
 #include "core/constants.hpp"
 #include "core/matrix.hpp"
 #include "core/numeric.hpp"
+#include "core/numeric_methods.hpp"
 
 #endif // ALL_HPP
