@@ -53,13 +53,6 @@ TEST_CASE("BASE TO POWER OF FLOATING-POINT") {
   REQUIRE( cal::equal(cal::pow(3., 1.5), 5.19615242271, 0.000000000001) );
 }
 
-TEST_CASE("CONTAINER TO POWER") {
-  matrix_<int, 1, 3> actual { 1, 2, 3 };
-  cal::pow_container(actual, 2);
-  const matrix_<int, 1, 3> expected ( 1, 4, 9 );
-  REQUIRE(expected == actual);
-}
-
 TEST_CASE("LOG BASE 2 OF X") {
   REQUIRE(cal::log2(32) == 5);
   REQUIRE(cal::log2(82) == 6);
