@@ -32,32 +32,24 @@ SOFTWARE.
 #include <cstdint>
 #include <limits>
 
-namespace kraken::cal
-{
-  /// @brief gives the absolute of a value
-  /// @param val
-  /// @return Ty
-  template <class Ty>
-  [[nodiscard]]
-  constexpr
-  auto abs(const Ty val) noexcept
-    -> Ty
-  {
-    return val < static_cast<Ty>(0) ? -(val) : val;
-  }
+namespace kraken::cal {
+/// @brief gives the absolute of a value
+/// @param val
+/// @return Ty
+template <class Ty>
+[[nodiscard]] constexpr auto abs(const Ty val) noexcept -> Ty {
+  return val < static_cast<Ty>(0) ? -(val) : val;
+}
 
-  /// @note special case for ints
-  template <>
-  [[nodiscard]]
-  constexpr inline
-  auto abs<std::int32_t>(std::int32_t val) noexcept
-    -> std::int32_t
-  {
-    const std::int32_t mask{
-        val >>
-        (sizeof(std::int32_t) * std::numeric_limits<unsigned char>::digits - 1)};
-    return (val ^ mask) - mask;
-  }
+/// @note special case for ints
+template <>
+[[nodiscard]] constexpr inline auto abs<std::int32_t>(std::int32_t val) noexcept
+    -> std::int32_t {
+  const std::int32_t mask{
+      val >>
+      (sizeof(std::int32_t) * std::numeric_limits<unsigned char>::digits - 1)};
+  return (val ^ mask) - mask;
+}
 } // namespace kraken::cal
 
 #endif // ABS_HPP
