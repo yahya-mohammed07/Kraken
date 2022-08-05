@@ -123,22 +123,6 @@ And that folder is :-
     std::cout << constants::pi << '\n';
   }
   ```
-
-## in case if you want to use the library with `Apology` system:-
-
-* ```cpp
-  #define APOLOGY   // define this macro before including `Kraken`
-  #include <Kraken/all.hpp>
-  #include <iostream>
-
-  using namespace kraken;
-
-  auto main()
-      -> int
-  {
-    std::cout << constants::pi << '\n';
-  }
-  ```
-
+  
 [PeaZip]: https://peazip.github.io/
 [keka]: https://www.keka.io/en/
