@@ -167,7 +167,7 @@ template <class A, class T, class Op>
 /// @brief checks if the integral number is negative or not
 /// @param val
 /// @return int
-template <class Ty> constexpr is_int auto is_neg(Ty val) noexcept {
+template <class Ty> constexpr auto is_neg(Ty val) noexcept {
   return (val < 0) ? true : false;
 }
 
@@ -176,7 +176,7 @@ template <class Ty> constexpr is_int auto is_neg(Ty val) noexcept {
 /// @return int
 /// @note special case
 template <>
-inline constexpr is_int auto is_neg<std::int32_t>(std::int32_t val) noexcept {
+inline constexpr auto is_neg<std::int32_t>(std::int32_t val) noexcept { // FIXME
   return (val ^ +0) < +0;
 }
 
