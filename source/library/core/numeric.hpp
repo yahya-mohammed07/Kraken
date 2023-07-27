@@ -176,7 +176,7 @@ template <class Ty> constexpr auto is_neg(Ty val) noexcept {
 /// @return int
 /// @note special case
 template <>
-inline constexpr auto is_neg<std::int32_t>(std::int32_t val) noexcept { // FIXME
+inline constexpr auto is_neg<std::int32_t>(std::int32_t val) noexcept {
   return (val ^ +0) < +0;
 }
 
