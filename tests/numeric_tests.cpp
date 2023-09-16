@@ -68,7 +68,7 @@ TEST_CASE("MAX") {
   REQUIRE(cal::max(90, 87) == 90);
   REQUIRE(cal::max(33, 87, 3, 66) == 87);
   REQUIRE(cal::max({33, 87, 3, 66}) == 87);
-  constexpr matrix_<int, 1, 4> nums {33, 87, 3, 66};
+   matrix_<int, 1, 4> nums {33, 87, 3, 66};
   REQUIRE(cal::max(nums) == 87);
   REQUIRE(*cal::max_range(nums.begin(), nums.end()) == 87);
 }
@@ -337,6 +337,6 @@ TEST_CASE("BIT CAST") {
 TEST_CASE("MEDIAN") {
   constexpr matrix_<int, 1, 7> nums { 12, 16, 12, 6, 18, 2, 4};
   REQUIRE( cal::median(nums) == 12 );
-  constexpr matrix_<double, 1, 8> nums2 { 42, 7, 17, 14, 7, 24, 15, 29};
+   matrix_<double, 1, 8> nums2 { 42, 7, 17, 14, 7, 24, 15, 29};
   REQUIRE( cal::median(nums2) == 16 );
 }

@@ -64,7 +64,7 @@ template <class Ty, std::size_t ROW, std::size_t COL>
 [[nodiscard]] constexpr auto determined(const matrix_<Ty, ROW, COL> &matrix)
     -> Ty {
   static_assert(ROW == COL, "- Matrix must be squared");
-  const auto temp{std::move(gauss_elimination(matrix))};
+  const auto temp{gauss_elimination(matrix)};
 
   Ty deter{1};
   for (std::size_t i{0}; i < COL; ++i) {

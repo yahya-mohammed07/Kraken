@@ -24,7 +24,7 @@ TEST_CASE("CHECK LEAST-SQUARES") {
 
 TEST_CASE("CRAMER'S RULE") {
   matrix_<float, 3, 3> mat(3.f, -1.f, 2.f, 1.f, 2.f, 3.f, 2.f, -2.f, -1.f);
-  constexpr matrix_<float, 1, 3> right_side{12, 11, 2};
+  constexpr matrix_<float, 1, 3> right_side(12.f, 11.f, 2.f);
   const auto actual = kraken::num_methods::cramer(mat, right_side);
   constexpr matrix_<float, 1, 3> expected(2.99999928474f, 1.00000023842f,
                                           1.99999976158f);
